@@ -1,0 +1,75 @@
+import { User, UserRole } from "../models/types";
+import { authService } from "../services/auth";
+import { can, PermissionAction, PermissionResource } from "../services/permissions";
+import { RateLimiter } from "../services/rate-limiter";
+import { ControllerRequest, ControllerResponse } from "../controllers/authController";
+
+export type NextFunction = () => void;
+
+const globalLimiter = new RateLimiter(100, 60);
+
+/**
+ * Middleware to verify session and extract user
+ */
+export function authenticate(req: ControllerRequest, res: ControllerResponse, next: NextFunction) {
+  const currentUser = authService.getUser();
+  if (!currentUser) {
+    return res.status(401).json({ success: false, error: "Authentication required" });
+  }
+
+  // Rate limiting per IP/User
+  const limit = globalLimiter.check(currentUser.id);
+  if (!limit.allowed) {
+    return res
+      .status(429)
+      .json({ success: false, error: "Too many requests. Please wait a moment." });
+  }
+
+  req.user = currentUser;
+  next();
+}
+
+/**
+ * Middleware to require specific role
+ */
+export function requireRole(role: UserRole) {
+  return (req: ControllerRequest, res: ControllerResponse, next: NextFunction) => {
+    const user = req.user as User | undefined;
+    if (!user) {
+      return res.status(401).json({ success: false, error: "Authentication required" });
+    }
+
+    if (user.role !== role) {
+      return res.status(403).json({ success: false, error: `Forbidden: Requires ${role} role` });
+    }
+
+    next();
+  };
+}
+
+/**
+ * Middleware to enforce fine-grained action permission
+ */
+export function requirePermission(action: PermissionAction, resource: PermissionResource) {
+  return (req: ControllerRequest, res: ControllerResponse, next: NextFunction) => {
+    const user = req.user as User | undefined;
+    if (!user) {
+      return res.status(401).json({ success: false, error: "Authentication required" });
+    }
+
+    const student = user.role === "student" ? authService.getStudentProfile() : null;
+    const context = {
+      institutionId: user.institutionId,
+      sectionId: req.params?.["sectionId"] || student?.sectionId,
+      studentId: req.params?.["studentId"] || student?.id,
+    };
+
+    if (!can(user, action, resource, context)) {
+      return res
+        .status(403)
+        .json({ success: false, error: `Forbidden: Cannot perform ${action} on ${resource}` });
+    }
+
+    next();
+  };
+}
