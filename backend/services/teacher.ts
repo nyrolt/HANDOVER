@@ -1,5 +1,5 @@
 import { db } from "./db";
-import type { Student, StudentMarks, Section } from "@/types";
+import type { Student, StudentMarks, Section } from "../models/types";
 
 export interface SpreadsheetRow {
   studentId: string;
@@ -70,6 +70,65 @@ export function getSectionSpreadsheetRows(sectionId: string): SpreadsheetRow[] {
   });
 }
 
+export function generateSectionMarksCSV(sectionId: string): string {
+  const section = db.getSectionById(sectionId);
+  const rows = getSectionSpreadsheetRows(sectionId);
+  const headers = [
+    "Roll No",
+    "Student Name",
+    "Email",
+    "Section",
+    "Project Group",
+    "Internal (/20)",
+    "Lab (/20)",
+    "Practical (/20)",
+    "Project (/20)",
+    "Total (/80)",
+    "Grade",
+  ];
+
+  const csvRows = [headers.join(",")];
+  rows.forEach((r) => {
+    const line = [
+      `"${r.rollNumber}"`,
+      `"${r.name.replace(/"/g, '""')}"`,
+      `"${r.email.replace(/"/g, '""')}"`,
+      `"${r.sectionName.replace(/"/g, '""')}"`,
+      `"${r.projectGroupName.replace(/"/g, '""')}"`,
+      r.internalMarks,
+      r.labRecordMarks,
+      r.practicalMarks,
+      r.projectMarks,
+      r.total,
+      `"${r.grade}"`,
+    ];
+    csvRows.push(line.join(","));
+  });
+
+  return csvRows.join("\n");
+}
+
+export function exportSectionMarksToCSV(sectionId: string): void {
+  const section = db.getSectionById(sectionId);
+  const csvContent = generateSectionMarksCSV(sectionId);
+  const globalObj = globalThis as unknown as { document?: Document };
+  if (typeof globalObj.document !== "undefined") {
+    const doc = globalObj.document;
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = doc.createElement("a");
+    link.setAttribute("href", url);
+    const filename = section?.sectionName
+      ? `${section.sectionName.replace(/\s+/g, "_")}_Marksheet.csv`
+      : "Section_Marksheet.csv";
+    link.setAttribute("download", filename);
+    doc.body.appendChild(link);
+    link.click();
+    doc.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  }
+}
+
 export function exportToCSV(section: Section | undefined, rows: SpreadsheetRow[]): void {
   const headers = [
     "Roll No",
@@ -104,18 +163,22 @@ export function exportToCSV(section: Section | undefined, rows: SpreadsheetRow[]
     csvRows.push(line.join(","));
   });
 
-  const blob = new Blob([csvRows.join("\n")], { type: "text/csv;charset=utf-8;" });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.setAttribute("href", url);
-  const filename = section?.sectionName
-    ? `${section.sectionName.replace(/\s+/g, "_")}_Marksheet.csv`
-    : "Section_Marksheet.csv";
-  link.setAttribute("download", filename);
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-  URL.revokeObjectURL(url);
+  const globalObj = globalThis as unknown as { document?: Document };
+  if (typeof globalObj.document !== "undefined") {
+    const doc = globalObj.document;
+    const blob = new Blob([csvRows.join("\n")], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = doc.createElement("a");
+    link.setAttribute("href", url);
+    const filename = section?.sectionName
+      ? `${section.sectionName.replace(/\s+/g, "_")}_Marksheet.csv`
+      : "Section_Marksheet.csv";
+    link.setAttribute("download", filename);
+    doc.body.appendChild(link);
+    link.click();
+    doc.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  }
 }
 
 export function parseAndImportCSV(

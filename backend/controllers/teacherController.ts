@@ -1,5 +1,10 @@
 import { db } from "../db/database";
-import { getSectionSpreadsheetRows, parseAndImportCSV, exportToCSV } from "../services/teacher";
+import {
+  getSectionSpreadsheetRows,
+  parseAndImportCSV,
+  exportToCSV,
+  generateSectionMarksCSV,
+} from "../services/teacher";
 import { assertCan } from "../services/permissions";
 import type { User, Student } from "../models/types";
 import { ControllerRequest, ControllerResponse } from "./authController";
@@ -314,6 +319,161 @@ export class TeacherController {
       return res.status(201).json({ success: true, data: announcement });
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Failed to create announcement";
+      return res.status(400).json({ success: false, error: msg });
+    }
+  }
+
+  async deleteSection(req: ControllerRequest, res: ControllerResponse) {
+    try {
+      const user = req.user as User;
+      if (!user) return res.status(401).json({ success: false, error: "Unauthorized" });
+      const sectionId = req.params?.["sectionId"] || "";
+      assertCan(user, "delete:section", "section", {
+        institutionId: user.institutionId,
+        sectionId,
+      });
+      db.deleteSection(sectionId);
+      return res.status(200).json({ success: true });
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Failed to delete section";
+      return res.status(400).json({ success: false, error: msg });
+    }
+  }
+
+  async getAssignments(req: ControllerRequest, res: ControllerResponse) {
+    try {
+      const user = req.user as User;
+      if (!user) return res.status(401).json({ success: false, error: "Unauthorized" });
+      const sectionId = req.query?.["sectionId"] || undefined;
+      assertCan(user, "read:assignment", "assignment", {
+        institutionId: user.institutionId,
+        sectionId,
+      });
+      const assignments = db.getAssignments(sectionId);
+      return res.status(200).json({ success: true, data: assignments });
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Failed to load assignments";
+      return res.status(500).json({ success: false, error: msg });
+    }
+  }
+
+  async deleteAssignment(req: ControllerRequest, res: ControllerResponse) {
+    try {
+      const user = req.user as User;
+      if (!user) return res.status(401).json({ success: false, error: "Unauthorized" });
+      const assignmentId = req.params?.["assignmentId"] || "";
+      assertCan(user, "delete:assignment", "assignment", { institutionId: user.institutionId });
+      db.deleteAssignment(assignmentId);
+      return res.status(200).json({ success: true });
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Failed to delete assignment";
+      return res.status(400).json({ success: false, error: msg });
+    }
+  }
+
+  async getAnnouncements(req: ControllerRequest, res: ControllerResponse) {
+    try {
+      const user = req.user as User;
+      if (!user) return res.status(401).json({ success: false, error: "Unauthorized" });
+      const sectionId = req.query?.["sectionId"] || undefined;
+      assertCan(user, "read:announcement", "announcement", {
+        institutionId: user.institutionId,
+        sectionId,
+      });
+      const announcements = db.getAnnouncements(sectionId);
+      return res.status(200).json({ success: true, data: announcements });
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Failed to load announcements";
+      return res.status(500).json({ success: false, error: msg });
+    }
+  }
+
+  async deleteAnnouncement(req: ControllerRequest, res: ControllerResponse) {
+    try {
+      const user = req.user as User;
+      if (!user) return res.status(401).json({ success: false, error: "Unauthorized" });
+      const announcementId = req.params?.["announcementId"] || "";
+      assertCan(user, "delete:announcement", "announcement", { institutionId: user.institutionId });
+      db.deleteAnnouncement(announcementId);
+      return res.status(200).json({ success: true });
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Failed to delete announcement";
+      return res.status(400).json({ success: false, error: msg });
+    }
+  }
+
+  async getGroupRequests(req: ControllerRequest, res: ControllerResponse) {
+    try {
+      const user = req.user as User;
+      if (!user) return res.status(401).json({ success: false, error: "Unauthorized" });
+      const sectionId = req.query?.["sectionId"] || undefined;
+      assertCan(user, "read:group", "projectGroup", {
+        institutionId: user.institutionId,
+        sectionId,
+      });
+      const requests = db.getGroupRequests(sectionId);
+      return res.status(200).json({ success: true, data: requests });
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Failed to load group requests";
+      return res.status(500).json({ success: false, error: msg });
+    }
+  }
+
+  async reviewGroupProposal(
+    req: ControllerRequest<{ status: "Approved" | "Rejected"; feedback?: string }>,
+    res: ControllerResponse,
+  ) {
+    try {
+      const user = req.user as User;
+      if (!user) return res.status(401).json({ success: false, error: "Unauthorized" });
+      const requestId = req.params?.["requestId"] || "";
+      const { status, feedback } = req.body;
+      assertCan(user, "review:proposal", "groupRequest", { institutionId: user.institutionId });
+
+      const success = db.reviewGroupRequest(requestId, status, user.name, feedback);
+      if (!success) {
+        return res.status(404).json({ success: false, error: "Proposal request not found" });
+      }
+
+      const updated = db.getGroupRequests().find((r) => r.id === requestId);
+      return res.status(200).json({ success: true, data: updated });
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Failed to review group proposal";
+      return res.status(400).json({ success: false, error: msg });
+    }
+  }
+
+  async exportCSV(req: ControllerRequest, res: ControllerResponse) {
+    try {
+      const user = req.user as User;
+      if (!user) return res.status(401).json({ success: false, error: "Unauthorized" });
+      const sectionId = req.params?.["sectionId"] || "";
+      assertCan(user, "read:marks", "marks", { institutionId: user.institutionId, sectionId });
+      const csv = generateSectionMarksCSV(sectionId);
+      return res.status(200).json({ success: true, data: csv });
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Failed to export CSV";
+      return res.status(400).json({ success: false, error: msg });
+    }
+  }
+
+  async importCSV(req: ControllerRequest<{ csvContent: string }>, res: ControllerResponse) {
+    try {
+      const user = req.user as User;
+      if (!user) return res.status(401).json({ success: false, error: "Unauthorized" });
+      const sectionId = req.params?.["sectionId"] || "";
+      const { csvContent } = req.body;
+      if (!csvContent) {
+        return res.status(400).json({ success: false, error: "CSV content is required" });
+      }
+      assertCan(user, "create:student", "student", {
+        institutionId: user.institutionId,
+        sectionId,
+      });
+      const result = parseAndImportCSV(csvContent, sectionId);
+      return res.status(200).json({ success: true, data: result });
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Failed to import CSV";
       return res.status(400).json({ success: false, error: msg });
     }
   }

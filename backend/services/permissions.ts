@@ -1,4 +1,4 @@
-import type { User, UserRole } from "@/types";
+import type { User, UserRole } from "../models/types";
 
 export type PermissionAction =
   | "create:section"

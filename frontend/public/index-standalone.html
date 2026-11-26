@@ -1,0 +1,1747 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Handover — Academic Operating System for College Faculty & Students</title>
+    <meta
+      name="description"
+      content="Professional spreadsheet-first workspace replacing fragmented Excel files for college departments. Manage continuous evaluation marks, class sections, assignments, and collaborative project teams with role-based security."
+    />
+    <meta
+      name="keywords"
+      content="college management system, teacher gradebook, student portal, continuous evaluation marks, group projects, academic marksheet, higher education SaaS, spreadsheet gradebook, handover project"
+    />
+    <meta name="author" content="Handover Academic Systems" />
+    <meta name="theme-color" content="#4F46E5" />
+
+    <!-- Open Graph / Social -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Handover — College Teacher & Student Management System" />
+    <meta
+      property="og:description"
+      content="Unified digital workspace for faculty continuous marks, class sections, and student project groups."
+    />
+    <meta property="og:site_name" content="Handover" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <!-- Favicon -->
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="alternate icon" href="/favicon.png" type="image/png" />
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Structured Data (JSON-LD) -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "Handover",
+        "applicationCategory": "EducationalApplication",
+        "operatingSystem": "Web",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        },
+        "description": "Unified digital workspace for faculty continuous marks, class sections, and student project groups."
+      }
+    </script>
+
+    <style>
+      :root {
+        --accent: #4f46e5;
+        --accent-hover: #4338ca;
+        --accent-light: #eef2ff;
+        --accent-glow: rgba(79, 70, 229, 0.18);
+        --student-accent: #059669;
+        --student-light: #ecfdf5;
+        --bg: #f8fafc;
+        --surface: #ffffff;
+        --border: #e2e8f0;
+        --border-subtle: #f1f5f9;
+        --text-main: #090d16;
+        --text-muted: #64748b;
+        --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        --font-mono: "JetBrains Mono", monospace;
+      }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        font-family: var(--font-sans);
+        background-color: var(--bg);
+        color: var(--text-main);
+        line-height: 1.6;
+        overflow-x: hidden;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      /* Ambient Mesh Glows */
+      .mesh-glow-top {
+        position: fixed;
+        top: -120px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 1000px;
+        height: 500px;
+        background: radial-gradient(
+          ellipse at center,
+          rgba(99, 102, 241, 0.15),
+          rgba(248, 250, 252, 0) 70%
+        );
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      .container {
+        width: 100%;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 1.5rem;
+        position: relative;
+        z-index: 1;
+      }
+
+      /* Header */
+      header.site-header {
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        background: rgba(255, 255, 255, 0.92);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-bottom: 1px solid var(--border);
+      }
+
+      .nav-wrapper {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 4rem;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+        text-decoration: none;
+        color: var(--text-main);
+      }
+
+      .brand-icon {
+        width: 2.25rem;
+        height: 2.25rem;
+        background: linear-gradient(135deg, var(--accent), #7c3aed);
+        color: white;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 12px var(--accent-glow);
+        font-size: 1.1rem;
+      }
+
+      .brand-text {
+        font-size: 1.125rem;
+        font-weight: 800;
+        letter-spacing: -0.025em;
+        line-height: 1.1;
+      }
+
+      .brand-sub {
+        font-size: 0.625rem;
+        font-family: var(--font-mono);
+        color: var(--text-muted);
+        letter-spacing: 0.08em;
+      }
+
+      nav.nav-links {
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+      }
+
+      nav.nav-links a {
+        text-decoration: none;
+        color: #475569;
+        font-size: 0.8125rem;
+        font-weight: 600;
+        transition: color 0.2s ease;
+      }
+
+      nav.nav-links a:hover {
+        color: var(--accent);
+      }
+
+      .nav-actions {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        font-size: 0.8125rem;
+        font-weight: 600;
+        padding: 0.55rem 1.15rem;
+        border-radius: 10px;
+        cursor: pointer;
+        text-decoration: none;
+        transition: all 0.2s ease;
+        border: 1px solid transparent;
+        white-space: nowrap;
+      }
+
+      .btn-primary {
+        background: linear-gradient(135deg, var(--accent), #6366f1);
+        color: white;
+        box-shadow: 0 4px 14px var(--accent-glow);
+      }
+
+      .btn-primary:hover {
+        background: linear-gradient(135deg, var(--accent-hover), #4f46e5);
+        transform: translateY(-1px);
+      }
+
+      .btn-outline {
+        background: white;
+        color: #334155;
+        border-color: var(--border);
+      }
+
+      .btn-outline:hover {
+        background: #f8fafc;
+        border-color: #cbd5e1;
+      }
+
+      .btn-student {
+        background: linear-gradient(135deg, var(--student-accent), #0d9488);
+        color: white;
+        box-shadow: 0 4px 14px rgba(5, 150, 105, 0.2);
+      }
+
+      .btn-student:hover {
+        transform: translateY(-1px);
+      }
+
+      /* Hero */
+      section.hero {
+        padding: 4.5rem 0 2.5rem;
+        text-align: center;
+      }
+
+      .status-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.3rem 0.9rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        background: white;
+        color: #334155;
+        border: 1px solid var(--border);
+        margin-bottom: 1.5rem;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+      }
+
+      .status-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background-color: #10b981;
+      }
+
+      h1.hero-title {
+        font-size: clamp(2.25rem, 5.5vw, 4.25rem);
+        font-weight: 900;
+        line-height: 1.1;
+        letter-spacing: -0.04em;
+        color: var(--text-main);
+        max-width: 920px;
+        margin: 0 auto 1.25rem;
+      }
+
+      .gradient-indigo {
+        background: linear-gradient(135deg, var(--accent), #7c3aed);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+
+      .gradient-emerald {
+        background: linear-gradient(135deg, #059669, #0d9488);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+
+      p.hero-desc {
+        font-size: clamp(1rem, 2vw, 1.2rem);
+        color: var(--text-muted);
+        max-width: 680px;
+        margin: 0 auto 2.25rem;
+        line-height: 1.6;
+      }
+
+      .hero-caps {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 1.5rem;
+        font-size: 0.8125rem;
+        font-weight: 600;
+        color: #475569;
+        margin-bottom: 3.5rem;
+      }
+
+      .hero-cap-item {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+      }
+
+      /* Workspaces Grid */
+      .workspaces-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 2rem;
+        max-width: 1040px;
+        margin: 0 auto 4rem;
+      }
+
+      .workspace-card {
+        background: white;
+        border: 1px solid var(--border);
+        border-radius: 24px;
+        padding: 2.25rem;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        position: relative;
+        transition: all 0.3s ease;
+      }
+
+      .workspace-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 16px 36px rgba(0, 0, 0, 0.07);
+      }
+
+      .workspace-card.faculty-card {
+        border-top: 3px solid var(--accent);
+      }
+
+      .workspace-card.student-card {
+        border-top: 3px solid var(--student-accent);
+      }
+
+      .workspace-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1.25rem;
+      }
+
+      .workspace-icon {
+        width: 3rem;
+        height: 3rem;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+      }
+
+      .faculty-card .workspace-icon {
+        background: var(--accent-light);
+        color: var(--accent);
+      }
+
+      .student-card .workspace-icon {
+        background: var(--student-light);
+        color: var(--student-accent);
+      }
+
+      .role-badge {
+        font-size: 0.6875rem;
+        font-family: var(--font-mono);
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        padding: 0.25rem 0.65rem;
+        border-radius: 9999px;
+      }
+
+      .faculty-card .role-badge {
+        background: var(--accent-light);
+        color: var(--accent);
+        border: 1px solid #c7d2fe;
+      }
+
+      .student-card .role-badge {
+        background: var(--student-light);
+        color: var(--student-accent);
+        border: 1px solid #a7f3d0;
+      }
+
+      .workspace-card h2 {
+        font-size: 1.5rem;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        margin-bottom: 0.6rem;
+      }
+
+      .workspace-card p {
+        font-size: 0.875rem;
+        color: var(--text-muted);
+        line-height: 1.55;
+        margin-bottom: 1.5rem;
+      }
+
+      .features-pill-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.6rem;
+        margin-bottom: 1.75rem;
+      }
+
+      .feat-pill {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+        background: #f8fafc;
+        border: 1px solid var(--border);
+        padding: 0.5rem 0.75rem;
+        border-radius: 10px;
+      }
+
+      /* Studio Sandbox Browser Bezel */
+      section.studio-section {
+        margin-bottom: 5rem;
+      }
+
+      .browser-window {
+        background: white;
+        border-radius: 24px;
+        border: 1px solid var(--border);
+        box-shadow: 0 16px 40px rgba(0, 0, 0, 0.05);
+        overflow: hidden;
+        max-width: 1040px;
+        margin: 0 auto;
+      }
+
+      .browser-bezel {
+        background: #0f172a;
+        color: #cbd5e1;
+        padding: 0.75rem 1.25rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 0.75rem;
+        font-family: var(--font-mono);
+      }
+
+      .window-dots {
+        display: flex;
+        gap: 0.4rem;
+      }
+
+      .dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+      }
+
+      .dot-red {
+        background: #ef4444;
+      }
+
+      .dot-yellow {
+        background: #f59e0b;
+      }
+
+      .dot-green {
+        background: #10b981;
+      }
+
+      .url-bar {
+        background: #1e293b;
+        padding: 0.25rem 0.85rem;
+        border-radius: 6px;
+        color: #94a3b8;
+        border: 1px solid #334155;
+      }
+
+      .studio-tabs {
+        background: #f8fafc;
+        border-bottom: 1px solid var(--border);
+        padding: 0.75rem 1.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+      }
+
+      .tab-buttons {
+        display: flex;
+        gap: 0.4rem;
+        background: #e2e8f0;
+        padding: 0.25rem;
+        border-radius: 10px;
+      }
+
+      .studio-tab-btn {
+        padding: 0.4rem 1rem;
+        font-size: 0.75rem;
+        font-weight: 700;
+        border-radius: 8px;
+        border: none;
+        background: none;
+        color: #475569;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .studio-tab-btn.active {
+        background: white;
+        color: var(--accent);
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+      }
+
+      .studio-content {
+        padding: 1.5rem;
+      }
+
+      /* Stats summary strip */
+      .stats-summary {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1rem;
+        background: #eef2ff;
+        border: 1px solid #e0e7ff;
+        border-radius: 16px;
+        padding: 1rem 1.25rem;
+        margin-bottom: 1.25rem;
+      }
+
+      .stat-item-label {
+        font-size: 0.625rem;
+        font-family: var(--font-mono);
+        color: #64748b;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+
+      .stat-item-val {
+        font-size: 1.25rem;
+        font-weight: 800;
+        font-family: var(--font-mono);
+        color: #1e1b4b;
+      }
+
+      /* Spreadsheet table */
+      .table-box {
+        overflow-x: auto;
+        border: 1px solid var(--border);
+        border-radius: 14px;
+      }
+
+      table.live-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.8125rem;
+        text-align: left;
+      }
+
+      table.live-table th {
+        background: #f1f5f9;
+        color: #334155;
+        font-weight: 700;
+        padding: 0.75rem 1rem;
+        border-bottom: 1px solid var(--border);
+      }
+
+      table.live-table td {
+        padding: 0.65rem 1rem;
+        border-bottom: 1px solid #f1f5f9;
+      }
+
+      .input-cell {
+        width: 3.25rem;
+        text-align: center;
+        padding: 0.3rem;
+        font-family: var(--font-mono);
+        font-weight: 700;
+        font-size: 0.8125rem;
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        outline: none;
+      }
+
+      .input-cell:focus {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.2);
+      }
+
+      /* Bento Grid Section */
+      .bento-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.5rem;
+        max-width: 1040px;
+        margin: 0 auto 5rem;
+      }
+
+      .bento-card {
+        background: white;
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        padding: 1.75rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+      }
+
+      .bento-wide {
+        grid-column: span 2;
+      }
+
+      .bento-full {
+        grid-column: span 3;
+      }
+
+      .bento-card h3 {
+        font-size: 1.15rem;
+        font-weight: 800;
+        margin-bottom: 0.5rem;
+      }
+
+      .bento-card p {
+        font-size: 0.8125rem;
+        color: var(--text-muted);
+        line-height: 1.55;
+      }
+
+      /* Side-by-side comparison */
+      .comparison-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+        max-width: 1040px;
+        margin: 0 auto 5rem;
+      }
+
+      .compare-card {
+        border-radius: 24px;
+        padding: 2.25rem;
+      }
+
+      .compare-card.old-way {
+        background: white;
+        border: 1px solid #fecdd3;
+      }
+
+      .compare-card.modern-way {
+        background: linear-gradient(135deg, #0f172a, #1e1b4b);
+        color: white;
+        border: 1px solid #312e81;
+      }
+
+      .compare-card h3 {
+        font-size: 1.25rem;
+        font-weight: 800;
+        margin-bottom: 1.25rem;
+      }
+
+      .compare-list {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        font-size: 0.8125rem;
+      }
+
+      /* FAQ */
+      .faq-list {
+        max-width: 800px;
+        margin: 0 auto 5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+
+      .faq-item {
+        background: white;
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        overflow: hidden;
+      }
+
+      .faq-question {
+        width: 100%;
+        text-align: left;
+        padding: 1.15rem 1.5rem;
+        background: none;
+        border: none;
+        font-size: 0.9375rem;
+        font-weight: 700;
+        color: var(--text-main);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        cursor: pointer;
+      }
+
+      .faq-answer {
+        display: none;
+        padding: 0 1.5rem 1.25rem;
+        font-size: 0.8125rem;
+        color: var(--text-muted);
+        line-height: 1.6;
+        border-top: 1px solid #f8fafc;
+      }
+
+      .faq-item.active .faq-answer {
+        display: block;
+      }
+
+      /* CTA Banner */
+      .cta-card {
+        background: linear-gradient(135deg, #090d16, #1e1b4b);
+        color: white;
+        border-radius: 24px;
+        padding: 4rem 2rem;
+        text-align: center;
+        max-width: 1040px;
+        margin: 0 auto 5rem;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+      }
+
+      /* Footer */
+      footer.site-footer {
+        border-top: 1px solid var(--border);
+        background: white;
+        padding: 3rem 0;
+        font-size: 0.75rem;
+        color: var(--text-muted);
+      }
+
+      @media (max-width: 768px) {
+        nav.nav-links {
+          display: none;
+        }
+
+        .bento-wide,
+        .bento-full {
+          grid-column: span 1;
+        }
+
+        .bento-grid,
+        .comparison-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .stats-summary {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="mesh-glow-top" aria-hidden="true"></div>
+
+    <!-- Header Navigation -->
+    <header class="site-header" role="banner">
+      <div class="container">
+        <div class="nav-wrapper">
+          <a href="/" class="brand" aria-label="Handover Home">
+            <div
+              class="brand-icon"
+              style="
+                background: #000;
+                border-radius: 9px;
+                overflow: hidden;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+              "
+            >
+              <img
+                src="/handover-logo.jpg"
+                alt="Handover"
+                style="width: 100%; height: 100%; object-fit: cover; display: block"
+                onerror="this.style.display = 'none'"
+              />
+            </div>
+            <div>
+              <div class="brand-text">Handover</div>
+              <div class="brand-sub">ACADEMIC OS</div>
+            </div>
+          </a>
+
+          <nav class="nav-links" role="navigation" aria-label="Main Navigation">
+            <a href="#workspaces">Workspaces</a>
+            <a href="#live-studio">Interactive Studio</a>
+            <a href="#capabilities">Architecture</a>
+            <a href="#comparison">Excel vs Handover</a>
+            <a href="#faq">FAQ</a>
+          </nav>
+
+          <div class="nav-actions">
+            <a href="/auth" class="btn btn-outline">Sign In</a>
+            <a href="/auth?tab=signup" class="btn btn-primary">Register Account</a>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Landmark -->
+    <main id="main-content" role="main">
+      <!-- Hero Section -->
+      <section class="hero">
+        <div class="container">
+          <div class="status-pill">
+            <span class="status-dot"></span>
+            <span>Academic Year 2026-2027</span>
+            <span style="color: #cbd5e1">•</span>
+            <span style="font-family: var(--font-mono); font-weight: 700; color: var(--accent)"
+              >Production Workspace v2.4</span
+            >
+          </div>
+
+          <h1 class="hero-title">
+            The modern academic workspace for
+            <span class="gradient-indigo">faculty</span> and
+            <span class="gradient-emerald">students</span>.
+          </h1>
+
+          <p class="hero-desc">
+            Eliminate chaotic, version-drifted Excel spreadsheets. Empower faculty with an inline
+            continuous marks engine, class sections, and 1-click CSV sync — while students track
+            verified transcripts and organize group projects.
+          </p>
+
+          <div class="hero-caps">
+            <div class="hero-cap-item"><span>✓</span> Inline Spreadsheet Gradebook</div>
+            <div class="hero-cap-item"><span>✓</span> Bounded Continuous Marks (0 - 20)</div>
+            <div class="hero-cap-item"><span>✓</span> Collaborative Project Teams</div>
+            <div class="hero-cap-item"><span>✓</span> Multi-Tenant Section Scoping</div>
+          </div>
+
+          <!-- Dual Workspace Cards -->
+          <div class="workspaces-grid" id="workspaces">
+            <!-- Faculty Card -->
+            <article class="workspace-card faculty-card">
+              <div>
+                <div class="workspace-header">
+                  <div class="workspace-icon">👨‍🏫</div>
+                  <span class="role-badge">Faculty Management Mode</span>
+                </div>
+                <h2>Faculty Workspace</h2>
+                <p>
+                  Designed for course instructors and department chairs. Rapid continuous marks
+                  entry with keyboard navigation (Tab/Enter), automated grade distributions,
+                  coursework assignments, and 1-click proposal review.
+                </p>
+
+                <div class="features-pill-grid">
+                  <div class="feat-pill">📊 Inline Gradebook</div>
+                  <div class="feat-pill">👥 Team Approvals</div>
+                  <div class="feat-pill">🎯 0-20 Marks Engine</div>
+                  <div class="feat-pill">📥 CSV Export & Import</div>
+                </div>
+              </div>
+
+              <div
+                style="
+                  display: grid;
+                  grid-template-columns: 1fr 1fr;
+                  gap: 0.6rem;
+                  border-top: 1px solid var(--border-subtle);
+                  padding-top: 1.25rem;
+                "
+              >
+                <a href="/auth?role=teacher" class="btn btn-primary">Enter Faculty Portal →</a>
+                <a href="/auth?tab=signup&role=teacher" class="btn btn-outline"
+                  >Register Instructor</a
+                >
+              </div>
+            </article>
+
+            <!-- Student Card -->
+            <article class="workspace-card student-card">
+              <div>
+                <div class="workspace-header">
+                  <div class="workspace-icon">👨‍🎓</div>
+                  <span class="role-badge">Student Access Portal</span>
+                </div>
+                <h2>Student Academic Portal</h2>
+                <p>
+                  Personalized, protected student hub. View official continuous marks transcripts,
+                  verify assignment deadlines, propose project groups with section peers, and
+                  receive official instructor notices.
+                </p>
+
+                <div class="features-pill-grid">
+                  <div class="feat-pill">🛡️ Verified Transcripts</div>
+                  <div class="feat-pill">🤝 Propose Teammates</div>
+                  <div class="feat-pill">📅 Course Deadlines</div>
+                  <div class="feat-pill">🔒 Isolated IDOR Privacy</div>
+                </div>
+              </div>
+
+              <div
+                style="
+                  display: grid;
+                  grid-template-columns: 1fr 1fr;
+                  gap: 0.6rem;
+                  border-top: 1px solid var(--border-subtle);
+                  padding-top: 1.25rem;
+                "
+              >
+                <a href="/auth?role=student" class="btn btn-outline">Student Sign In</a>
+                <a href="/auth?tab=signup&role=student" class="btn btn-student">Register Student</a>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- Live Studio Section -->
+      <section class="container studio-section" id="live-studio">
+        <div style="text-align: center; max-width: 650px; margin: 0 auto 2.5rem">
+          <span
+            style="
+              font-size: 0.75rem;
+              font-family: var(--font-mono);
+              font-weight: 700;
+              color: var(--accent);
+              text-transform: uppercase;
+            "
+            >Interactive Studio Sandbox</span
+          >
+          <h2
+            style="
+              font-size: 2.25rem;
+              font-weight: 800;
+              letter-spacing: -0.03em;
+              margin: 0.35rem 0 0.5rem;
+            "
+          >
+            Test-drive the academic workspace live
+          </h2>
+          <p style="font-size: 0.875rem; color: var(--text-muted)">
+            Experience the actual interface. Edit continuous marks cells inline below to see
+            automatic aggregation and grade rules recompute in real time.
+          </p>
+        </div>
+
+        <div class="browser-window">
+          <div class="browser-bezel">
+            <div class="window-dots">
+              <span class="dot dot-red"></span>
+              <span class="dot dot-yellow"></span>
+              <span class="dot dot-green"></span>
+            </div>
+            <div class="url-bar">https://handover.internal/cse-301/section-a/gradebook</div>
+            <div>&lt; 15ms compute</div>
+          </div>
+
+          <div class="studio-tabs">
+            <div class="tab-buttons">
+              <button class="studio-tab-btn active" id="btnTab1" onclick="switchStudioTab('sheet')">
+                Faculty Spreadsheet
+              </button>
+              <button class="studio-tab-btn" id="btnTab2" onclick="switchStudioTab('transcript')">
+                Student Transcript
+              </button>
+              <button class="studio-tab-btn" id="btnTab3" onclick="switchStudioTab('teams')">
+                Project Teams
+              </button>
+            </div>
+            <div style="font-size: 0.75rem; color: #475569; font-weight: 600">
+              Section: <strong>CS-301 Algorithms (Sec A)</strong>
+            </div>
+          </div>
+
+          <div class="studio-content">
+            <!-- Sheet Tab -->
+            <div id="studioSheetView">
+              <div class="stats-summary">
+                <div>
+                  <div class="stat-item-label">Class Average</div>
+                  <div class="stat-item-val" id="mockAvg">90.0%</div>
+                </div>
+                <div>
+                  <div class="stat-item-label">Top Score</div>
+                  <div class="stat-item-val" id="mockTop">76 / 80</div>
+                </div>
+                <div>
+                  <div class="stat-item-label">Criteria</div>
+                  <div class="stat-item-val">40.0% Min</div>
+                </div>
+                <div>
+                  <div class="stat-item-label">Persistence</div>
+                  <div class="stat-item-val" style="color: #059669">● Autosaved</div>
+                </div>
+              </div>
+
+              <div class="table-box">
+                <table class="live-table">
+                  <thead>
+                    <tr>
+                      <th>Roll No</th>
+                      <th>Student Name</th>
+                      <th>Project Team</th>
+                      <th style="text-align: center">Internal /20</th>
+                      <th style="text-align: center">Lab /20</th>
+                      <th style="text-align: center">Practical /20</th>
+                      <th style="text-align: center">Project /20</th>
+                      <th style="text-align: center">Total /80</th>
+                      <th style="text-align: center">Grade</th>
+                    </tr>
+                  </thead>
+                  <tbody id="studioRows">
+                    <!-- Populated via script -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Transcript Tab -->
+            <div id="studioTranscriptView" style="display: none; padding: 1rem 0">
+              <div
+                style="
+                  background: #ecfdf5;
+                  border: 1px solid #a7f3d0;
+                  border-radius: 16px;
+                  padding: 1.25rem;
+                  display: flex;
+                  justify-content: space-between;
+                  align-items: center;
+                  margin-bottom: 1.5rem;
+                "
+              >
+                <div>
+                  <h3 style="font-size: 1.15rem; font-weight: 800; color: #065f46">
+                    Alexander Wright
+                  </h3>
+                  <p style="font-size: 0.75rem; color: #047857; font-family: var(--font-mono)">
+                    Roll: 2024-CS-001 • CS-301 Section A • Computer Science & Engineering
+                  </p>
+                </div>
+                <span
+                  style="
+                    background: #059669;
+                    color: white;
+                    padding: 0.35rem 0.85rem;
+                    border-radius: 9999px;
+                    font-size: 0.75rem;
+                    font-weight: 700;
+                  "
+                  >Official Verified Transcript</span
+                >
+              </div>
+
+              <div
+                style="
+                  display: grid;
+                  grid-template-columns: repeat(4, 1fr);
+                  gap: 1rem;
+                  text-align: center;
+                  margin-bottom: 1.5rem;
+                "
+              >
+                <div
+                  style="
+                    background: #f8fafc;
+                    border: 1px solid var(--border);
+                    border-radius: 12px;
+                    padding: 1rem;
+                  "
+                >
+                  <div
+                    style="
+                      font-size: 0.65rem;
+                      font-weight: 700;
+                      color: var(--text-muted);
+                      text-transform: uppercase;
+                    "
+                  >
+                    Internal Exam
+                  </div>
+                  <div style="font-size: 1.35rem; font-weight: 900; font-family: var(--font-mono)">
+                    18 / 20
+                  </div>
+                  <div style="font-size: 0.7rem; color: #059669; font-weight: 700">90% Scored</div>
+                </div>
+                <div
+                  style="
+                    background: #f8fafc;
+                    border: 1px solid var(--border);
+                    border-radius: 12px;
+                    padding: 1rem;
+                  "
+                >
+                  <div
+                    style="
+                      font-size: 0.65rem;
+                      font-weight: 700;
+                      color: var(--text-muted);
+                      text-transform: uppercase;
+                    "
+                  >
+                    Lab Record
+                  </div>
+                  <div style="font-size: 1.35rem; font-weight: 900; font-family: var(--font-mono)">
+                    19 / 20
+                  </div>
+                  <div style="font-size: 0.7rem; color: #059669; font-weight: 700">95% Scored</div>
+                </div>
+                <div
+                  style="
+                    background: #f8fafc;
+                    border: 1px solid var(--border);
+                    border-radius: 12px;
+                    padding: 1rem;
+                  "
+                >
+                  <div
+                    style="
+                      font-size: 0.65rem;
+                      font-weight: 700;
+                      color: var(--text-muted);
+                      text-transform: uppercase;
+                    "
+                  >
+                    Practical Exam
+                  </div>
+                  <div style="font-size: 1.35rem; font-weight: 900; font-family: var(--font-mono)">
+                    17 / 20
+                  </div>
+                  <div style="font-size: 0.7rem; color: #4f46e5; font-weight: 700">85% Scored</div>
+                </div>
+                <div
+                  style="
+                    background: #f8fafc;
+                    border: 1px solid var(--border);
+                    border-radius: 12px;
+                    padding: 1rem;
+                  "
+                >
+                  <div
+                    style="
+                      font-size: 0.65rem;
+                      font-weight: 700;
+                      color: var(--text-muted);
+                      text-transform: uppercase;
+                    "
+                  >
+                    Project Work
+                  </div>
+                  <div style="font-size: 1.35rem; font-weight: 900; font-family: var(--font-mono)">
+                    18 / 20
+                  </div>
+                  <div style="font-size: 0.7rem; color: #059669; font-weight: 700">90% Scored</div>
+                </div>
+              </div>
+
+              <div
+                style="
+                  background: white;
+                  border: 1px solid var(--border);
+                  border-radius: 14px;
+                  padding: 1.25rem;
+                  display: flex;
+                  justify-content: space-between;
+                  align-items: center;
+                "
+              >
+                <div>
+                  <div style="font-size: 0.75rem; color: var(--text-muted)">
+                    Cumulative Continuous Score
+                  </div>
+                  <div style="font-size: 1.5rem; font-weight: 900; font-family: var(--font-mono)">
+                    72 / 80 (90.0% Aggregate)
+                  </div>
+                </div>
+                <span
+                  style="
+                    background: #d1fae5;
+                    color: #065f46;
+                    border: 1px solid #6ee7b7;
+                    padding: 0.4rem 1rem;
+                    border-radius: 10px;
+                    font-weight: 800;
+                    font-size: 0.875rem;
+                  "
+                  >Grade O (Outstanding)</span
+                >
+              </div>
+            </div>
+
+            <!-- Teams Tab -->
+            <div id="studioTeamsView" style="display: none; padding: 1rem 0">
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem">
+                <div
+                  style="
+                    background: #f8fafc;
+                    border: 1px solid var(--border);
+                    border-radius: 16px;
+                    padding: 1.25rem;
+                  "
+                >
+                  <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem">
+                    <span
+                      style="
+                        font-weight: 700;
+                        font-family: var(--font-mono);
+                        color: var(--accent);
+                        font-size: 0.8125rem;
+                      "
+                      >Team Veritas • 3 Members</span
+                    >
+                    <span
+                      style="
+                        background: #d1fae5;
+                        color: #047857;
+                        font-size: 0.6875rem;
+                        font-weight: 700;
+                        padding: 0.2rem 0.5rem;
+                        border-radius: 9999px;
+                      "
+                      >✓ Faculty Approved</span
+                    >
+                  </div>
+                  <h4 style="font-size: 0.9375rem; font-weight: 800; margin-bottom: 0.35rem">
+                    Veritas: Fault-Tolerant Distributed Key-Value Store
+                  </h4>
+                  <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.75rem">
+                    Guide: Dr. Eleanor Vance, Ph.D. • Status: In Progress
+                  </p>
+                  <div style="font-size: 0.75rem; color: #334155">
+                    <strong>Roster:</strong> 👑 Alexander (Leader), Sophia, Marcus
+                  </div>
+                </div>
+
+                <div
+                  style="
+                    background: #f8fafc;
+                    border: 1px solid var(--border);
+                    border-radius: 16px;
+                    padding: 1.25rem;
+                  "
+                >
+                  <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem">
+                    <span
+                      style="
+                        font-weight: 700;
+                        font-family: var(--font-mono);
+                        color: #7c3aed;
+                        font-size: 0.8125rem;
+                      "
+                      >Team AegisFlow • 3 Members</span
+                    >
+                    <span
+                      style="
+                        background: #d1fae5;
+                        color: #047857;
+                        font-size: 0.6875rem;
+                        font-weight: 700;
+                        padding: 0.2rem 0.5rem;
+                        border-radius: 9999px;
+                      "
+                      >✓ Faculty Approved</span
+                    >
+                  </div>
+                  <h4 style="font-size: 0.9375rem; font-weight: 800; margin-bottom: 0.35rem">
+                    AegisFlow: Real-Time Stream Processing Pipeline
+                  </h4>
+                  <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.75rem">
+                    Guide: Dr. Eleanor Vance, Ph.D. • Status: In Progress
+                  </p>
+                  <div style="font-size: 0.75rem; color: #334155">
+                    <strong>Roster:</strong> 👑 Olivia (Leader), Liam, Isabella
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Bento Architecture & Capabilities -->
+      <section class="container" id="capabilities">
+        <div style="text-align: center; max-width: 650px; margin: 0 auto 2.5rem">
+          <span
+            style="
+              font-size: 0.75rem;
+              font-family: var(--font-mono);
+              font-weight: 700;
+              color: var(--accent);
+              text-transform: uppercase;
+            "
+            >System Capabilities</span
+          >
+          <h2
+            style="
+              font-size: 2.25rem;
+              font-weight: 800;
+              letter-spacing: -0.03em;
+              margin: 0.35rem 0 0.5rem;
+            "
+          >
+            Engineered for academic faculty and department workflows
+          </h2>
+          <p style="font-size: 0.875rem; color: var(--text-muted)">
+            Every workflow required to coordinate courses, calculate grades, and review student
+            projects without switching between disparate tools.
+          </p>
+        </div>
+
+        <div class="bento-grid">
+          <div
+            class="bento-card bento-wide"
+            style="background: linear-gradient(135deg, white, #eef2ff)"
+          >
+            <div style="font-size: 1.5rem; margin-bottom: 0.75rem">📊</div>
+            <h3>Excel-Like Continuous Marks Gradebook</h3>
+            <p>
+              Navigate seamlessly using Tab, Shift+Tab, and Enter keys. Frozen student names and
+              roll numbers ensure frictionless horizontal scrolling. Automatic bounding clamps
+              prevent out-of-bounds inputs (strictly 0 to 20).
+            </p>
+          </div>
+
+          <div class="bento-card">
+            <div style="font-size: 1.5rem; margin-bottom: 0.75rem">🏫</div>
+            <h3>Independent Class Sections</h3>
+            <p>
+              Strict multi-tenancy ensures CSE-A, CSE-B, and IT-A records never leak. Each section
+              maintains isolated roll rosters, coursework, and teams.
+            </p>
+          </div>
+
+          <div class="bento-card">
+            <div style="font-size: 1.5rem; margin-bottom: 0.75rem">👥</div>
+            <h3>Dual Group Project Engine</h3>
+            <p>
+              Students propose project titles and invite classmates. Instructors verify eligibility,
+              assign faculty guides, and record milestone marks in one click.
+            </p>
+          </div>
+
+          <div
+            class="bento-card bento-wide"
+            style="background: linear-gradient(135deg, white, #ecfdf5)"
+          >
+            <div style="font-size: 1.5rem; margin-bottom: 0.75rem">📥</div>
+            <h3>Bi-Directional CSV Synchronization</h3>
+            <p>
+              Export complete section records to clean CSV formats ready for registrar submission.
+              Seamlessly batch-import student rosters from university administrative files.
+            </p>
+          </div>
+
+          <div
+            class="bento-card bento-full"
+            style="
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              flex-wrap: wrap;
+              gap: 1rem;
+            "
+          >
+            <div>
+              <h3>Centralized Authorization & Privacy Protection</h3>
+              <p>
+                Enforced by single-source-of-truth authorization check can(user, action, resource).
+                Students can never view peers' private records or tamper with grades.
+              </p>
+            </div>
+            <span
+              style="
+                font-family: var(--font-mono);
+                font-size: 0.75rem;
+                background: #f8fafc;
+                border: 1px solid var(--border);
+                padding: 0.5rem 1rem;
+                border-radius: 8px;
+              "
+              >FERPA & IDOR Compliant</span
+            >
+          </div>
+        </div>
+      </section>
+
+      <!-- Side-by-Side Comparison -->
+      <section class="container" id="comparison">
+        <div style="text-align: center; max-width: 650px; margin: 0 auto 2.5rem">
+          <span
+            style="
+              font-size: 0.75rem;
+              font-family: var(--font-mono);
+              font-weight: 700;
+              color: #e11d48;
+              text-transform: uppercase;
+            "
+            >Why Colleges Upgrade</span
+          >
+          <h2
+            style="
+              font-size: 2.25rem;
+              font-weight: 800;
+              letter-spacing: -0.03em;
+              margin: 0.35rem 0 0.5rem;
+            "
+          >
+            Why Excel Spreadsheets Fail Academic Departments
+          </h2>
+          <p style="font-size: 0.875rem; color: var(--text-muted)">
+            Desktop spreadsheets are calculators. Handover is an institutional operating system.
+          </p>
+        </div>
+
+        <div class="comparison-grid">
+          <div class="compare-card old-way">
+            <span
+              style="
+                font-size: 0.7rem;
+                font-family: var(--font-mono);
+                font-weight: 700;
+                color: #e11d48;
+                text-transform: uppercase;
+              "
+              >The Fragile Old Way</span
+            >
+            <h3>Manual Excel Spreadsheets</h3>
+            <ul class="compare-list">
+              <li>
+                ❌ <strong>Version Drift & Loss:</strong> Scores of marks_final_v2_edit.xlsx
+                scattered across USB sticks and emails.
+              </li>
+              <li>
+                ❌ <strong>Bad Bounds & Errors:</strong> Accidental 25/20 scores entered, broken
+                formulas, and #REF! errors.
+              </li>
+              <li>
+                ❌ <strong>Zero Privacy:</strong> Printing marks on bulletin boards or sending bulk
+                spreadsheets revealing peer scores.
+              </li>
+              <li>
+                ❌ <strong>Chaotic Teams:</strong> Uncoordinated WhatsApp group chats and lost
+                handwritten paper proposals.
+              </li>
+            </ul>
+          </div>
+
+          <div class="compare-card modern-way">
+            <span
+              style="
+                font-size: 0.7rem;
+                font-family: var(--font-mono);
+                font-weight: 700;
+                color: #34d399;
+                text-transform: uppercase;
+              "
+              >The Modern Standard</span
+            >
+            <h3>Handover Academic OS</h3>
+            <ul class="compare-list">
+              <li>
+                ✓ <strong>Single Atomic Source of Truth:</strong> Live persistent database with
+                real-time continuous updates.
+              </li>
+              <li>
+                ✓ <strong>Strict Bounds & Instant Grading:</strong> Automated clamping (0 - 20) and
+                letter grades (O, A+, A, B+, B, F).
+              </li>
+              <li>
+                ✓ <strong>Role-Isolated Portals:</strong> Students access only their personal
+                verified scorecard with complete privacy.
+              </li>
+              <li>
+                ✓ <strong>Structured Proposals:</strong> Online teammate invites; faculty review,
+                approve, and guide in one click.
+              </li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- FAQ Section -->
+      <section class="container" id="faq">
+        <div style="text-align: center; max-width: 650px; margin: 0 auto 2.5rem">
+          <span
+            style="
+              font-size: 0.75rem;
+              font-family: var(--font-mono);
+              font-weight: 700;
+              color: var(--accent);
+              text-transform: uppercase;
+            "
+            >Questions & Answers</span
+          >
+          <h2
+            style="
+              font-size: 2.25rem;
+              font-weight: 800;
+              letter-spacing: -0.03em;
+              margin: 0.35rem 0 0.5rem;
+            "
+          >
+            Frequently Asked Questions
+          </h2>
+          <p style="font-size: 0.875rem; color: var(--text-muted)">
+            Everything you need to know about setting up and operating Handover.
+          </p>
+        </div>
+
+        <div class="faq-list">
+          <div class="faq-item active">
+            <button class="faq-question" onclick="toggleFaq(this)">
+              <span>Can instructors export continuous marks records to CSV or Excel?</span>
+              <span>▾</span>
+            </button>
+            <div class="faq-answer">
+              Yes. In both the Student Roster and Marks Manager views, instructors can click 'Export
+              to CSV' at any time to instantly download a formatted spreadsheet containing roll
+              numbers, names, internal, lab, practical, project scores, and auto-computed totals.
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">
+              <span>Can students edit or tamper with their grades?</span>
+              <span>▾</span>
+            </button>
+            <div class="faq-answer">
+              No. The system enforces centralized server-side authorization check can(user, action,
+              resource). Even if an unauthorized request is forged, it is strictly rejected.
+              Students only possess read-only access to their verified scorecard.
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">
+              <span>How does the Student Group Project proposal workflow work?</span>
+              <span>▾</span>
+            </button>
+            <div class="faq-answer">
+              Enrolled students submit a proposal including their proposed project title and
+              teammates from their section. The faculty reviews the proposal on their dashboard and
+              can Approve or Reject with feedback. Once approved, it becomes an official group with
+              an assigned faculty guide.
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">
+              <span>Can college departments manage multiple sections independently?</span>
+              <span>▾</span>
+            </button>
+            <div class="faq-answer">
+              Yes. Faculty can create sections such as 'CSE - Section A', 'CSE - Section B', and 'IT
+              - Section A'. Student rosters, continuous evaluation marks, and project groups are
+              strictly scoped by sectionId and never mix.
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- CTA Section -->
+      <section class="container">
+        <div class="cta-card">
+          <h2
+            style="
+              font-size: 2.5rem;
+              font-weight: 900;
+              letter-spacing: -0.03em;
+              margin-bottom: 1rem;
+            "
+          >
+            Switch from messy spreadsheets to organized academic flow.
+          </h2>
+          <p style="color: #cbd5e1; max-width: 600px; margin: 0 auto 2rem; font-size: 1rem">
+            Empower your faculty with spreadsheet-first efficiency while giving students
+            transparent, verified access to continuous coursework and grades.
+          </p>
+          <div style="display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap">
+            <a href="/auth?role=teacher" class="btn btn-primary" style="padding: 0.75rem 1.75rem"
+              >Enter Faculty Workspace →</a
+            >
+            <a
+              href="/auth?tab=signup"
+              class="btn btn-outline"
+              style="
+                padding: 0.75rem 1.75rem;
+                background: rgba(255, 255, 255, 0.1);
+                color: white;
+                border-color: rgba(255, 255, 255, 0.2);
+              "
+              >Student Registration</a
+            >
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer" role="contentinfo">
+      <div class="container" style="text-align: center">
+        <p style="font-weight: 700; color: var(--text-main); margin-bottom: 0.4rem">
+          Handover Academic Systems Inc.
+        </p>
+        <p>
+          © 2026 Handover. Professional spreadsheet-first digital workspace for college faculty and
+          students.
+        </p>
+      </div>
+    </footer>
+
+    <!-- Interactive JS -->
+    <script>
+      const demoStudents = [
+        {
+          roll: "2024-CS-001",
+          name: "Alexander Wright",
+          group: "Team Veritas",
+          internal: 18,
+          lab: 19,
+          practical: 17,
+          project: 18,
+        },
+        {
+          roll: "2024-CS-002",
+          name: "Sophia Martinez",
+          group: "Team Veritas",
+          internal: 19,
+          lab: 20,
+          practical: 18,
+          project: 19,
+        },
+        {
+          roll: "2024-CS-003",
+          name: "Marcus Chen",
+          group: "Team Veritas",
+          internal: 17,
+          lab: 18,
+          practical: 18,
+          project: 19,
+        },
+        {
+          roll: "2024-CS-004",
+          name: "Olivia Patel",
+          group: "Team AegisFlow",
+          internal: 18,
+          lab: 19,
+          practical: 19,
+          project: 17,
+        },
+        {
+          roll: "2024-CS-005",
+          name: "Liam O'Connor",
+          group: "Team AegisFlow",
+          internal: 16,
+          lab: 17,
+          practical: 18,
+          project: 18,
+        },
+      ];
+
+      function computeGradeTier(total) {
+        const pct = (total / 80) * 100;
+        if (pct >= 90) return { label: "O", color: "#059669", bg: "#ecfdf5" };
+        if (pct >= 80) return { label: "A+", color: "#4f46e5", bg: "#eef2ff" };
+        if (pct >= 70) return { label: "A", color: "#2563eb", bg: "#eff6ff" };
+        return { label: "B+", color: "#d97706", bg: "#fef3c7" };
+      }
+
+      function renderLiveTable() {
+        const tbody = document.getElementById("studioRows");
+        if (!tbody) return;
+        tbody.innerHTML = "";
+
+        let grandTotal = 0;
+        let maxScore = 0;
+
+        demoStudents.forEach((st, idx) => {
+          const tot = st.internal + st.lab + st.practical + st.project;
+          grandTotal += tot;
+          if (tot > maxScore) maxScore = tot;
+          const grade = computeGradeTier(tot);
+
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td style="font-family: var(--font-mono); font-weight: 700; color: #475569;">${st.roll}</td>
+            <td><strong>${st.name}</strong></td>
+            <td><span style="background: #eef2ff; color: #4f46e5; padding: 0.2rem 0.5rem; border-radius: 6px; font-weight: 600; font-size: 0.75rem; font-family: var(--font-mono);">${st.group}</span></td>
+            <td style="text-align: center;"><input class="input-cell" type="number" min="0" max="20" value="${st.internal}" onchange="changeMark(${idx}, 'internal', this.value)"></td>
+            <td style="text-align: center;"><input class="input-cell" type="number" min="0" max="20" value="${st.lab}" onchange="changeMark(${idx}, 'lab', this.value)"></td>
+            <td style="text-align: center;"><input class="input-cell" type="number" min="0" max="20" value="${st.practical}" onchange="changeMark(${idx}, 'practical', this.value)"></td>
+            <td style="text-align: center;"><input class="input-cell" type="number" min="0" max="20" value="${st.project}" onchange="changeMark(${idx}, 'project', this.value)"></td>
+            <td style="text-align: center; font-family: var(--font-mono); font-weight: 800;">${tot}</td>
+            <td style="text-align: center;"><span style="background: ${grade.bg}; color: ${grade.color}; padding: 0.2rem 0.6rem; border-radius: 6px; font-weight: 800; font-size: 0.75rem;">${grade.label}</span></td>
+          `;
+          tbody.appendChild(tr);
+        });
+
+        const avg = Math.round((grandTotal / (demoStudents.length * 80)) * 100 * 10) / 10;
+        document.getElementById("mockAvg").innerText = avg + "%";
+        document.getElementById("mockTop").innerText = maxScore + " / 80";
+      }
+
+      function changeMark(idx, field, val) {
+        const num = Math.min(20, Math.max(0, parseInt(val, 10) || 0));
+        demoStudents[idx][field] = num;
+        renderLiveTable();
+      }
+
+      function switchStudioTab(tab) {
+        document.getElementById("btnTab1").classList.toggle("active", tab === "sheet");
+        document.getElementById("btnTab2").classList.toggle("active", tab === "transcript");
+        document.getElementById("btnTab3").classList.toggle("active", tab === "teams");
+
+        document.getElementById("studioSheetView").style.display =
+          tab === "sheet" ? "block" : "none";
+        document.getElementById("studioTranscriptView").style.display =
+          tab === "transcript" ? "block" : "none";
+        document.getElementById("studioTeamsView").style.display =
+          tab === "teams" ? "block" : "none";
+      }
+
+      function toggleFaq(btn) {
+        const parent = btn.parentElement;
+        const isActive = parent.classList.contains("active");
+        document.querySelectorAll(".faq-item").forEach((item) => item.classList.remove("active"));
+        if (!isActive) parent.classList.add("active");
+      }
+
+      document.addEventListener("DOMContentLoaded", () => {
+        renderLiveTable();
+      });
+    </script>
+  </body>
+</html>

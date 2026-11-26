@@ -60,6 +60,12 @@ export const apiRoutes: RouteDefinition[] = [
     handler: (req, res) => teacherController.getSections(req, res),
   },
   {
+    method: "DELETE",
+    path: "/api/teacher/sections/:sectionId",
+    middlewares: [authenticate, requireRole("teacher"), csrfProtection],
+    handler: (req, res) => teacherController.deleteSection(req, res),
+  },
+  {
     method: "POST",
     path: "/api/teacher/sections",
     middlewares: [authenticate, requireRole("teacher"), csrfProtection],
@@ -131,6 +137,18 @@ export const apiRoutes: RouteDefinition[] = [
       ),
   },
   {
+    method: "GET",
+    path: "/api/teacher/assignments",
+    middlewares: [authenticate, requireRole("teacher")],
+    handler: (req, res) => teacherController.getAssignments(req, res),
+  },
+  {
+    method: "DELETE",
+    path: "/api/teacher/assignments/:assignmentId",
+    middlewares: [authenticate, requireRole("teacher"), csrfProtection],
+    handler: (req, res) => teacherController.deleteAssignment(req, res),
+  },
+  {
     method: "POST",
     path: "/api/teacher/projects/groups",
     middlewares: [authenticate, requireRole("teacher"), csrfProtection],
@@ -145,6 +163,22 @@ export const apiRoutes: RouteDefinition[] = [
       ),
   },
   {
+    method: "GET",
+    path: "/api/teacher/projects/requests",
+    middlewares: [authenticate, requireRole("teacher")],
+    handler: (req, res) => teacherController.getGroupRequests(req, res),
+  },
+  {
+    method: "POST",
+    path: "/api/teacher/projects/requests/:requestId/review",
+    middlewares: [authenticate, requireRole("teacher"), csrfProtection],
+    handler: (req, res) =>
+      teacherController.reviewGroupProposal(
+        req as ControllerRequest<{ status: "Approved" | "Rejected"; feedback?: string }>,
+        res,
+      ),
+  },
+  {
     method: "PATCH",
     path: "/api/teacher/projects/groups/:groupId/status",
     middlewares: [authenticate, requireRole("teacher"), csrfProtection],
@@ -155,6 +189,18 @@ export const apiRoutes: RouteDefinition[] = [
       ),
   },
   {
+    method: "GET",
+    path: "/api/teacher/announcements",
+    middlewares: [authenticate, requireRole("teacher")],
+    handler: (req, res) => teacherController.getAnnouncements(req, res),
+  },
+  {
+    method: "DELETE",
+    path: "/api/teacher/announcements/:announcementId",
+    middlewares: [authenticate, requireRole("teacher"), csrfProtection],
+    handler: (req, res) => teacherController.deleteAnnouncement(req, res),
+  },
+  {
     method: "POST",
     path: "/api/teacher/announcements",
     middlewares: [authenticate, requireRole("teacher"), csrfProtection],
@@ -163,6 +209,19 @@ export const apiRoutes: RouteDefinition[] = [
         req as ControllerRequest<{ title: string; content: string; sectionId: string }>,
         res,
       ),
+  },
+  {
+    method: "GET",
+    path: "/api/teacher/sections/:sectionId/export-csv",
+    middlewares: [authenticate, requireRole("teacher")],
+    handler: (req, res) => teacherController.exportCSV(req, res),
+  },
+  {
+    method: "POST",
+    path: "/api/teacher/sections/:sectionId/import-csv",
+    middlewares: [authenticate, requireRole("teacher"), csrfProtection],
+    handler: (req, res) =>
+      teacherController.importCSV(req as ControllerRequest<{ csvContent: string }>, res),
   },
 
   // --- MARKS SPREADSHEET ROUTES ---

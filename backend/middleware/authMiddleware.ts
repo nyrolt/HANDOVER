@@ -12,7 +12,30 @@ const globalLimiter = new RateLimiter(100, 60);
  * Middleware to verify session and extract user
  */
 export function authenticate(req: ControllerRequest, res: ControllerResponse, next: NextFunction) {
-  const currentUser = authService.getUser();
+  // Extract session token from cookie or Authorization Bearer header
+  const reqAny = req as unknown as {
+    cookies?: Record<string, string>;
+    headers?: Record<string, string | string[]>;
+  };
+  const cookieToken = reqAny.cookies?.["handover_session"];
+  const authHeader = reqAny.headers?.["authorization"];
+  const bearerToken =
+    typeof authHeader === "string" ? authHeader.replace(/^Bearer\s+/i, "").trim() : undefined;
+  const token = cookieToken || bearerToken;
+
+  let currentUser: User | null = null;
+  if (token) {
+    const verified = authService.verifySession(token);
+    if (verified) {
+      currentUser = verified.user;
+    }
+  }
+
+  // Fallback to active memory session
+  if (!currentUser) {
+    currentUser = authService.getUser();
+  }
+
   if (!currentUser) {
     return res.status(401).json({ success: false, error: "Authentication required" });
   }

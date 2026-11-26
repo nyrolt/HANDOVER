@@ -770,39 +770,23 @@
       <div class="container">
         <div class="nav-wrapper">
           <a href="/" class="brand" aria-label="Handover Home">
-            <div class="brand-icon">
-              <svg
-                viewBox="0 0 40 40"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-                style="width: 100%; height: 100%"
-              >
-                <rect width="40" height="40" rx="10" fill="url(#brand-grad)" />
-                <rect x="9.5" y="10" width="4.5" height="20" rx="2.25" fill="white" />
-                <rect x="26" y="10" width="4.5" height="20" rx="2.25" fill="white" />
-                <path d="M12 20H28" stroke="white" stroke-width="4.2" stroke-linecap="round" />
-                <path
-                  d="M17.5 16L21.5 20L17.5 24"
-                  stroke="#10b981"
-                  stroke-width="3.2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                />
-                <circle
-                  cx="28.25"
-                  cy="11.5"
-                  r="2.25"
-                  fill="#10b981"
-                  stroke="white"
-                  stroke-width="1"
-                />
-                <defs>
-                  <linearGradient id="brand-grad" x1="0" y1="0" x2="40" y2="40">
-                    <stop stop-color="#4F46E5" />
-                    <stop offset="1" stop-color="#7C3AED" />
-                  </linearGradient>
-                </defs>
-              </svg>
+            <div
+              class="brand-icon"
+              style="
+                background: #000;
+                border-radius: 9px;
+                overflow: hidden;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+              "
+            >
+              <img
+                src="/handover-logo.jpg"
+                alt="Handover"
+                style="width: 100%; height: 100%; object-fit: cover; display: block"
+                onerror="this.style.display = 'none'"
+              />
             </div>
             <div>
               <div class="brand-text">Handover</div>

@@ -1,0 +1,17 @@
+{
+  "name": "handover-backend",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "dotenv": "^18.0.10",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.3",
+    "vitest": "^4.1.10"
+  }
+}

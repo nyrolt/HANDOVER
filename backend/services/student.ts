@@ -7,7 +7,7 @@ import type {
   GroupRequest,
   Assignment,
   Announcement,
-} from "@/types";
+} from "../models/types";
 import { computeGrade } from "./teacher";
 
 export interface StudentDashboardData {

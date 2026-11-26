@@ -1,0 +1,11 @@
+{
+  "name": "handover-frontend",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite dev --port 5173",
+    "build": "vite build",
+    "preview": "vite preview --port 5173",
+    "typecheck": "tsc --noEmit"
+  }
+}

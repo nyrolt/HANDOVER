@@ -1,3 +1,5 @@
+import fs from "fs";
+import path from "path";
 import type {
   User,
   Section,
@@ -9,10 +11,11 @@ import type {
   GroupRequest,
   Announcement,
   ActivityLog,
-} from "@/types";
+} from "../models/types";
 
 const STORAGE_KEY = "handover_academic_system_v2";
-const LEGACY_STORAGE_KEY = "campusflow_academic_system_v2";
+const DATA_DIR = path.resolve(__dirname, "..", "data");
+const DB_FILE = path.join(DATA_DIR, "handover-store.json");
 
 export interface DatabaseState {
   users: User[];
@@ -530,37 +533,76 @@ class CollegeDatabase {
     this.state = this.loadState();
   }
 
+  private isNode(): boolean {
+    return (
+      typeof process !== "undefined" && process.versions != null && process.versions.node != null
+    );
+  }
+
   private isBrowser(): boolean {
-    return typeof window !== "undefined" && typeof localStorage !== "undefined";
+    const g = globalThis as unknown as Record<string, unknown>;
+    return (
+      typeof globalThis !== "undefined" &&
+      "localStorage" in globalThis &&
+      g["localStorage"] !== undefined
+    );
   }
 
   private loadState(): DatabaseState {
-    if (!this.isBrowser()) {
-      return JSON.parse(JSON.stringify(INITIAL_DEMO_DATA));
-    }
-
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        // Ensure all required collections exist
-        return {
-          ...INITIAL_DEMO_DATA,
-          ...parsed,
-        };
+    // 1. In Node.js environment, load from structured JSON persistence file
+    if (this.isNode()) {
+      try {
+        if (fs.existsSync(DB_FILE)) {
+          const content = fs.readFileSync(DB_FILE, "utf-8");
+          const parsed = JSON.parse(content) as Partial<DatabaseState>;
+          return {
+            ...INITIAL_DEMO_DATA,
+            ...parsed,
+          };
+        }
+      } catch (e) {
+        console.warn("Failed to load state from disk:", e);
       }
-    } catch (e) {
-      console.warn("Failed to load state from localStorage:", e);
     }
 
-    // Initialize with demo data
-    const initial = JSON.parse(JSON.stringify(INITIAL_DEMO_DATA));
+    // 2. In browser environment, load from localStorage
+    if (this.isBrowser()) {
+      try {
+        const stored = localStorage.getItem(STORAGE_KEY);
+        if (stored) {
+          const parsed = JSON.parse(stored) as Partial<DatabaseState>;
+          return {
+            ...INITIAL_DEMO_DATA,
+            ...parsed,
+          };
+        }
+      } catch (e) {
+        console.warn("Failed to load state from localStorage:", e);
+      }
+    }
+
+    // 3. Initialize with realistic default academic data and persist
+    const initial = JSON.parse(JSON.stringify(INITIAL_DEMO_DATA)) as DatabaseState;
     this.saveState(initial);
     return initial;
   }
 
   private saveState(state: DatabaseState): void {
     this.state = state;
+
+    // 1. In Node.js environment, atomically write to disk
+    if (this.isNode()) {
+      try {
+        if (!fs.existsSync(DATA_DIR)) {
+          fs.mkdirSync(DATA_DIR, { recursive: true });
+        }
+        fs.writeFileSync(DB_FILE, JSON.stringify(state, null, 2), "utf-8");
+      } catch (e) {
+        console.error("Failed to save state to disk:", e);
+      }
+    }
+
+    // 2. In browser environment, save to localStorage
     if (this.isBrowser()) {
       try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
@@ -568,6 +610,7 @@ class CollegeDatabase {
         console.error("Failed to save state to localStorage:", e);
       }
     }
+
     this.notify();
   }
 

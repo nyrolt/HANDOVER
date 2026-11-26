@@ -55,10 +55,33 @@ export class AuthController {
     try {
       const { email, role, password } = req.body;
       const result = authService.login(email, role, password);
-      if (!result.success) {
+      if (!result.success || !result.user) {
         return res.status(400).json({ success: false, error: result.error || "Login failed" });
       }
-      return res.status(200).json({ success: true, data: result });
+
+      // Generate session token and set cookie
+      const session = authService.createSession(result.user.id);
+      const resAny = res as unknown as {
+        cookie?: (name: string, val: string, options: Record<string, unknown>) => void;
+      };
+      if (typeof resAny.cookie === "function") {
+        resAny.cookie("handover_session", session.sessionId, {
+          httpOnly: true,
+          sameSite: "lax",
+          path: "/",
+          maxAge: 7 * 24 * 60 * 60 * 1000,
+        });
+      }
+
+      return res.status(200).json({
+        success: true,
+        data: {
+          user: session.user,
+          studentProfile: session.studentProfile,
+          role: session.user.role,
+          token: session.sessionId,
+        },
+      });
     } catch (err: unknown) {
       const errorMsg = err instanceof Error ? err.message : "Internal error";
       return res.status(500).json({ success: false, error: errorMsg });
@@ -79,26 +102,97 @@ export class AuthController {
         );
       }
 
-      if (!result.success) {
+      if (!result.success || !result.user) {
         return res
           .status(400)
           .json({ success: false, error: result.error || "Registration failed" });
       }
-      return res.status(201).json({ success: true, data: result });
+
+      const session = authService.createSession(result.user.id);
+      const resAny = res as unknown as {
+        cookie?: (name: string, val: string, options: Record<string, unknown>) => void;
+      };
+      if (typeof resAny.cookie === "function") {
+        resAny.cookie("handover_session", session.sessionId, {
+          httpOnly: true,
+          sameSite: "lax",
+          path: "/",
+          maxAge: 7 * 24 * 60 * 60 * 1000,
+        });
+      }
+
+      return res.status(201).json({
+        success: true,
+        data: {
+          user: session.user,
+          studentProfile: session.studentProfile,
+          role: session.user.role,
+          token: session.sessionId,
+        },
+      });
     } catch (err: unknown) {
       const errorMsg = err instanceof Error ? err.message : "Internal error";
       return res.status(500).json({ success: false, error: errorMsg });
     }
   }
 
-  async logout(_req: ControllerRequest, res: ControllerResponse) {
+  async logout(req: ControllerRequest, res: ControllerResponse) {
+    const reqAny = req as unknown as { cookies?: Record<string, string> };
+    const token = reqAny.cookies?.["handover_session"];
+    if (token) {
+      authService.destroySession(token);
+    }
+    const resAny = res as unknown as {
+      clearCookie?: (name: string, options?: Record<string, unknown>) => void;
+    };
+    if (typeof resAny.clearCookie === "function") {
+      resAny.clearCookie("handover_session", { path: "/" });
+    }
     authService.logout();
     return res.status(200).json({ success: true });
   }
 
-  async getMe(_req: ControllerRequest, res: ControllerResponse) {
+  async getMe(req: ControllerRequest, res: ControllerResponse) {
+    // If request was authenticated through middleware, req.user is set
+    if (req.user) {
+      const studentProfile =
+        req.user.role === "student"
+          ? authService.getStudentProfile() ||
+            (await import("../db/database")).db.getStudentByUserId(req.user.id)
+          : undefined;
+      return res.status(200).json({
+        success: true,
+        data: {
+          user: req.user,
+          studentProfile,
+        },
+      });
+    }
+
+    // Check token from cookie or header
+    const reqAny = req as unknown as {
+      cookies?: Record<string, string>;
+      headers?: Record<string, string | string[]>;
+    };
+    const token =
+      reqAny.cookies?.["handover_session"] ||
+      (typeof reqAny.headers?.["authorization"] === "string"
+        ? reqAny.headers["authorization"].replace(/^Bearer\s+/i, "").trim()
+        : undefined);
+
+    if (token) {
+      const verified = authService.verifySession(token);
+      if (verified) {
+        return res.status(200).json({ success: true, data: verified });
+      }
+    }
+
     const session = authService.getSession();
-    return res.status(200).json({ success: true, data: session });
+    if (session) {
+      return res.status(200).json({ success: true, data: session });
+    }
+
+    return res.status(401).json({ success: false, error: "Not authenticated" });
   }
 }
 

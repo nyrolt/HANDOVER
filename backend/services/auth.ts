@@ -1,5 +1,4 @@
-import { useState, useEffect } from "react";
-import type { User, UserRole, Student } from "@/types";
+import type { User, UserRole, Student } from "../models/types";
 import { db } from "./db";
 
 const SESSION_KEY = "college_mgmt_session_v1";
@@ -12,13 +11,75 @@ export interface AuthSession {
 class AuthService {
   private currentSession: AuthSession | null = null;
   private listeners: Set<() => void> = new Set();
+  private activeSessions: Map<string, { sessionId: string; userId: string; createdAt: number }> =
+    new Map();
 
   constructor() {
     this.currentSession = this.loadSession();
   }
 
+  public createSession(userId: string): {
+    sessionId: string;
+    user: User;
+    studentProfile?: Student | undefined;
+  } {
+    const user = db.getUserById(userId);
+    if (!user) throw new Error("User not found");
+
+    const sessionId =
+      "sess_" +
+      Math.random().toString(36).substring(2, 15) +
+      Math.random().toString(36).substring(2, 15);
+    this.activeSessions.set(sessionId, {
+      sessionId,
+      userId,
+      createdAt: Date.now(),
+    });
+
+    let studentProfile: Student | undefined;
+    if (user.role === "student") {
+      studentProfile =
+        db.getStudentByUserId(user.id) ||
+        db.getStudents().find((s) => s.email.toLowerCase() === user.email.toLowerCase());
+    }
+
+    this.saveSession({ user, studentProfile });
+    return { sessionId, user, studentProfile };
+  }
+
+  public verifySession(
+    sessionId: string,
+  ): { user: User; studentProfile?: Student | undefined } | null {
+    const session = this.activeSessions.get(sessionId);
+    if (!session) return null;
+
+    const user = db.getUserById(session.userId);
+    if (!user) {
+      this.activeSessions.delete(sessionId);
+      return null;
+    }
+
+    let studentProfile: Student | undefined;
+    if (user.role === "student") {
+      studentProfile =
+        db.getStudentByUserId(user.id) ||
+        db.getStudents().find((s) => s.email.toLowerCase() === user.email.toLowerCase());
+    }
+
+    return { user, studentProfile };
+  }
+
+  public destroySession(sessionId: string): void {
+    this.activeSessions.delete(sessionId);
+  }
+
   private isBrowser(): boolean {
-    return typeof window !== "undefined" && typeof localStorage !== "undefined";
+    const g = globalThis as unknown as Record<string, unknown>;
+    return (
+      typeof globalThis !== "undefined" &&
+      "localStorage" in globalThis &&
+      g["localStorage"] !== undefined
+    );
   }
 
   private loadSession(): AuthSession | null {
@@ -96,7 +157,13 @@ class AuthService {
     email: string,
     role?: UserRole,
     password?: string,
-  ): { success: boolean; error?: string; role?: UserRole } {
+  ): {
+    success: boolean;
+    error?: string | undefined;
+    role?: UserRole | undefined;
+    user?: User | undefined;
+    studentProfile?: Student | undefined;
+  } {
     const trimmedEmail = email.trim().toLowerCase();
     if (!trimmedEmail) {
       return { success: false, error: "Please enter your college email address." };
@@ -160,7 +227,7 @@ class AuthService {
     }
 
     this.saveSession({ user, studentProfile });
-    return { success: true, role: user.role };
+    return { success: true, role: user.role, user, studentProfile };
   }
 
   public registerTeacher(data: {
@@ -169,7 +236,12 @@ class AuthService {
     department: string;
     initialSectionName?: string | undefined;
     password?: string | undefined;
-  }): { success: boolean; error?: string; role?: UserRole } {
+  }): {
+    success: boolean;
+    error?: string | undefined;
+    role?: UserRole | undefined;
+    user?: User | undefined;
+  } {
     const trimmedEmail = data.email.trim().toLowerCase();
     const trimmedName = data.name.trim();
     const trimmedDept = data.department.trim();
@@ -212,7 +284,7 @@ class AuthService {
 
     // 3. Save session
     this.saveSession({ user: newTeacher });
-    return { success: true, role: "teacher" };
+    return { success: true, role: "teacher", user: newTeacher };
   }
 
   public registerStudent(data: {
@@ -221,7 +293,13 @@ class AuthService {
     rollNumber: string;
     sectionId: string;
     password?: string | undefined;
-  }): { success: boolean; error?: string; role?: UserRole } {
+  }): {
+    success: boolean;
+    error?: string | undefined;
+    role?: UserRole | undefined;
+    user?: User | undefined;
+    studentProfile?: Student | undefined;
+  } {
     const trimmedEmail = data.email.trim().toLowerCase();
     const trimmedRoll = data.rollNumber.trim();
     const trimmedName = data.name.trim();
@@ -280,7 +358,7 @@ class AuthService {
     // 3. Save session
     this.saveSession({ user: newUser, studentProfile: newStudent });
 
-    return { success: true, role: "student" };
+    return { success: true, role: "student", user: newUser, studentProfile: newStudent };
   }
 
   public loginWithEmail(email: string, role?: UserRole): { success: boolean; error?: string } {
@@ -322,36 +400,3 @@ class AuthService {
 }
 
 export const authService = new AuthService();
-
-export function useAuth() {
-  const [session, setSession] = useState<AuthSession | null>(() => authService.getSession());
-
-  useEffect(() => {
-    const unsubscribeAuth = authService.subscribe(() => {
-      setSession(authService.getSession());
-    });
-    const unsubscribeDb = db.subscribe(() => {
-      // Re-fetch current session to keep profile in sync
-      setSession(authService.getSession());
-    });
-    return () => {
-      unsubscribeAuth();
-      unsubscribeDb();
-    };
-  }, []);
-
-  return {
-    session,
-    user: session?.user || null,
-    role: session?.user?.role || null,
-    isTeacher: session?.user?.role === "teacher",
-    isStudent: session?.user?.role === "student",
-    studentProfile:
-      session?.studentProfile || (session?.user ? db.getStudentByUserId(session.user.id) : null),
-    login: authService.login.bind(authService),
-    registerTeacher: authService.registerTeacher.bind(authService),
-    registerStudent: authService.registerStudent.bind(authService),
-    loginWithEmail: authService.loginWithEmail.bind(authService),
-    logout: authService.logout.bind(authService),
-  };
-}

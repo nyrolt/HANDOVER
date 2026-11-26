@@ -1,6 +1,37 @@
 # Handover — College Teacher & Student Management System
 
-A simple, minimal, clean, and professional web application designed for college teachers to manage classes, students, assignments, group projects, and continuous examination marks in a digital spreadsheet-like dashboard, with a restricted portal for students to track their coursework and submit group proposals.
+A simple, minimal, clean, and professional web application designed for college faculty to manage classes, students, assignments, group projects, and continuous examination marks in a digital spreadsheet-like dashboard, with a restricted portal for students to track their coursework and submit group proposals.
+
+---
+
+## Architecture Overview (3-Tier Modular Monolith)
+
+The project is structured into three independent, decoupled modules:
+
+```
+handover/
+├── frontend/    # React 19 + TanStack Start / Router + Tailwind CSS v4 (Port 5173)
+│   ├── src/
+│   │   ├── components/  # Teacher spreadsheet, student gradebook, layout, Radix UI
+│   │   ├── routes/      # TanStack file-based routes (/, /auth, /dashboard)
+│   │   ├── services/    # Client state, auth hook, and HTTP REST API client
+│   │   └── styles.css   # Modern gradients & vibrant professional design system
+│   ├── package.json
+│   └── vite.config.ts
+├── backend/     # Pure TypeScript business logic, models, controllers & tests (Zero UI dependencies)
+│   ├── controllers/     # Auth, teacher, student, and marks controllers
+│   ├── services/        # Permissions engine, RBAC matrix, database, validators
+│   ├── models/          # Shared domain interfaces and schemas
+│   ├── test/            # Vitest suite (17 comprehensive tests)
+│   └── package.json
+├── server/      # Node.js + Express REST API Server (Port 5000)
+│   ├── api/             # REST route bindings for controllers
+│   ├── middleware/      # Authentication, RBAC, CSRF, error handling
+│   ├── config.ts        # Port 5000, CORS, rate limits
+│   ├── index.ts         # Express server listener
+│   └── package.json
+└── package.json # Root orchestrator for concurrent local development
+```
 
 ---
 
@@ -19,7 +50,7 @@ A simple, minimal, clean, and professional web application designed for college 
   - Column sorting by Roll No, Name, and Total Marks.
   - CSV Export and CSV Import tools.
 - **Section Management**:
-  - Create, rename, and delete class sections (e.g., `CSE - Section A`, `CSE - Section B`, `IT - Section A`).
+  - Create, rename, and delete class sections (e.g., `CS-301 (Sec A)`, `CS-302 (Sec B)`, `CS-405 (Sec C)`).
   - Isolated student rosters per section.
 - **Group Projects Management**:
   - View all teams per section.
@@ -31,7 +62,7 @@ A simple, minimal, clean, and professional web application designed for college 
   - Create, edit, and delete coursework assignments with firm deadlines and instructions.
   - Assign to specific sections.
 - **Marks & Results Gradebook**:
-  - Dedicated continuous assessment sheet with configurable maximum marks and class performance metrics (Class Average, Highest Score, Pass Rate).
+  - Dedicated continuous assessment sheet with configurable maximum marks and class performance metrics.
 - **Teacher Reports**:
   - Grade distribution analytics and one-click full section export.
 - **Class Announcements**:
@@ -56,52 +87,66 @@ A simple, minimal, clean, and professional web application designed for college 
 
 ---
 
-## Demo Credentials & One-Click Login
+## Development Workflow & Commands
 
-The application comes pre-seeded with realistic college data. You can log in using either the one-click demo buttons on the home/auth page or via the role switcher in the top navigation bar:
-
-| Role        | Name                | Email                 | Details                                     |
-| :---------- | :------------------ | :-------------------- | :------------------------------------------ |
-| **Teacher** | Prof. Ramesh Sharma | `teacher@college.edu` | Full administrative & spreadsheet control   |
-| **Student** | Rahul Sharma        | `rahul@college.edu`   | Roll 01, CSE - Section A (Team Alpha)       |
-| **Student** | Aman Verma          | `aman@college.edu`    | Roll 02, CSE - Section A (Team Alpha)       |
-| **Student** | Priya Patel         | `priya@college.edu`   | Roll 03, CSE - Section A (Team Beta)        |
-| **Student** | Rohan Joshi         | `rohan@college.edu`   | Roll 01, CSE - Section B (Pending Proposal) |
-
-_(No password required in demo mode; click any demo login button or enter any email to sign in)._
-
----
-
-## Installation & Running Locally
-
-### Prerequisites
-
-- Node.js (v18+ or v20+)
-- npm
-
-### 1. Install Dependencies
-
-```sh
-npm install
-```
-
-### 2. Run the Development Server
+### Root Command (Runs Frontend + Server Concurrently)
 
 ```sh
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) (or the port Vite outputs) in your browser.
+Starts:
 
-### 3. Run Unit Tests
+- **Server**: [http://localhost:5000](http://localhost:5000) (Express REST API)
+- **Frontend**: [http://localhost:5173](http://localhost:5173) (TanStack Start App)
+
+### Independent Package Execution
+
+#### Frontend (React 19 + TanStack Start):
 
 ```sh
+cd frontend
+npm run dev
+```
+
+Runs independently on [http://localhost:5173](http://localhost:5173).
+
+#### Server (Express REST API):
+
+```sh
+cd server
+npm run dev
+```
+
+Runs independently on [http://localhost:5000](http://localhost:5000).
+
+#### Backend (Test Suite & TypeScript):
+
+```sh
+cd backend
 npm test
 ```
 
-### 4. Build for Production
+Runs the 17 isolated business logic and RBAC tests via Vitest.
+
+---
+
+## Full Verification Commands
 
 ```sh
+# Run backend test suite
+npm test
+
+# Run TypeScript checks across all packages
+npx tsc --noEmit
+
+# Run ESLint across all packages
+npm run lint
+
+# Format codebase
+npm run format
+
+# Production build of frontend
 npm run build
 ```
 
@@ -109,6 +154,6 @@ npm run build
 
 ## Tech Stack
 
-- **Framework**: React 19, TypeScript, TanStack Start, TanStack Router
-- **Styling**: Tailwind CSS v4, Lucide React icons, Radix UI primitives
-- **Persistence**: Reactive LocalStorage Client Database (`src/services/db.ts`) with pre-seeded data, real-time cross-component subscribers, and auto-save
+- **Frontend**: React 19, TypeScript, TanStack Start, TanStack Router, Tailwind CSS v4, Lucide React icons, Radix UI primitives
+- **Server**: Node.js, Express, CORS, CSRF Protection, Cookie Parser
+- **Backend**: Pure TypeScript, Zod Schema Validation, Centralized RBAC (`can()`), Vitest

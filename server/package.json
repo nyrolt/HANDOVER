@@ -1,0 +1,24 @@
+{
+  "name": "handover-server",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch index.ts",
+    "start": "tsx index.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "dotenv": "^18.0.10",
+    "express": "^4.21.2"
+  },
+  "devDependencies": {
+    "@types/cookie-parser": "^1.4.8",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.16.5",
+    "tsx": "^4.19.3",
+    "typescript": "^5.8.3"
+  }
+}
