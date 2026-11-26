@@ -1,39 +1,41 @@
 import { describe, expect, it, beforeEach } from "vitest";
 import { db } from "../services/db";
 import { authService } from "../services/auth";
-import { computeGrade, getSectionSpreadsheetRows, parseAndImportCSV } from "../services/teacher";
+import { computeGrade, parseAndImportCSV } from "../services/teacher";
 import { getStudentDashboardData } from "../services/student";
 
 describe("College Management System - Database & Business Logic", () => {
   beforeEach(() => {
     db.resetToDefault();
+    authService.logout();
   });
 
-  it("initializes with realistic academic data matching university standards", () => {
+  it("initializes with a clean, empty state without hardcoded mock data", () => {
     const sections = db.getSections();
     const students = db.getStudents();
     const marks = db.getMarks();
     const groups = db.getProjectGroups();
 
-    expect(sections.length).toBeGreaterThanOrEqual(3);
-    expect(students.length).toBeGreaterThanOrEqual(8);
-    expect(marks.length).toBeGreaterThanOrEqual(8);
-    expect(groups.length).toBeGreaterThanOrEqual(2);
-
-    // Verify real student record:
-    // Roll 2024-CS-001 Alexander Wright: 18, 19, 17, 18, total 72
-    const alexander = students.find((s) => s.name === "Alexander Wright")!;
-    expect(alexander).toBeDefined();
-    const alexanderMarks = db.getStudentMarks(alexander.id)!;
-    expect(alexanderMarks.internalMarks).toBe(18);
-    expect(alexanderMarks.labRecordMarks).toBe(19);
-    expect(alexanderMarks.practicalMarks).toBe(17);
-    expect(alexanderMarks.projectMarks).toBe(18);
-    expect(alexanderMarks.total).toBe(72);
+    expect(sections.length).toBe(0);
+    expect(students.length).toBe(0);
+    expect(marks.length).toBe(0);
+    expect(groups.length).toBe(0);
   });
 
   it("correctly calculates total marks and clamps values within [0, 20]", () => {
-    const student = db.getStudents()[0]!;
+    const section = db.createSection({
+      sectionName: "CS-301: Algorithms",
+      courseName: "B.S. Computer Science",
+      academicYear: "2026-2027",
+      teacherId: "teacher-1",
+    });
+
+    const student = db.addStudent({
+      name: "Test Student",
+      email: "test.student@college.edu",
+      rollNumber: "CS-001",
+      sectionId: section.id,
+    });
 
     // Update marks with valid values
     const updated = db.updateStudentMarks(
@@ -44,7 +46,7 @@ describe("College Management System - Database & Business Logic", () => {
         practicalMarks: 19,
         projectMarks: 17,
       },
-      "Dr. Eleanor Vance, Ph.D.",
+      "Faculty Advisor",
     )!;
 
     expect(updated.total).toBe(74); // 20 + 18 + 19 + 17
@@ -55,7 +57,7 @@ describe("College Management System - Database & Business Logic", () => {
       {
         internalMarks: 25,
       },
-      "Dr. Eleanor Vance, Ph.D.",
+      "Faculty Advisor",
     )!;
     expect(clampedHigh.internalMarks).toBe(20);
 
@@ -65,7 +67,7 @@ describe("College Management System - Database & Business Logic", () => {
       {
         internalMarks: -5,
       },
-      "Dr. Eleanor Vance, Ph.D.",
+      "Faculty Advisor",
     )!;
     expect(clampedLow.internalMarks).toBe(0);
   });
@@ -86,7 +88,7 @@ describe("College Management System - Database & Business Logic", () => {
       sectionName: "CS-405: Distributed Databases (Sec C)",
       courseName: "B.S. Computer Science",
       academicYear: "2026-2027",
-      teacherId: "usr-faculty-vance",
+      teacherId: "teacher-1",
     });
 
     expect(db.getSectionById(newSection.id)).toBeDefined();
@@ -103,13 +105,33 @@ describe("College Management System - Database & Business Logic", () => {
     expect(secStudents.length).toBe(1);
     expect(secStudents[0]?.name).toBe("Hannah Lee");
 
+    // Create another section
+    const anotherSection = db.createSection({
+      sectionName: "IT-201: Web Systems",
+      courseName: "Information Technology",
+      academicYear: "2026-2027",
+      teacherId: "teacher-1",
+    });
+
     // Records do not mix between sections
-    const cseStudents = db.getStudents("sec-cse-a");
-    expect(cseStudents.some((s) => s.id === newStudent.id)).toBe(false);
+    const itStudents = db.getStudents(anotherSection.id);
+    expect(itStudents.some((s) => s.id === newStudent.id)).toBe(false);
   });
 
   it("supports group projects: student proposals and teacher approval workflow", () => {
-    const student = db.getStudents("sec-cse-b")[0]!;
+    const section = db.createSection({
+      sectionName: "CS-302: Software Engineering",
+      courseName: "Computer Science",
+      academicYear: "2026-2027",
+      teacherId: "teacher-1",
+    });
+
+    const student = db.addStudent({
+      name: "Jane Smith",
+      email: "j.smith@student.university.edu",
+      rollNumber: "2024-CS-010",
+      sectionId: section.id,
+    });
 
     // Student proposes a group
     const request = db.submitGroupRequest({
@@ -117,7 +139,7 @@ describe("College Management System - Database & Business Logic", () => {
       studentName: student.name,
       proposedGroupName: "Team Quantum",
       proposedProjectTitle: "Quantum Cryptography Protocol Simulator",
-      proposedMembers: ["Ethan Takahashi", "Maya Johnson"],
+      proposedMembers: ["Jane Smith", "Bob Vance"],
       sectionId: student.sectionId,
     });
 
@@ -125,7 +147,7 @@ describe("College Management System - Database & Business Logic", () => {
     expect(db.getGroupRequests(student.sectionId).some((r) => r.id === request.id)).toBe(true);
 
     // Teacher reviews and approves proposal
-    const approved = db.reviewGroupRequest(request.id, "Approved", "Dr. Eleanor Vance, Ph.D.");
+    const approved = db.reviewGroupRequest(request.id, "Approved", "Faculty Advisor");
     expect(approved).toBe(true);
 
     // Official group should now be created
@@ -142,36 +164,89 @@ describe("College Management System - Database & Business Logic", () => {
   });
 
   it("parses and imports students from CSV text accurately", () => {
+    const section = db.createSection({
+      sectionName: "CS-101: Intro to Programming",
+      courseName: "Computer Science",
+      academicYear: "2026-2027",
+      teacherId: "teacher-1",
+    });
+
     const csvContent = `Roll No,Student Name,Email
 2024-CS-020,Lucas Miller,l.miller@student.university.edu
 2024-CS-021,Emma Davis,e.davis@student.university.edu`;
 
-    const result = parseAndImportCSV(csvContent, "sec-cse-a");
+    const result = parseAndImportCSV(csvContent, section.id);
     expect(result.addedCount).toBe(2);
     expect(result.errors.length).toBe(0);
 
-    const imported = db.getStudents("sec-cse-a").find((s) => s.rollNumber === "2024-CS-020")!;
+    const imported = db.getStudents(section.id).find((s) => s.rollNumber === "2024-CS-020")!;
     expect(imported).toBeDefined();
     expect(imported.name).toBe("Lucas Miller");
   });
 
   it("provides student dashboard data with strictly read-only marks", () => {
-    const alexander = db.getStudents().find((s) => s.name === "Alexander Wright")!;
-    const dashData = getStudentDashboardData(alexander.id)!;
+    const section = db.createSection({
+      sectionName: "CS-201: Data Structures",
+      courseName: "Computer Science",
+      academicYear: "2026-2027",
+      teacherId: "teacher-1",
+    });
 
-    expect(dashData.student.name).toBe("Alexander Wright");
+    const student = db.addStudent({
+      name: "Alice Walker",
+      email: "a.walker@student.university.edu",
+      rollNumber: "2024-CS-015",
+      sectionId: section.id,
+    });
+
+    db.updateStudentMarks(
+      student.id,
+      {
+        internalMarks: 18,
+        labRecordMarks: 19,
+        practicalMarks: 17,
+        projectMarks: 18,
+      },
+      "Faculty Advisor",
+    );
+
+    db.createAssignment({
+      title: "Binary Trees Lab",
+      subject: "Data Structures",
+      description: "Implement AVL and Red-Black trees",
+      sectionId: section.id,
+      deadline: "2026-12-10",
+      createdBy: "Faculty Advisor",
+    });
+
+    db.createAnnouncement({
+      title: "Midterm Exam Notice",
+      message: "Midterm exam will be held next Tuesday.",
+      sectionId: section.id,
+      teacherName: "Faculty Advisor",
+    });
+
+    const dashData = getStudentDashboardData(student.id)!;
+
+    expect(dashData.student.name).toBe("Alice Walker");
     expect(dashData.marks?.total).toBe(72);
-    expect(dashData.approvedGroup?.groupName).toBe("Team Veritas");
-    expect(dashData.assignments.length).toBeGreaterThan(0);
-    expect(dashData.announcements.length).toBeGreaterThan(0);
+    expect(dashData.assignments.length).toBe(1);
+    expect(dashData.announcements.length).toBe(1);
   });
 
   it("handles student registration, creates section link, and routes to student role", () => {
+    const section = db.createSection({
+      sectionName: "CS-301: Algorithms & Data Structures",
+      courseName: "Computer Science",
+      academicYear: "2026-2027",
+      teacherId: "teacher-1",
+    });
+
     const regResult = authService.registerStudent({
       name: "Lucas Vance",
       email: "l.vance@student.university.edu",
       rollNumber: "2024-CS-099",
-      sectionId: "sec-cse-a",
+      sectionId: section.id,
       password: "Password@123",
     });
 
@@ -180,7 +255,7 @@ describe("College Management System - Database & Business Logic", () => {
 
     // Student profile should exist in DB
     const student = db
-      .getStudents("sec-cse-a")
+      .getStudents(section.id)
       .find((s) => s.email === "l.vance@student.university.edu");
     expect(student).toBeDefined();
     expect(student?.name).toBe("Lucas Vance");
@@ -221,27 +296,55 @@ describe("College Management System - Database & Business Logic", () => {
   });
 
   it("authenticates registered users and assigns the appropriate session role", () => {
+    // Register Teacher
+    authService.registerTeacher({
+      name: "Dr. Sarah Connor",
+      email: "s.connor@university.edu",
+      department: "Computer Science",
+      initialSectionName: "CS-101: Programming",
+      password: "TeacherPassword@123",
+    });
+
+    // Register Student
+    const section = db.getSections()[0]!;
+    authService.registerStudent({
+      name: "John Connor",
+      email: "j.connor@student.university.edu",
+      rollNumber: "2026-CS-001",
+      sectionId: section.id,
+      password: "StudentPassword@123",
+    });
+
     // Teacher login
-    const teacherLogin = authService.login("e.vance@university.edu", "teacher");
+    const teacherLogin = authService.login("s.connor@university.edu", "teacher");
     expect(teacherLogin.success).toBe(true);
     expect(teacherLogin.role).toBe("teacher");
     expect(authService.getSession()?.user.role).toBe("teacher");
 
     // Student login
-    const studentLogin = authService.login("a.wright@student.university.edu", "student");
+    const studentLogin = authService.login("j.connor@student.university.edu", "student");
     expect(studentLogin.success).toBe(true);
     expect(studentLogin.role).toBe("student");
-    expect(authService.getSession()?.studentProfile?.name).toBe("Alexander Wright");
+    expect(authService.getSession()?.studentProfile?.name).toBe("John Connor");
   });
 
   it("rejects invalid logins and role mismatches with helpful errors", () => {
+    // Register Teacher
+    authService.registerTeacher({
+      name: "Dr. Sarah Connor",
+      email: "s.connor@university.edu",
+      department: "Computer Science",
+      initialSectionName: "CS-101: Programming",
+      password: "TeacherPassword@123",
+    });
+
     // Non-existent email
     const nonExistent = authService.login("unknown@student.university.edu", "student");
     expect(nonExistent.success).toBe(false);
     expect(nonExistent.error).toContain("No student account found");
 
     // Role mismatch: Teacher trying to sign in via student tab
-    const roleMismatch = authService.login("e.vance@university.edu", "student");
+    const roleMismatch = authService.login("s.connor@university.edu", "student");
     expect(roleMismatch.success).toBe(false);
     expect(roleMismatch.error).toContain("registered as a teacher");
   });

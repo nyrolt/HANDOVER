@@ -5,14 +5,9 @@ import {
   Download,
   Settings2,
   CheckCircle2,
-  TrendingUp,
-  BarChart2,
   Search,
   ArrowUpDown,
   Calculator,
-  Save,
-  Check,
-  Sparkles,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -99,30 +94,29 @@ export function MarksManager() {
   const passRate = totalStudents > 0 ? Math.round((passCount / totalStudents) * 100) : 0;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 font-sans">
       {/* Gradebook Header */}
-      <div className="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="bg-white border border-slate-200/80 rounded-xl p-5 sm:p-6 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-600 text-white flex items-center justify-center shadow-xs shadow-indigo-600/30">
-              <Award className="w-4 h-4" />
+            <div className="w-8 h-8 rounded-lg bg-slate-900 text-white flex items-center justify-center shrink-0">
+              <Award className="w-4 h-4 stroke-[1.5]" />
             </div>
-            <h2 className="text-lg font-bold text-slate-900 tracking-tight">
-              Academic Marks & Continuous Evaluation Gradebook
+            <h2 className="text-lg font-semibold text-slate-900 tracking-tight">
+              Academic Marks & Continuous Evaluation
             </h2>
           </div>
           <p className="text-xs text-slate-500 mt-1">
-            Spreadsheet-first evaluation with real-time calculations, input validation, and instant
-            grade synchronization.
+            Section gradebook with atomic updates, component bounds, and verified calculation rules.
           </p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2.5">
+        <div className="flex flex-wrap items-center gap-2">
           {/* Section Selector */}
           <select
             value={selectedSectionId}
             onChange={(e) => setSelectedSectionId(e.target.value)}
-            className="h-9 px-3 text-xs font-semibold bg-slate-50 border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+            className="h-8 px-2.5 text-xs font-medium bg-slate-50 border border-slate-200 rounded-lg text-slate-800 focus:outline-none focus:border-slate-400 cursor-pointer"
           >
             {sections.map((s) => (
               <option key={s.id} value={s.id}>
@@ -136,35 +130,35 @@ export function MarksManager() {
             size="sm"
             variant="outline"
             onClick={() => setConfigOpen(!configOpen)}
-            className="border-slate-200 text-slate-700 hover:bg-slate-50 text-xs h-9 rounded-xl gap-1.5 font-semibold"
+            className="border-slate-200 text-slate-700 hover:bg-slate-50 text-xs h-8 rounded-lg gap-1.5 font-medium transition-colors"
           >
-            <Settings2 className="w-3.5 h-3.5 text-slate-500" />
-            <span>Scale Config</span>
+            <Settings2 className="w-3.5 h-3.5 stroke-[1.5] text-slate-500" />
+            <span>Bounds Config</span>
           </Button>
 
           {/* Export */}
           <Button
             size="sm"
             onClick={() => exportToCSV(currentSection, rows)}
-            className="bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white text-xs h-9 rounded-xl gap-1.5 shadow-xs shadow-indigo-600/25 px-3.5 font-semibold"
+            className="bg-slate-900 hover:bg-slate-800 text-white text-xs h-8 rounded-lg gap-1.5 px-3.5 font-medium transition-colors"
           >
-            <Download className="w-3.5 h-3.5" />
-            <span>Export Gradebook</span>
+            <Download className="w-3.5 h-3.5 stroke-[1.5]" />
+            <span>Export CSV</span>
           </Button>
         </div>
       </div>
 
       {/* Max Marks Configuration Panel */}
       {configOpen && (
-        <div className="bg-gradient-to-r from-slate-50 via-indigo-50/30 to-white border border-indigo-100 rounded-2xl p-5 shadow-xs space-y-4 animate-in fade-in">
+        <div className="bg-slate-50 border border-slate-200/80 rounded-xl p-4 shadow-xs space-y-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Calculator className="w-4 h-4 text-indigo-600" />
-              <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
-                Evaluation Component Max Bounds
+              <Calculator className="w-4 h-4 stroke-[1.5] text-slate-600" />
+              <h3 className="text-xs font-medium text-slate-800">
+                Component Maximum Marks
               </h3>
             </div>
-            <span className="text-xs font-bold text-indigo-700 bg-white px-2.5 py-1 rounded-lg border border-indigo-100">
+            <span className="text-xs font-mono font-medium text-slate-700 bg-white px-2 py-0.5 rounded border border-slate-200">
               Total Max: {maxTotal} Marks
             </span>
           </div>
@@ -172,7 +166,7 @@ export function MarksManager() {
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
             {Object.entries(maxMarks).map(([key, val]) => (
               <div key={key} className="space-y-1">
-                <label className="capitalize font-semibold text-slate-600 text-[11px]">
+                <label className="capitalize text-[11px] font-medium text-slate-600">
                   {key} (/20)
                 </label>
                 <Input
@@ -184,7 +178,7 @@ export function MarksManager() {
                       [key]: Math.max(1, parseInt(e.target.value) || 20),
                     })
                   }
-                  className="h-8 text-xs font-mono font-bold bg-white rounded-lg border-slate-200"
+                  className="h-8 text-xs font-mono bg-white rounded-lg border-slate-200 tabular-nums"
                 />
               </div>
             ))}
@@ -193,61 +187,55 @@ export function MarksManager() {
       )}
 
       {/* 4 KPI Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-xs">
-          <div className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
-            Class Average
-          </div>
-          <div className="text-2xl font-black text-slate-900 mt-1 font-mono">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+        <div className="bg-white border border-slate-200/80 rounded-xl p-4 shadow-xs">
+          <div className="text-[11px] font-medium text-slate-400">Class Average</div>
+          <div className="text-2xl font-semibold text-slate-900 mt-1 font-mono tabular-nums">
             {classAvg}{" "}
             <span className="text-xs font-normal text-slate-400 font-sans">/{maxTotal}</span>
           </div>
           <div className="text-xs text-slate-500 mt-0.5">Mean student performance</div>
         </div>
 
-        <div className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-xs">
-          <div className="text-[11px] font-bold text-indigo-700 uppercase tracking-wider">
-            Highest Score
-          </div>
-          <div className="text-2xl font-black text-indigo-700 mt-1 font-mono">
+        <div className="bg-white border border-slate-200/80 rounded-xl p-4 shadow-xs">
+          <div className="text-[11px] font-medium text-slate-400">Highest Score</div>
+          <div className="text-2xl font-semibold text-slate-900 mt-1 font-mono tabular-nums">
             {highestScore}{" "}
             <span className="text-xs font-normal text-slate-400 font-sans">/{maxTotal}</span>
           </div>
-          <div className="text-xs text-slate-500 mt-0.5">Section top performer</div>
+          <div className="text-xs text-slate-500 mt-0.5">Section top score</div>
         </div>
 
-        <div className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-xs">
-          <div className="text-[11px] font-bold text-emerald-700 uppercase tracking-wider">
-            Pass Rate
+        <div className="bg-white border border-slate-200/80 rounded-xl p-4 shadow-xs">
+          <div className="text-[11px] font-medium text-slate-400">Passing Rate</div>
+          <div className="text-2xl font-semibold text-slate-900 mt-1 font-mono tabular-nums">
+            {passRate}%
           </div>
-          <div className="text-2xl font-black text-emerald-600 mt-1 font-mono">{passRate}%</div>
           <div className="text-xs text-slate-500 mt-0.5">
             {passCount} of {totalStudents} passing
           </div>
         </div>
 
-        <div className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-xs flex flex-col justify-between">
-          <div className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
-            Live Sync Status
-          </div>
+        <div className="bg-white border border-slate-200/80 rounded-xl p-4 shadow-xs flex flex-col justify-between">
+          <div className="text-[11px] font-medium text-slate-400">Status</div>
           <div className="flex items-center gap-2 mt-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
-            <span className="text-xs font-bold text-slate-800">{statusMsg}</span>
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+            <span className="text-xs font-medium text-slate-800">{statusMsg}</span>
           </div>
-          <div className="text-[11px] text-slate-400 mt-0.5">Auto-saved to database</div>
+          <div className="text-[11px] text-slate-400 mt-0.5">Atomic file persistence</div>
         </div>
       </div>
 
-      {/* Toolbar & Search */}
-      <div className="bg-white border border-slate-200/80 rounded-3xl p-6 sm:p-7 shadow-xs space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      {/* Main Table Container */}
+      <div className="bg-white border border-slate-200/80 rounded-xl p-4 shadow-xs space-y-3">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="relative w-full sm:w-80">
-            <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3.5 top-3" />
+            <Search className="w-3.5 h-3.5 stroke-[1.5] text-slate-400 absolute left-3 top-2.5" />
             <Input
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search by student name or roll..."
-              className="pl-9 text-xs h-9 border-slate-200 rounded-xl"
+              className="pl-8 text-xs h-8 border-slate-200 rounded-lg bg-slate-50 focus:bg-white"
             />
           </div>
 
@@ -256,42 +244,41 @@ export function MarksManager() {
               size="sm"
               variant="outline"
               onClick={() => setSortOrder(sortOrder === "desc" ? "asc" : "desc")}
-              className="h-9 px-3 text-xs font-semibold border-slate-200 text-slate-700 gap-1.5 rounded-xl hover:bg-slate-50"
+              className="h-8 px-3 text-xs font-medium border-slate-200 text-slate-700 gap-1.5 rounded-lg hover:bg-slate-50"
             >
-              <ArrowUpDown className="w-3.5 h-3.5 text-slate-500" />
+              <ArrowUpDown className="w-3.5 h-3.5 stroke-[1.5] text-slate-400" />
               <span>Sort: {sortOrder === "desc" ? "Highest First" : "Lowest First"}</span>
             </Button>
           </div>
         </div>
 
         {/* Spreadsheet Data Grid */}
-        <div className="overflow-x-auto border border-slate-100 rounded-2xl">
+        <div className="overflow-x-auto border border-slate-200/80 rounded-lg">
           <table className="w-full text-left text-xs border-collapse">
-            <thead className="border-b border-slate-200 text-slate-500 font-bold uppercase text-[10px] tracking-wider bg-slate-50/60">
+            <thead className="border-b border-slate-200 text-slate-600 text-[11px] font-medium bg-slate-50/80">
               <tr>
-                <th className="py-3 px-4 font-mono">Roll No</th>
-                <th className="py-3 px-4">Student</th>
-                <th className="py-3 px-3 text-center">Internal /{maxMarks.internal}</th>
-                <th className="py-3 px-3 text-center">Lab /{maxMarks.lab}</th>
-                <th className="py-3 px-3 text-center">Practical /{maxMarks.practical}</th>
-                <th className="py-3 px-3 text-center">Project /{maxMarks.project}</th>
-                <th className="py-3 px-3 text-center font-bold text-indigo-900">
+                <th className="py-2.5 px-3 font-mono">Roll</th>
+                <th className="py-2.5 px-3">Student Name</th>
+                <th className="py-2.5 px-2.5 text-center font-mono">Internal /{maxMarks.internal}</th>
+                <th className="py-2.5 px-2.5 text-center font-mono">Lab /{maxMarks.lab}</th>
+                <th className="py-2.5 px-2.5 text-center font-mono">Practical /{maxMarks.practical}</th>
+                <th className="py-2.5 px-2.5 text-center font-mono">Project /{maxMarks.project}</th>
+                <th className="py-2.5 px-2.5 text-center font-mono font-medium text-slate-900 bg-slate-100/50">
                   Total /{maxTotal}
                 </th>
-                <th className="py-3 px-3 text-center">Percentage</th>
-                <th className="py-3 px-4 text-center">Grade</th>
+                <th className="py-2.5 px-2.5 text-center font-mono">Percentage</th>
+                <th className="py-2.5 px-3 text-center">Grade</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 font-sans">
               {filteredAndSortedRows.map((r) => {
                 const pct = Math.round((r.total / maxTotal) * 100);
-                const isPass = pct >= 40;
                 return (
                   <tr key={r.studentId} className="hover:bg-slate-50/70 transition-colors">
-                    <td className="py-3 px-4 font-mono font-bold text-slate-800">{r.rollNumber}</td>
-                    <td className="py-3 px-4">
-                      <div className="font-semibold text-slate-900">{r.name}</div>
-                      <div className="text-[10px] text-slate-400 truncate max-w-[150px]">
+                    <td className="py-2 px-3 font-mono text-slate-700 tabular-nums">{r.rollNumber}</td>
+                    <td className="py-2 px-3">
+                      <div className="font-medium text-slate-900">{r.name}</div>
+                      <div className="text-[10px] text-slate-400 font-mono truncate max-w-[150px]">
                         {r.email}
                       </div>
                     </td>
@@ -299,10 +286,10 @@ export function MarksManager() {
                     {/* Internal Cell */}
                     <td
                       onClick={() => handleStartEdit(r.studentId, "internalMarks", r.internalMarks)}
-                      className="py-3 px-3 text-center font-mono cursor-pointer hover:bg-indigo-50/60 transition-colors"
+                      className="py-1.5 px-2 text-center font-mono tabular-nums cursor-pointer hover:bg-slate-100/60 transition-colors"
                     >
                       {editingCell?.studentId === r.studentId &&
-                      editingCell.field === "internalMarks" ? (
+                        editingCell.field === "internalMarks" ? (
                         <input
                           autoFocus
                           type="number"
@@ -310,10 +297,10 @@ export function MarksManager() {
                           onChange={(e) => setCellInput(e.target.value)}
                           onBlur={handleCommitEdit}
                           onKeyDown={(e) => e.key === "Enter" && handleCommitEdit()}
-                          className="w-14 text-center font-mono font-bold border-2 border-indigo-600 rounded bg-white text-xs outline-none py-0.5"
+                          className="w-12 text-center font-mono border border-slate-900 rounded bg-white text-xs outline-none py-0.5 tabular-nums"
                         />
                       ) : (
-                        <span className="font-semibold text-slate-700">{r.internalMarks}</span>
+                        <span className="text-slate-800">{r.internalMarks}</span>
                       )}
                     </td>
 
@@ -322,10 +309,10 @@ export function MarksManager() {
                       onClick={() =>
                         handleStartEdit(r.studentId, "labRecordMarks", r.labRecordMarks)
                       }
-                      className="py-3 px-3 text-center font-mono cursor-pointer hover:bg-indigo-50/60 transition-colors"
+                      className="py-1.5 px-2 text-center font-mono tabular-nums cursor-pointer hover:bg-slate-100/60 transition-colors"
                     >
                       {editingCell?.studentId === r.studentId &&
-                      editingCell.field === "labRecordMarks" ? (
+                        editingCell.field === "labRecordMarks" ? (
                         <input
                           autoFocus
                           type="number"
@@ -333,10 +320,10 @@ export function MarksManager() {
                           onChange={(e) => setCellInput(e.target.value)}
                           onBlur={handleCommitEdit}
                           onKeyDown={(e) => e.key === "Enter" && handleCommitEdit()}
-                          className="w-14 text-center font-mono font-bold border-2 border-indigo-600 rounded bg-white text-xs outline-none py-0.5"
+                          className="w-12 text-center font-mono border border-slate-900 rounded bg-white text-xs outline-none py-0.5 tabular-nums"
                         />
                       ) : (
-                        <span className="font-semibold text-slate-700">{r.labRecordMarks}</span>
+                        <span className="text-slate-800">{r.labRecordMarks}</span>
                       )}
                     </td>
 
@@ -345,10 +332,10 @@ export function MarksManager() {
                       onClick={() =>
                         handleStartEdit(r.studentId, "practicalMarks", r.practicalMarks)
                       }
-                      className="py-3 px-3 text-center font-mono cursor-pointer hover:bg-indigo-50/60 transition-colors"
+                      className="py-1.5 px-2 text-center font-mono tabular-nums cursor-pointer hover:bg-slate-100/60 transition-colors"
                     >
                       {editingCell?.studentId === r.studentId &&
-                      editingCell.field === "practicalMarks" ? (
+                        editingCell.field === "practicalMarks" ? (
                         <input
                           autoFocus
                           type="number"
@@ -356,20 +343,20 @@ export function MarksManager() {
                           onChange={(e) => setCellInput(e.target.value)}
                           onBlur={handleCommitEdit}
                           onKeyDown={(e) => e.key === "Enter" && handleCommitEdit()}
-                          className="w-14 text-center font-mono font-bold border-2 border-indigo-600 rounded bg-white text-xs outline-none py-0.5"
+                          className="w-12 text-center font-mono border border-slate-900 rounded bg-white text-xs outline-none py-0.5 tabular-nums"
                         />
                       ) : (
-                        <span className="font-semibold text-slate-700">{r.practicalMarks}</span>
+                        <span className="text-slate-800">{r.practicalMarks}</span>
                       )}
                     </td>
 
                     {/* Project Cell */}
                     <td
                       onClick={() => handleStartEdit(r.studentId, "projectMarks", r.projectMarks)}
-                      className="py-3 px-3 text-center font-mono cursor-pointer hover:bg-indigo-50/60 transition-colors"
+                      className="py-1.5 px-2 text-center font-mono tabular-nums cursor-pointer hover:bg-slate-100/60 transition-colors"
                     >
                       {editingCell?.studentId === r.studentId &&
-                      editingCell.field === "projectMarks" ? (
+                        editingCell.field === "projectMarks" ? (
                         <input
                           autoFocus
                           type="number"
@@ -377,32 +364,26 @@ export function MarksManager() {
                           onChange={(e) => setCellInput(e.target.value)}
                           onBlur={handleCommitEdit}
                           onKeyDown={(e) => e.key === "Enter" && handleCommitEdit()}
-                          className="w-14 text-center font-mono font-bold border-2 border-indigo-600 rounded bg-white text-xs outline-none py-0.5"
+                          className="w-12 text-center font-mono border border-slate-900 rounded bg-white text-xs outline-none py-0.5 tabular-nums"
                         />
                       ) : (
-                        <span className="font-semibold text-slate-700">{r.projectMarks}</span>
+                        <span className="text-slate-800">{r.projectMarks}</span>
                       )}
                     </td>
 
                     {/* Total Cell */}
-                    <td className="py-3 px-3 text-center font-mono font-black text-indigo-700 text-sm">
+                    <td className="py-2 px-2.5 text-center font-mono tabular-nums font-semibold text-slate-900 text-xs bg-slate-50/50">
                       {r.total}
                     </td>
 
                     {/* Percentage */}
-                    <td className="py-3 px-3 text-center font-mono text-xs text-slate-600">
+                    <td className="py-2 px-2.5 text-center font-mono tabular-nums text-xs text-slate-600">
                       {pct}%
                     </td>
 
                     {/* Grade Pill */}
-                    <td className="py-3 px-4 text-center">
-                      <span
-                        className={`px-2.5 py-0.5 rounded-md text-[10px] font-bold ${
-                          isPass
-                            ? "bg-emerald-50 text-emerald-800 border border-emerald-200"
-                            : "bg-rose-50 text-rose-800 border border-rose-200"
-                        }`}
-                      >
+                    <td className="py-2 px-3 text-center">
+                      <span className="px-2 py-0.5 rounded text-[10px] font-mono font-medium bg-slate-100 text-slate-800">
                         {r.grade.split(" ")[0]}
                       </span>
                     </td>

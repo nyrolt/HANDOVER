@@ -30,7 +30,7 @@ export function HandoverLogo({ size = "md", showText = false, className = "" }: 
     <div className={`flex items-center gap-2.5 ${className}`}>
       {/* Icon Mark */}
       <div
-        className={`${iconSize} relative shrink-0 ${roundedClass} overflow-hidden shadow-md shadow-black/25 bg-black transition-transform group-hover:scale-105`}
+        className={`${iconSize} relative shrink-0 ${roundedClass} overflow-hidden shadow-xs bg-black`}
         title="Handover"
       >
         {!imgError ? (
@@ -83,11 +83,11 @@ export function HandoverLogo({ size = "md", showText = false, className = "" }: 
       {/* Brand Text (Optional) */}
       {showText && (
         <div className="flex flex-col text-left">
-          <span className="tracking-tight text-lg font-extrabold bg-gradient-to-r from-slate-950 via-indigo-950 to-slate-800 bg-clip-text text-transparent leading-none">
+          <span className="tracking-tight text-lg font-semibold text-slate-900 leading-none">
             Handover
           </span>
-          <span className="text-[10px] font-mono font-bold text-indigo-600 tracking-wider">
-            ACADEMIC OS
+          <span className="text-[10px] font-mono text-slate-500 font-medium tracking-normal mt-0.5">
+            Academic OS
           </span>
         </div>
       )}

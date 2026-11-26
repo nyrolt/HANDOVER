@@ -12,7 +12,6 @@ import {
   Binary,
   Layers,
   Printer,
-  Sparkles,
 } from "lucide-react";
 import { db } from "@/services/db";
 import { computeGrade } from "@/services/teacher";
@@ -43,9 +42,9 @@ export function StudentMarks({ student }: StudentMarksProps) {
       score: internal,
       max: 20,
       weightage: "25%",
+
+      
       icon: BookOpen,
-      iconBg: "bg-indigo-50 text-indigo-600 border-indigo-100",
-      progressGradient: "from-indigo-600 to-violet-600",
       description: "Mid-term written theory assessments and periodic unit examinations.",
     },
     {
@@ -54,8 +53,6 @@ export function StudentMarks({ student }: StudentMarksProps) {
       max: 20,
       weightage: "25%",
       icon: FlaskConical,
-      iconBg: "bg-sky-50 text-sky-600 border-sky-100",
-      progressGradient: "from-sky-500 to-blue-600",
       description: "Laboratory journal evaluations, algorithm benchmarks, and code submissions.",
     },
     {
@@ -64,8 +61,6 @@ export function StudentMarks({ student }: StudentMarksProps) {
       max: 20,
       weightage: "25%",
       icon: Binary,
-      iconBg: "bg-emerald-50 text-emerald-600 border-emerald-100",
-      progressGradient: "from-emerald-500 to-teal-600",
       description: "Live terminal execution, algorithmic problem-solving and oral viva voce.",
     },
     {
@@ -74,8 +69,6 @@ export function StudentMarks({ student }: StudentMarksProps) {
       max: 20,
       weightage: "25%",
       icon: Layers,
-      iconBg: "bg-purple-50 text-purple-600 border-purple-100",
-      progressGradient: "from-purple-500 to-pink-600",
       description: "System architecture, git pull request reviews, and final milestone demo.",
     },
   ];
@@ -83,13 +76,11 @@ export function StudentMarks({ student }: StudentMarksProps) {
   return (
     <div className="space-y-6">
       {/* Top Header Card */}
-      <div className="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="bg-white border border-slate-200/80 rounded-xl p-5 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-600 text-white flex items-center justify-center shadow-xs shadow-indigo-600/30">
-              <Award className="w-4 h-4" />
-            </div>
-            <h2 className="text-lg font-bold text-slate-900 tracking-tight">
+          <div className="flex items-center gap-2">
+            <Award className="w-4 h-4 text-slate-700" />
+            <h2 className="text-base font-semibold text-slate-900">
               Academic Marksheet & Transcript
             </h2>
           </div>
@@ -98,69 +89,63 @@ export function StudentMarks({ student }: StudentMarksProps) {
           </p>
         </div>
 
-        <div className="flex items-center gap-2.5">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-50 border border-emerald-200/80 text-xs font-semibold text-emerald-700">
-            <ShieldCheck className="w-4 h-4 text-emerald-600" />
-            <span>Official Verified Transcript</span>
+        <div className="flex items-center gap-2">
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-slate-100 border border-slate-200/60 text-xs font-medium text-slate-700">
+            <ShieldCheck className="w-3.5 h-3.5 text-slate-600" />
+            <span>Official verified transcript</span>
           </div>
           <Button
             variant="outline"
             size="sm"
             onClick={() => window.print()}
-            className="h-9 px-3 text-xs font-semibold border-slate-200 text-slate-700 hover:bg-slate-50 gap-1.5"
+            className="h-8 px-3 text-xs font-medium border-slate-200 text-slate-700 hover:bg-slate-50 gap-1.5 rounded-lg"
           >
             <Printer className="w-3.5 h-3.5 text-slate-500" />
-            <span>Print Transcript</span>
+            <span>Print transcript</span>
           </Button>
         </div>
       </div>
 
-      {/* Main Grade Summary Banner */}
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-slate-950 via-indigo-950 to-slate-900 text-white p-7 shadow-lg shadow-indigo-950/20">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-bl from-indigo-500/20 via-purple-500/10 to-transparent rounded-full blur-3xl pointer-events-none" />
-
-        <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-          <div className="space-y-3">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-indigo-200 border border-white/15 text-xs font-semibold backdrop-blur-md">
-              <Sparkles className="w-3.5 h-3.5 text-indigo-300" />
+      {/* Main Grade Summary Certificate Box */}
+      <div className="bg-white border border-slate-200/80 rounded-xl p-6 shadow-xs">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+          <div className="space-y-2">
+            <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-md bg-slate-100 text-slate-700 border border-slate-200/60 text-[11px] font-medium">
               <span>Section: {section?.sectionName || "General CS"}</span>
             </div>
 
             <div>
-              <h3 className="text-2xl sm:text-3xl font-extrabold tracking-tight">{student.name}</h3>
-              <div className="flex flex-wrap items-center gap-3 text-xs text-slate-300 mt-1 font-medium">
-                <span className="font-mono text-indigo-300 font-semibold bg-white/5 px-2 py-0.5 rounded border border-white/10">
-                  Roll No: {student.rollNumber}
+              <h3 className="text-xl font-semibold text-slate-900">{student.name}</h3>
+              <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500 mt-1">
+                <span className="font-mono text-slate-700 font-medium bg-slate-50 px-2 py-0.5 rounded border border-slate-200/60">
+                  Roll no: {student.rollNumber}
                 </span>
                 <span>•</span>
                 <span>{section?.courseName || "Computer Science & Engineering"}</span>
                 <span>•</span>
-                <span>Year: {section?.academicYear || "2026-2027"}</span>
+                <span>Academic year: {section?.academicYear || "2026-2027"}</span>
               </div>
             </div>
           </div>
 
-          <div className="flex items-center gap-4 bg-white/10 backdrop-blur-md p-5 rounded-2xl border border-white/15 self-start lg:self-auto">
+          <div className="flex items-center gap-4 bg-slate-50 p-4 rounded-lg border border-slate-200 self-start lg:self-auto">
             <div>
-              <div className="text-[11px] font-bold uppercase tracking-wider text-indigo-200">
-                Cumulative Score
+              <div className="text-[10px] uppercase font-medium text-slate-500">
+                Cumulative score
               </div>
-              <div className="text-3xl sm:text-4xl font-black text-white font-mono mt-0.5 tracking-tight">
+              <div className="text-2xl font-semibold text-slate-900 font-mono mt-0.5 tabular-nums">
                 {total}
-                <span className="text-base font-normal text-slate-400 font-sans">
-                  {" "}
-                  / {maxTotal}
-                </span>
+                <span className="text-sm font-normal text-slate-400 font-sans"> / {maxTotal}</span>
               </div>
             </div>
 
-            <div className="h-10 w-px bg-white/20 mx-1" />
+            <div className="h-10 w-px bg-slate-200 mx-1" />
 
             <div className="text-left">
-              <div className="inline-block px-2.5 py-1 rounded-lg bg-emerald-500/20 border border-emerald-400/30 text-emerald-300 text-xs font-bold">
+              <div className="inline-block px-2 py-0.5 rounded bg-slate-100 border border-slate-200 text-slate-800 text-[11px] font-mono font-medium">
                 {percentage}% Score
               </div>
-              <div className="text-xs font-bold text-white mt-1">{grade}</div>
+              <div className="text-xs font-medium text-slate-700 mt-1 font-mono">{grade}</div>
             </div>
           </div>
         </div>
@@ -174,43 +159,39 @@ export function StudentMarks({ student }: StudentMarksProps) {
           return (
             <div
               key={c.title}
-              className="bg-white border border-slate-200/80 hover:border-indigo-200 rounded-2xl p-5 shadow-xs transition-all space-y-4"
+              className="bg-white border border-slate-200/80 hover:border-slate-300 rounded-xl p-5 shadow-xs transition-all space-y-3.5"
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="flex items-start gap-3">
-                  <div
-                    className={`w-10 h-10 rounded-xl border flex items-center justify-center shrink-0 ${c.iconBg}`}
-                  >
-                    <Icon className="w-5 h-5" />
+                  <div className="w-8 h-8 rounded-lg border border-slate-200/60 bg-slate-100 text-slate-700 flex items-center justify-center shrink-0">
+                    <Icon className="w-4 h-4" />
                   </div>
                   <div>
-                    <h4 className="text-sm font-bold text-slate-900 tracking-tight">{c.title}</h4>
+                    <h4 className="text-sm font-semibold text-slate-900">{c.title}</h4>
                     <p className="text-xs text-slate-500 leading-relaxed mt-0.5">{c.description}</p>
                   </div>
                 </div>
 
-                <div className="text-right shrink-0 bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-100">
-                  <div className="text-lg font-black text-slate-900 font-mono">
+                <div className="text-right shrink-0 bg-slate-50 px-2.5 py-1 rounded-md border border-slate-200">
+                  <div className="text-base font-semibold text-slate-900 font-mono tabular-nums">
                     {c.score}
                     <span className="text-xs font-normal text-slate-400">/{c.max}</span>
                   </div>
-                  <span className="text-[10px] font-bold text-indigo-600 uppercase">
-                    {c.weightage}
-                  </span>
+                  <span className="text-[10px] font-medium text-slate-500">{c.weightage}</span>
                 </div>
               </div>
 
               {/* Progress bar */}
-              <div className="space-y-1.5 pt-1">
-                <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden p-[1px]">
+              <div className="space-y-1 pt-1">
+                <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
                   <div
-                    className={`h-full rounded-full bg-gradient-to-r ${c.progressGradient} transition-all duration-500`}
+                    className="h-full rounded-full bg-slate-900 transition-all duration-300"
                     style={{ width: `${compPct}%` }}
                   />
                 </div>
-                <div className="flex items-center justify-between text-[11px] text-slate-500 font-medium">
-                  <span>Performance Rating</span>
-                  <span className="font-bold text-slate-700">{compPct}% of Max</span>
+                <div className="flex items-center justify-between text-[11px] text-slate-500">
+                  <span>Performance rating</span>
+                  <span className="font-mono tabular-nums text-slate-700">{compPct}%</span>
                 </div>
               </div>
             </div>
@@ -223,7 +204,7 @@ export function StudentMarks({ student }: StudentMarksProps) {
         <div className="flex items-center gap-2">
           <FileCheck2 className="w-4 h-4 text-emerald-600 shrink-0" />
           <span>
-            Authorized & Recorded by <strong>{teacher?.name || "Dr. Eleanor Vance, Ph.D."}</strong>
+            Authorized & Recorded by <strong>{teacher?.name || "Department Faculty"}</strong>
             {teacher?.department && ` • ${teacher.department}`}
           </span>
         </div>

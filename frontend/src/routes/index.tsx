@@ -214,12 +214,8 @@ function IndexPage() {
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] text-slate-800 flex flex-col font-sans selection:bg-indigo-600 selection:text-white antialiased">
-      {/* Background Lighting & Subtle Mesh Gradients */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
-        <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-gradient-to-b from-indigo-100/60 via-purple-50/40 to-transparent rounded-[100%] blur-3xl opacity-80" />
-        <div className="absolute top-[40rem] -right-36 w-[600px] h-[600px] bg-gradient-to-bl from-emerald-100/40 via-teal-50/30 to-transparent rounded-full blur-3xl opacity-60" />
-        <div className="absolute top-[75rem] -left-36 w-[600px] h-[600px] bg-gradient-to-tr from-violet-100/40 via-indigo-50/30 to-transparent rounded-full blur-3xl opacity-50" />
-      </div>
+      {/* Background */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none z-0" />
 
       {/* Top Navigation Bar */}
       <header className="h-16 border-b border-slate-200/80 bg-white/90 backdrop-blur-md sticky top-0 z-40 px-4 sm:px-8 transition-all">
@@ -228,11 +224,11 @@ function IndexPage() {
           <Link to="/" className="flex items-center gap-2.5 font-bold text-slate-900 group">
             <HandoverLogo size="md" />
             <div className="flex flex-col">
-              <span className="tracking-tight text-lg font-extrabold bg-gradient-to-r from-slate-950 via-indigo-950 to-slate-800 bg-clip-text text-transparent leading-none">
+              <span className="tracking-tight text-lg font-semibold text-slate-900 leading-none">
                 Handover
               </span>
-              <span className="text-[10px] font-mono font-bold text-indigo-600 tracking-wider">
-                ACADEMIC OS
+              <span className="text-[10px] font-mono text-slate-500 font-medium tracking-normal mt-0.5">
+                Academic OS
               </span>
             </div>
           </Link>
@@ -368,24 +364,16 @@ function IndexPage() {
         {/* HERO SECTION */}
         <section className="max-w-4xl mx-auto text-center space-y-6 pt-2 md:pt-6">
           {/* Authentic status badge */}
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-[11px] font-semibold bg-white border border-slate-200 shadow-xs shadow-slate-200/50">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span className="text-slate-700 font-medium">Academic Year 2026-2027</span>
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[11px] font-medium bg-white border border-slate-200 shadow-xs">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+            <span className="text-slate-700">Academic Year 2026-2027</span>
             <span className="text-slate-300">•</span>
-            <span className="text-indigo-600 font-mono font-bold">Production Workspace v2.4</span>
+            <span className="text-slate-600 font-mono">Verified College OS</span>
           </div>
 
           {/* Primary Headline */}
-          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight leading-[1.08] text-slate-950">
-            The modern academic workspace for{" "}
-            <span className="bg-gradient-to-r from-indigo-600 via-violet-600 to-indigo-700 bg-clip-text text-transparent">
-              faculty
-            </span>{" "}
-            and{" "}
-            <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 bg-clip-text text-transparent">
-              students
-            </span>
-            .
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-semibold tracking-tight leading-[1.12] text-slate-900">
+            The modern academic workspace for faculty and students
           </h1>
 
           <p className="text-base sm:text-lg text-slate-600 leading-relaxed max-w-2xl mx-auto font-normal">

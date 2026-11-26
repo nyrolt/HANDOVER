@@ -225,6 +225,7 @@ class AuthService {
     const trimmedEmail = data.email.trim().toLowerCase();
     const trimmedRoll = data.rollNumber.trim();
     const trimmedName = data.name.trim();
+    const rawSection = data.sectionId.trim();
 
     if (!trimmedName) {
       return { success: false, error: "Please enter your full name." };
@@ -235,8 +236,8 @@ class AuthService {
     if (!trimmedRoll) {
       return { success: false, error: "Please enter your student roll number." };
     }
-    if (!data.sectionId) {
-      return { success: false, error: "Please select your assigned class / section." };
+    if (!rawSection) {
+      return { success: false, error: "Please select or enter your class / section." };
     }
 
     // Check if user already exists
@@ -248,8 +249,26 @@ class AuthService {
       };
     }
 
+    // Resolve target section or dynamically create if new section name provided
+    let targetSection = db.getSectionById(rawSection);
+    if (!targetSection) {
+      targetSection = db
+        .getSections()
+        .find((s) => s.sectionName.toLowerCase() === rawSection.toLowerCase());
+    }
+    if (!targetSection) {
+      targetSection = db.createSection({
+        sectionName: rawSection,
+        courseName: "Academic Program",
+        academicYear: "2026-2027",
+        teacherId: "faculty-pending",
+      });
+    }
+
+    const resolvedSectionId = targetSection.id;
+
     // Check if roll number already taken in this section
-    const existingStudentsInSection = db.getStudents(data.sectionId);
+    const existingStudentsInSection = db.getStudents(resolvedSectionId);
     if (
       existingStudentsInSection.some(
         (s) => s.rollNumber.toLowerCase() === trimmedRoll.toLowerCase(),
@@ -274,7 +293,7 @@ class AuthService {
       name: trimmedName,
       email: trimmedEmail,
       rollNumber: trimmedRoll,
-      sectionId: data.sectionId,
+      sectionId: resolvedSectionId,
     });
 
     // 3. Save session

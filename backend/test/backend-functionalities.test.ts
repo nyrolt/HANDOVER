@@ -4,10 +4,8 @@ import { authService } from "../services/auth";
 import { authController } from "../controllers/authController";
 import { teacherController } from "../controllers/teacherController";
 import { studentController } from "../controllers/studentController";
-import { marksController } from "../controllers/marksController";
 import { can } from "../services/permissions";
-import { generateSectionMarksCSV } from "../services/teacher";
-import type { User } from "../models/types";
+import type { User, Section, Student } from "../models/types";
 import * as fs from "fs";
 import * as path from "path";
 
@@ -80,6 +78,17 @@ describe("Backend Architecture & Complete Functionalities", () => {
   });
 
   describe("Authentication & Session Management", () => {
+    beforeEach(() => {
+      authService.registerTeacher({
+        name: "Dr. Eleanor Vance",
+        email: "e.vance@university.edu",
+        department: "Computer Science",
+        initialSectionName: "CS-301: Algorithms & Data Structures",
+        password: "Faculty@2026",
+      });
+      authService.logout();
+    });
+
     it("should authenticate teacher and issue session token + HTTP cookie", async () => {
       const res = createMockResponse();
       await authController.login(
@@ -155,12 +164,18 @@ describe("Backend Architecture & Complete Functionalities", () => {
 
   describe("Teacher Management Endpoints", () => {
     let teacherUser: User;
+    let baseSection: Section;
 
     beforeEach(() => {
-      const user = db.getUserByEmail("e.vance@university.edu")!;
-      teacherUser = {
-        ...user,
-      };
+      authService.registerTeacher({
+        name: "Dr. Eleanor Vance",
+        email: "e.vance@university.edu",
+        department: "Computer Science",
+        initialSectionName: "CS-301: Algorithms & Data Structures",
+        password: "Faculty@2026",
+      });
+      teacherUser = db.getUserByEmail("e.vance@university.edu")!;
+      baseSection = db.getSections()[0]!;
     });
 
     it("should allow teacher to create, retrieve, and delete class sections", async () => {
@@ -210,7 +225,7 @@ describe("Backend Architecture & Complete Functionalities", () => {
             title: "Distributed Systems Lab 1",
             subject: "Cloud Architecture",
             description: "Implement Raft consensus algorithm",
-            sectionId: "sec-cse-a",
+            sectionId: baseSection.id,
             deadline: "2026-12-15",
           },
         },
@@ -225,7 +240,7 @@ describe("Backend Architecture & Complete Functionalities", () => {
       await teacherController.getAssignments(
         {
           user: teacherUser,
-          query: { sectionId: "sec-cse-a" },
+          query: { sectionId: baseSection.id },
           body: {},
         },
         listRes,
@@ -245,26 +260,34 @@ describe("Backend Architecture & Complete Functionalities", () => {
         delRes,
       );
       expect(delRes.statusCode).toBe(200);
-      expect(db.getAssignments("sec-cse-a").some((a) => a.id === assignment.id)).toBe(false);
+      expect(db.getAssignments(baseSection.id).some((a) => a.id === assignment.id)).toBe(false);
     });
 
     it("should review group proposals and auto-provision project groups upon approval", async () => {
-      // 1. Student submits proposal
-      const proposal = db.submitGroupRequest({
-        studentId: "stud-1",
-        studentName: "Alexander Wright",
-        sectionId: "sec-cse-a",
-        proposedGroupName: "HyperScale DB",
-        proposedProjectTitle: "High-Performance Distributed Key-Value Store",
-        proposedMembers: ["Alexander Wright", "Sophia Martinez"],
+      // 1. Create a student in this section
+      const student = db.addStudent({
+        name: "Alexander Wright",
+        email: "a.wright@student.university.edu",
+        rollNumber: "2024-CS-001",
+        sectionId: baseSection.id,
       });
 
-      // 2. Teacher retrieves pending requests
+      // 2. Student submits proposal
+      const proposal = db.submitGroupRequest({
+        studentId: student.id,
+        studentName: student.name,
+        sectionId: baseSection.id,
+        proposedGroupName: "HyperScale DB",
+        proposedProjectTitle: "High-Performance Distributed Key-Value Store",
+        proposedMembers: [student.name, "Sophia Martinez"],
+      });
+
+      // 3. Teacher retrieves pending requests
       const listRes = createMockResponse();
       await teacherController.getGroupRequests(
         {
           user: teacherUser,
-          query: { sectionId: "sec-cse-a" },
+          query: { sectionId: baseSection.id },
           body: {},
         },
         listRes,
@@ -273,7 +296,7 @@ describe("Backend Architecture & Complete Functionalities", () => {
       const requests = (listRes.data as { data: Array<{ id: string; status: string }> }).data;
       expect(requests.some((r) => r.id === proposal.id && r.status === "Pending")).toBe(true);
 
-      // 3. Teacher approves the proposal
+      // 4. Teacher approves the proposal
       const reviewRes = createMockResponse();
       await teacherController.reviewGroupProposal(
         {
@@ -288,8 +311,8 @@ describe("Backend Architecture & Complete Functionalities", () => {
       );
       expect(reviewRes.statusCode).toBe(200);
 
-      // 4. Verify project group was automatically created in the database
-      const groups = db.getProjectGroups("sec-cse-a");
+      // 5. Verify project group was automatically created in the database
+      const groups = db.getProjectGroups(baseSection.id);
       const createdGroup = groups.find((g) => g.groupName === "HyperScale DB");
       expect(createdGroup).toBeDefined();
       expect(createdGroup?.projectTitle).toBe("High-Performance Distributed Key-Value Store");
@@ -302,7 +325,7 @@ describe("Backend Architecture & Complete Functionalities", () => {
       await teacherController.exportCSV(
         {
           user: teacherUser,
-          params: { sectionId: "sec-cse-a" },
+          params: { sectionId: baseSection.id },
           body: {},
         },
         exportRes,
@@ -320,13 +343,13 @@ describe("Backend Architecture & Complete Functionalities", () => {
       await teacherController.importCSV(
         {
           user: teacherUser,
-          params: { sectionId: "sec-cse-a" },
+          params: { sectionId: baseSection.id },
           body: { csvContent: sampleCsv },
         },
         importRes,
       );
       expect(importRes.statusCode).toBe(200);
-      const student = db.getStudents("sec-cse-a").find((s) => s.rollNumber === "2024-CS-099");
+      const student = db.getStudents(baseSection.id).find((s) => s.rollNumber === "2024-CS-099");
       expect(student).toBeDefined();
       expect(student?.name).toBe("Jordan Hayes");
     });
@@ -334,12 +357,28 @@ describe("Backend Architecture & Complete Functionalities", () => {
 
   describe("Student Portal & Read-Only Protection", () => {
     let studentUser: User;
+    let studentProfile: Student;
 
     beforeEach(() => {
-      const user = db.getUserByEmail("a.wright@student.university.edu")!;
-      studentUser = {
-        ...user,
-      };
+      authService.registerTeacher({
+        name: "Dr. Eleanor Vance",
+        email: "e.vance@university.edu",
+        department: "Computer Science",
+        initialSectionName: "CS-301: Algorithms & Data Structures",
+        password: "Faculty@2026",
+      });
+      const section = db.getSections()[0]!;
+
+      const regStudent = authService.registerStudent({
+        name: "Alexander Wright",
+        email: "a.wright@student.university.edu",
+        rollNumber: "2024-CS-001",
+        sectionId: section.id,
+        password: "Password@123",
+      });
+
+      studentUser = db.getUserByEmail("a.wright@student.university.edu")!;
+      studentProfile = db.getStudents(section.id).find((s) => s.email === studentUser.email)!;
     });
 
     it("should retrieve student personal dashboard and verified read-only marks", async () => {

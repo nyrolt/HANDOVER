@@ -45,11 +45,11 @@ export function TeacherAnnouncements() {
 
   return (
     <div className="space-y-6">
-      <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="bg-white border border-slate-200/80 rounded-xl p-5 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <Bell className="w-5 h-5 text-indigo-600" />
-            <h2 className="text-base font-bold text-slate-800">Class Announcements</h2>
+            <Bell className="w-4 h-4 text-slate-700" />
+            <h2 className="text-base font-semibold text-slate-900">Class Announcements</h2>
           </div>
           <p className="text-xs text-slate-500 mt-1">
             Broadcast examination schedules, practical deadlines, and project announcements to
@@ -61,9 +61,9 @@ export function TeacherAnnouncements() {
           <select
             value={selectedSectionId}
             onChange={(e) => setSelectedSectionId(e.target.value)}
-            className="h-8 px-3 text-xs font-semibold bg-slate-50 border border-slate-200 rounded-lg text-slate-800 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+            className="h-8 px-2.5 text-xs font-medium bg-slate-50 border border-slate-200 rounded-lg text-slate-800 focus:outline-none focus:ring-1 focus:ring-slate-400"
           >
-            <option value="all">All Sections</option>
+            <option value="all">All sections</option>
             {sections.map((s) => (
               <option key={s.id} value={s.id}>
                 {s.sectionName}
@@ -74,20 +74,22 @@ export function TeacherAnnouncements() {
           <Button
             size="sm"
             onClick={() => setCreateOpen(true)}
-            className="bg-indigo-600 hover:bg-indigo-700 text-white text-xs gap-1.5 h-8 shadow-xs"
+            className="bg-slate-900 hover:bg-slate-800 text-white text-xs gap-1.5 h-8 px-3 rounded-lg shadow-xs font-medium"
           >
             <Plus className="w-3.5 h-3.5" />
-            Post Announcement
+            Post announcement
           </Button>
         </div>
       </div>
 
       <div className="space-y-3.5">
         {announcements.length === 0 ? (
-          <div className="bg-white border border-slate-200 rounded-xl p-12 text-center text-slate-400">
+          <div className="bg-white border border-slate-200/80 rounded-xl p-12 text-center text-slate-400">
             <Bell className="w-8 h-8 mx-auto text-slate-300 mb-2" />
-            <p className="text-sm font-semibold text-slate-700">No announcements posted yet.</p>
-            <p className="text-xs mt-1">Click "Post Announcement" to broadcast to your students.</p>
+            <p className="text-sm font-medium text-slate-700">No announcements posted yet.</p>
+            <p className="text-xs text-slate-500 mt-1">
+              Click "Post announcement" to broadcast to your students.
+            </p>
           </div>
         ) : (
           announcements.map((ann) => {
@@ -101,39 +103,39 @@ export function TeacherAnnouncements() {
             return (
               <div
                 key={ann.id}
-                className="bg-white border border-slate-200 rounded-xl p-5 hover:border-indigo-300 transition-all space-y-3"
+                className="bg-white border border-slate-200/80 rounded-xl p-5 hover:border-slate-300 transition-all space-y-3"
               >
                 <div className="flex items-start justify-between">
                   <div>
                     <div className="flex items-center gap-2">
-                      <span className="text-[11px] font-semibold px-2 py-0.5 rounded bg-slate-100 text-slate-600">
+                      <span className="text-[11px] font-medium px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 border border-slate-200/60">
                         {section?.sectionName || "General"}
                       </span>
                       {ann.priority === "important" && (
-                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-rose-100 text-rose-800">
+                        <span className="text-[10px] font-medium px-2 py-0.5 rounded-md bg-rose-50 text-rose-700 border border-rose-200/60 font-mono">
                           Important Notice
                         </span>
                       )}
                     </div>
-                    <h3 className="text-base font-bold text-slate-800 mt-2">{ann.title}</h3>
+                    <h3 className="text-base font-semibold text-slate-900 mt-2">{ann.title}</h3>
                   </div>
 
                   <button
                     onClick={() => handleDelete(ann.id)}
-                    className="p-1 text-slate-400 hover:text-rose-600 rounded"
+                    className="p-1 text-slate-400 hover:text-rose-600 rounded transition-colors"
                     title="Delete notice"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
                   </button>
                 </div>
 
-                <p className="text-xs text-slate-600 leading-relaxed bg-slate-50/50 p-3 rounded-lg border border-slate-100">
+                <p className="text-xs text-slate-600 leading-relaxed bg-slate-50/70 p-3 rounded-lg border border-slate-100">
                   {ann.message}
                 </p>
 
-                <div className="flex items-center justify-between text-xs text-slate-400 pt-1">
+                <div className="flex items-center justify-between text-xs text-slate-500 pt-1">
                   <span>Posted by {ann.teacherName}</span>
-                  <span>{date}</span>
+                  <span className="font-mono text-slate-400">{date}</span>
                 </div>
               </div>
             );
@@ -145,17 +147,18 @@ export function TeacherAnnouncements() {
       {createOpen && (
         <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white rounded-xl shadow-xl border border-slate-200 max-w-md w-full p-6 animate-in fade-in-50 zoom-in-95">
-            <h3 className="text-base font-bold text-slate-800">Post Announcement</h3>
+            <h3 className="text-base font-semibold text-slate-900">Post Announcement</h3>
+            <p className="text-xs text-slate-500 mt-1">Broadcast notice or examination schedule to students.</p>
 
             <form onSubmit={handleCreate} className="mt-4 space-y-3.5">
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                <label className="block text-xs font-medium text-slate-700 mb-1">
                   Target Section
                 </label>
                 <select
                   value={targetSectionId}
                   onChange={(e) => setTargetSectionId(e.target.value)}
-                  className="w-full text-xs h-9 bg-white border border-slate-200 rounded-md px-2 font-medium"
+                  className="w-full text-xs h-8 bg-white border border-slate-200 rounded-lg px-2.5 font-medium text-slate-800 focus:outline-none focus:border-slate-400"
                 >
                   {sections.map((s) => (
                     <option key={s.id} value={s.id}>
@@ -166,7 +169,7 @@ export function TeacherAnnouncements() {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                <label className="block text-xs font-medium text-slate-700 mb-1">
                   Announcement Title
                 </label>
                 <Input
@@ -174,19 +177,19 @@ export function TeacherAnnouncements() {
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="e.g. Schedule for Lab Practical Exam"
                   required
-                  className="text-xs h-9"
+                  className="text-xs h-8 rounded-lg"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                <label className="block text-xs font-medium text-slate-700 mb-1">
                   Message Content
                 </label>
                 <Textarea
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
                   placeholder="Type announcement message..."
-                  className="text-xs"
+                  className="text-xs rounded-lg"
                   rows={4}
                   required
                 />
@@ -197,9 +200,9 @@ export function TeacherAnnouncements() {
                   type="checkbox"
                   checked={isImportant}
                   onChange={(e) => setIsImportant(e.target.checked)}
-                  className="rounded text-indigo-600 focus:ring-indigo-500"
+                  className="rounded text-slate-900 focus:ring-slate-900 accent-slate-900"
                 />
-                <span className="font-semibold">Mark as High Priority / Important</span>
+                <span className="font-medium">Mark as High Priority / Important</span>
               </label>
 
               <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
@@ -215,10 +218,10 @@ export function TeacherAnnouncements() {
                 <Button
                   type="submit"
                   size="sm"
-                  className="bg-indigo-600 hover:bg-indigo-700 text-white text-xs gap-1.5"
+                  className="bg-slate-900 hover:bg-slate-800 text-white text-xs gap-1.5 h-8 px-3 rounded-lg font-medium"
                 >
                   <Send className="w-3.5 h-3.5" />
-                  Post Notice
+                  Post notice
                 </Button>
               </div>
             </form>
