@@ -40,6 +40,9 @@ export function AppLayout() {
   // Search state
   const [searchQuery, setSearchQuery] = useState("");
 
+  // Mobile menu drawer state
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
   if (!user) return null;
 
   const pendingApprovalsCount = db.getGroupRequests().filter((r) => r.status === "Pending").length;
@@ -102,10 +105,12 @@ export function AppLayout() {
         currentTitle={pageTitle}
         onSearch={teacherTab === "students" ? (q) => setSearchQuery(q) : undefined}
         searchQuery={searchQuery}
+        onToggleMobileMenu={() => setMobileMenuOpen((prev) => !prev)}
+        isMobileMenuOpen={mobileMenuOpen}
       />
 
       {/* Main Body */}
-      <div className="flex-1 flex">
+      <div className="flex-1 flex overflow-hidden">
         {/* Sidebar */}
         <Sidebar
           role={user.role}
@@ -113,13 +118,16 @@ export function AppLayout() {
           onTabChange={(tab) => {
             if (isTeacher) setTeacherTab(tab as TeacherTab);
             else setStudentTab(tab as StudentTab);
+            setMobileMenuOpen(false);
           }}
           pendingApprovalsCount={pendingApprovalsCount}
           activeAssignmentsCount={activeAssignmentsCount}
+          mobileOpen={mobileMenuOpen}
+          onCloseMobile={() => setMobileMenuOpen(false)}
         />
 
         {/* Dynamic Content Pane */}
-        <main className="flex-1 p-5 md:p-8 min-w-0 max-w-7xl mx-auto w-full space-y-6">
+        <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 min-w-0 max-w-7xl mx-auto w-full space-y-6">
           {isTeacher ? (
             <>
               {teacherTab === "overview" && (
