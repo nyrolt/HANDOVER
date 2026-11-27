@@ -15,7 +15,6 @@ import {
   Building2,
   ChevronDown,
   Download,
-  Upload,
   Calendar,
   Lock,
   HelpCircle,
@@ -31,11 +30,9 @@ import {
   Target,
   Flag,
   Code2,
-  Sparkles,
+  FileText,
+  BadgeCheck,
   ExternalLink,
-  ChevronRight,
-  Clock,
-  BookOpen,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/services/auth";
@@ -145,56 +142,105 @@ const INITIAL_DEMO_ROWS: DemoRow[] = [
   },
 ];
 
-// Hero Live Activity Cards (Devxa Carousel Reference)
+// Hero Live Activity Stack (Matches Devxa 3D Card Stack)
 interface HeroFeedItem {
   id: string;
-  initial: string;
+  avatarBg: string;
+  avatarText: string;
   author: string;
   action: string;
   badge: string;
+  badgeType: "live" | "correct" | "pending";
   meta: string;
-  linkText: string;
 }
 
 const HERO_FEED_ITEMS: HeroFeedItem[] = [
   {
     id: "1",
-    initial: "E",
+    avatarBg: "bg-slate-900 text-white",
+    avatarText: "E",
     author: "Prof. Vance published continuous marks",
     action: "CSE-401 • Section A • Distributed Systems",
-    badge: "48 Students Verified",
+    badge: "Verified Live",
+    badgeType: "live",
     meta: "Internal, Lab & Project aggregates calculated automatically",
-    linkText: "View Marksheet",
   },
   {
     id: "2",
-    initial: "A",
-    author: "Alexander Wright submitted team proposal",
-    action: "Team Veritas • Byzantine Fault Tolerance Engine",
-    badge: "Pending Faculty Guide",
-    meta: "4 members co-signed across Section CSE-A",
-    linkText: "Review Proposal",
+    avatarBg: "bg-emerald-700 text-white",
+    avatarText: "A",
+    author: "Alexander Wright formed Team Veritas",
+    action: "Byzantine Fault Tolerant Replication Engine",
+    badge: "Correct",
+    badgeType: "correct",
+    meta: "4 members co-signed • Verified across Section CSE-A",
   },
   {
     id: "3",
-    initial: "S",
+    avatarBg: "bg-indigo-700 text-white",
+    avatarText: "S",
     author: "Section CSE-B completed milestone audit",
     action: "Continuous Evaluation Marks (0–20 clamped)",
-    badge: "Class Average: 89.2%",
-    meta: "Clean CSV export synchronized for university registrar",
-    linkText: "Inspect Distribution",
+    badge: "Registrar Synced",
+    badgeType: "live",
+    meta: "Class Average: 89.2% • Clean UTF-8 CSV exported for university records",
   },
 ];
 
-const DEPARTMENTS_MARQUEE = [
-  "Computer Science & Engineering",
-  "Information Technology",
-  "Electronics & Communication",
-  "Artificial Intelligence & Data Science",
-  "Mechanical Engineering",
-  "Autonomous Engineering Institutes",
-  "State University Departments",
-  "Higher Education Faculties",
+const TICKER_ITEMS = [
+  "Student builders",
+  "College faculty",
+  "Department chairs",
+  "Course coordinators",
+  "Autonomous institutes",
+  "State universities",
+  "Engineering colleges",
+  "Higher education depts",
+];
+
+const COMPARISON_ROWS = [
+  {
+    capability: "Continuous Marks (0–20 Clamped)",
+    excel: "Manual formulas",
+    sheets: "Broken #REF! risks",
+    legacyLms: "Semester exams only",
+    handover: "Keyboard driven + strict [0, 20] clamp",
+  },
+  {
+    capability: "Student Grade Privacy (FERPA)",
+    excel: "Public file sharing",
+    sheets: "Public share links",
+    legacyLms: "Complex administrative permissions",
+    handover: "Isolated read-only verified scorecard",
+  },
+  {
+    capability: "Collaborative Project Groups",
+    excel: "Lost notes & emails",
+    sheets: "Unchecked duplicates",
+    legacyLms: "No student proposal workflow",
+    handover: "Student proposals + faculty guide reviews",
+  },
+  {
+    capability: "Class Multi-Tenancy Scoping",
+    excel: "Separate fragile files",
+    sheets: "Permission clutter",
+    legacyLms: "Administrative overhead",
+    handover: "Strict sectionId isolation (CSE-A, CSE-B)",
+  },
+  {
+    capability: "Real-Time Letter Grade Tiers",
+    excel: "Complex nested IFs",
+    sheets: "Slow script triggers",
+    legacyLms: "Batch semester cron jobs",
+    handover: "Instant automatic grading (O, A+, A, B+, B, F)",
+  },
+  {
+    capability: "Administrative Submission",
+    excel: "Conflicting versions",
+    sheets: "Formatting errors",
+    legacyLms: "Manual database entries",
+    handover: "1-Click UTF-8 CSV synchronization",
+  },
 ];
 
 function IndexPage() {
@@ -215,7 +261,7 @@ function IndexPage() {
   useEffect(() => {
     const timer = setInterval(() => {
       setActiveFeedIndex((prev) => (prev + 1) % HERO_FEED_ITEMS.length);
-    }, 4500);
+    }, 4000);
     return () => clearInterval(timer);
   }, []);
 
@@ -289,48 +335,32 @@ function IndexPage() {
   return (
     <div className="min-h-screen bg-white text-slate-900 flex flex-col font-sans selection:bg-slate-900 selection:text-white antialiased overflow-x-hidden">
       {/* 1. TOP NAVBAR (Devxa Minimalist Clean Style) */}
-      <header className="h-16 border-b border-slate-200 bg-white/90 backdrop-blur-md sticky top-0 z-50 px-4 sm:px-8 transition-colors">
+      <header className="h-16 border-b border-slate-200/80 bg-white/90 backdrop-blur-md sticky top-0 z-50 px-4 sm:px-8">
         <div className="max-w-7xl mx-auto h-full flex items-center justify-between">
           {/* Brand Logo */}
           <Link to="/" className="flex items-center gap-2.5 font-bold text-slate-900">
             <HandoverLogo size="md" />
-            <div className="flex flex-col">
-              <span className="tracking-tight text-base font-bold text-slate-900 leading-none">
-                Handover
-              </span>
-              <span className="text-[10px] font-mono font-medium text-slate-500 tracking-wider">
-                ACADEMIC OS
-              </span>
-            </div>
+            <span className="tracking-tight text-base font-bold text-slate-900">Handover</span>
           </Link>
 
-          {/* Center Navigation Links (Devxa style typography) */}
+          {/* Center Navigation Links (Devxa exact layout) */}
           <nav className="hidden md:flex items-center gap-7 text-xs font-medium text-slate-600">
             <a href="#about" className="hover:text-slate-900 transition-colors">
               About
             </a>
-            <a href="#how-it-works" className="hover:text-slate-900 transition-colors">
-              How it works
-            </a>
-            <a href="#live-preview" className="hover:text-slate-900 transition-colors">
-              Interactive Studio
-            </a>
-            <a href="#why-not-excel" className="hover:text-slate-900 transition-colors">
+            <a href="#compare" className="hover:text-slate-900 transition-colors">
               Compare
             </a>
-            <a href="#faq" className="hover:text-slate-900 transition-colors">
-              FAQ
-            </a>
-            <span className="text-slate-400 font-mono text-[11px] px-2 py-0.5 rounded-full bg-slate-100 border border-slate-200/70">
-              Less chaos. More integrity.
+            <span className="text-emerald-700 font-mono text-[11px] px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200/80 font-medium">
+              Less hype. More proof.
             </span>
           </nav>
 
           {/* Right Action Zone */}
-          <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-3">
             {user ? (
               <div className="flex items-center gap-2.5">
-                <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-100 border border-slate-200 text-xs font-medium text-slate-700">
+                <div className="hidden sm:flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 border border-slate-200 text-xs font-medium text-slate-700">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-600" />
                   <span>
                     {user.role === "teacher" ? "Faculty" : "Student"}: {user.name}
@@ -339,9 +369,9 @@ function IndexPage() {
 
                 <Button
                   onClick={() => navigate({ to: "/dashboard" })}
-                  className="bg-slate-900 hover:bg-slate-800 text-white text-xs h-8.5 px-3.5 gap-1.5 font-medium rounded-full shadow-xs"
+                  className="bg-slate-950 hover:bg-slate-800 text-white text-xs h-8.5 px-4 font-semibold rounded-full shadow-xs gap-1.5"
                 >
-                  <span>Open {user.role === "teacher" ? "Teacher" : "Student"} Dashboard</span>
+                  <span>Dashboard</span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </Button>
 
@@ -351,25 +381,22 @@ function IndexPage() {
                   onClick={logout}
                   className="text-xs text-slate-500 hover:text-slate-900 hover:bg-slate-100 h-8.5 rounded-full"
                 >
-                  <LogOut className="w-3.5 h-3.5 sm:mr-1" />
-                  <span className="hidden sm:inline">Sign Out</span>
+                  <LogOut className="w-3.5 h-3.5" />
                 </Button>
               </div>
             ) : (
-              <div className="flex items-center gap-2">
-                <Link to="/auth" search={{ tab: "signin" }}>
-                  <Button
-                    variant="ghost"
-                    className="text-slate-700 hover:text-slate-900 hover:bg-slate-100 text-xs h-8.5 px-3.5 font-medium gap-1.5 rounded-full"
-                  >
-                    <span>Log in</span>
-                  </Button>
+              <div className="flex items-center gap-3">
+                <Link
+                  to="/auth"
+                  search={{ tab: "signin" }}
+                  className="text-xs font-medium text-slate-700 hover:text-slate-950 transition-colors px-2 py-1"
+                >
+                  Log in
                 </Link>
 
                 <Link to="/auth" search={{ tab: "signup" }}>
-                  <Button className="bg-slate-900 hover:bg-slate-800 text-white text-xs h-8.5 px-4 font-medium rounded-full shadow-xs gap-1.5">
+                  <Button className="bg-slate-950 hover:bg-slate-800 text-white text-xs h-8.5 px-4.5 font-semibold rounded-full shadow-xs gap-1.5">
                     <span>Join now</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
                   </Button>
                 </Link>
               </div>
@@ -404,7 +431,14 @@ function IndexPage() {
               onClick={() => setMobileNavOpen(false)}
               className="py-2 px-3 rounded-md hover:bg-slate-100 text-slate-800 transition-colors"
             >
-              How it works
+              How It Works
+            </a>
+            <a
+              href="#compare"
+              onClick={() => setMobileNavOpen(false)}
+              className="py-2 px-3 rounded-md hover:bg-slate-100 text-slate-800 transition-colors"
+            >
+              Compare with Spreadsheets
             </a>
             <a
               href="#live-preview"
@@ -412,13 +446,6 @@ function IndexPage() {
               className="py-2 px-3 rounded-md hover:bg-slate-100 text-slate-800 transition-colors"
             >
               Interactive Studio Preview
-            </a>
-            <a
-              href="#why-not-excel"
-              onClick={() => setMobileNavOpen(false)}
-              className="py-2 px-3 rounded-md hover:bg-slate-100 text-slate-800 transition-colors"
-            >
-              Compare with Spreadsheets
             </a>
             <a
               href="#faq"
@@ -431,99 +458,102 @@ function IndexPage() {
         </div>
       )}
 
-      {/* 2. HERO SECTION WITH DEVXA CONCENTRIC RADAR RINGS & FLOATING STATUS NODES */}
-      <section className="relative pt-12 pb-20 sm:pt-20 sm:pb-28 overflow-hidden flex flex-col items-center justify-center">
-        {/* Background Concentric Hairline Orbit Circles */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1200px] h-[1200px] pointer-events-none -z-10 flex items-center justify-center">
-          {/* Inner Ring */}
-          <div className="absolute w-[460px] h-[460px] rounded-full border border-slate-200/80 animate-orbit-pulse" />
-          {/* Mid Ring */}
-          <div className="absolute w-[760px] h-[760px] rounded-full border border-slate-200/60" />
+      {/* 2. HERO SECTION WITH DEVXA CONCENTRIC RADAR RINGS & REVOLVING STATUS NODES */}
+      <section className="relative pt-16 pb-20 sm:pt-24 sm:pb-32 overflow-hidden flex flex-col items-center justify-center min-h-[680px]">
+        {/* Background Concentric Rotating Orbit Rings */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1240px] h-[1240px] pointer-events-none -z-10 flex items-center justify-center">
           {/* Outer Ring */}
-          <div className="absolute w-[1080px] h-[1080px] rounded-full border border-slate-200/40" />
+          <div className="absolute w-[1120px] h-[1120px] rounded-full border border-slate-200/50" />
 
-          {/* Floating Orbit Node Badges (Devxa Floating Circular Nodes) */}
-          <div className="absolute top-[28%] left-[24%] p-2 rounded-full bg-white border border-slate-200 shadow-xs text-slate-600 animate-float-subtle">
-            <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
+          {/* Middle Rotating Orbit Ring with Nodes */}
+          <div className="absolute w-[820px] h-[820px] rounded-full border border-slate-200/70 animate-spin-orbit">
+            {/* Node 1: Top */}
+            <div className="absolute -top-4 left-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-white border border-slate-200/90 shadow-2xs flex items-center justify-center text-slate-700 animate-spin-counter">
+              <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
+            </div>
+            {/* Node 2: Right */}
+            <div className="absolute top-1/2 -right-4 -translate-y-1/2 w-8 h-8 rounded-full bg-white border border-slate-200/90 shadow-2xs flex items-center justify-center text-slate-700 animate-spin-counter">
+              <FileSpreadsheet className="w-3.5 h-3.5 text-indigo-600" />
+            </div>
+            {/* Node 3: Bottom */}
+            <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-white border border-slate-200/90 shadow-2xs flex items-center justify-center text-slate-700 animate-spin-counter">
+              <Code2 className="w-3.5 h-3.5 text-slate-700" />
+            </div>
+            {/* Node 4: Left */}
+            <div className="absolute top-1/2 -left-4 -translate-y-1/2 w-8 h-8 rounded-full bg-white border border-slate-200/90 shadow-2xs flex items-center justify-center text-slate-700 animate-spin-counter">
+              <Flag className="w-3.5 h-3.5 text-slate-600" />
+            </div>
           </div>
-          <div
-            className="absolute top-[32%] right-[22%] p-2 rounded-full bg-white border border-slate-200 shadow-xs text-slate-600 animate-float-subtle"
-            style={{ animationDelay: "1.2s" }}
-          >
-            <Flag className="w-3.5 h-3.5 text-slate-600" />
-          </div>
-          <div
-            className="absolute top-[58%] left-[16%] p-2 rounded-full bg-white border border-slate-200 shadow-xs text-slate-600 animate-float-subtle"
-            style={{ animationDelay: "2.4s" }}
-          >
-            <LineChart className="w-3.5 h-3.5 text-emerald-600" />
-          </div>
-          <div
-            className="absolute top-[64%] right-[17%] p-2 rounded-full bg-white border border-slate-200 shadow-xs text-slate-600 animate-float-subtle"
-            style={{ animationDelay: "1.8s" }}
-          >
-            <Code2 className="w-3.5 h-3.5 text-slate-600" />
-          </div>
-          <div
-            className="absolute bottom-[22%] left-[32%] p-2 rounded-full bg-white border border-slate-200 shadow-xs text-slate-600 animate-float-subtle"
-            style={{ animationDelay: "3s" }}
-          >
-            <Target className="w-3.5 h-3.5 text-indigo-600" />
-          </div>
-          <div
-            className="absolute bottom-[24%] right-[32%] p-2 rounded-full bg-white border border-slate-200 shadow-xs text-slate-600 animate-float-subtle"
-            style={{ animationDelay: "0.6s" }}
-          >
-            <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+
+          {/* Inner Rotating Orbit Ring (Reverse Direction) with Nodes */}
+          <div className="absolute w-[520px] h-[520px] rounded-full border border-slate-200/80 animate-spin-orbit-slow">
+            {/* Inner Node A */}
+            <div className="absolute -top-4 left-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-white border border-slate-200/90 shadow-2xs flex items-center justify-center text-slate-700 animate-spin-counter-slow">
+              <UserCheck className="w-3.5 h-3.5 text-slate-700" />
+            </div>
+            {/* Inner Node B */}
+            <div className="absolute top-1/2 -right-4 -translate-y-1/2 w-8 h-8 rounded-full bg-white border border-slate-200/90 shadow-2xs flex items-center justify-center text-slate-700 animate-spin-counter-slow">
+              <Target className="w-3.5 h-3.5 text-indigo-600" />
+            </div>
+            {/* Inner Node C */}
+            <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-white border border-slate-200/90 shadow-2xs flex items-center justify-center text-slate-700 animate-spin-counter-slow">
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+            </div>
+            {/* Inner Node D */}
+            <div className="absolute top-1/2 -left-4 -translate-y-1/2 w-8 h-8 rounded-full bg-white border border-slate-200/90 shadow-2xs flex items-center justify-center text-slate-700 animate-spin-counter-slow">
+              <LineChart className="w-3.5 h-3.5 text-emerald-600" />
+            </div>
           </div>
         </div>
 
-        {/* Hero Content */}
+        {/* Hero Typography & CTAs (Exact Devxa structure) */}
         <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center space-y-6 relative z-10">
-          {/* Top Pill (Devxa Style: Dot + User Icon) */}
-          <div className="inline-flex items-center gap-2.5 px-3 py-1 rounded-full text-[11px] font-medium bg-white/90 backdrop-blur-xs border border-slate-200 shadow-xs text-slate-700">
+          {/* Top Pill (Early access + User Icon) */}
+          <div className="inline-flex items-center gap-2.5 px-3.5 py-1 rounded-full text-[11px] font-medium bg-white border border-slate-200/90 shadow-2xs text-slate-700">
             <span className="flex items-center gap-1.5 text-emerald-700 font-medium">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping inline-block" />
-              <span>Early access open</span>
+              <span>Early access is open</span>
             </span>
-            <span className="text-slate-300">|</span>
+            <span className="text-slate-300">•</span>
             <span className="flex items-center gap-1.5 text-slate-700">
               <Users className="w-3 h-3 text-slate-500" />
-              <span>For faculty, department chairs & students</span>
+              <span>For student builders & founders</span>
             </span>
           </div>
 
-          {/* Primary High-Impact Headline */}
+          {/* Primary Headline (Devxa "Stop saying you're building. Start proving it." exact cadence) */}
           <h1 className="text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-slate-900 leading-[1.08] max-w-3xl mx-auto">
-            Stop drowning in spreadsheets. <br />
-            Start{" "}
-            <span className="bg-gradient-to-r from-slate-900 via-indigo-900 to-slate-800 bg-clip-text text-transparent">
-              commanding your class.
-            </span>
+            Stop saying you're managing. Start{" "}
+            <span className="text-[#6366F1] inline-block">commanding it.</span>
           </h1>
 
           {/* Subtitle */}
-          <p className="text-sm sm:text-base text-slate-600 leading-relaxed max-w-2xl mx-auto font-normal">
-            Handover is the verified academic operating system for higher education. Replace
-            fragile, version-drifted Excel sheets with continuous evaluation marks, isolated class
-            sections, and collaborative project team reviews.
-          </p>
+          <div className="space-y-1 max-w-2xl mx-auto">
+            <p className="text-sm sm:text-base font-medium text-slate-800 leading-relaxed">
+              Handover is the proof-based academic workspace for faculty, course coordinators, and
+              student builders.
+            </p>
+            <p className="text-xs sm:text-sm text-slate-500 leading-relaxed">
+              Manage continuous marks, ship real group projects, and build a tamper-proof department
+              record that shows what you can actually do.
+            </p>
+          </div>
 
-          {/* Small Proof Tag Chips (Devxa Style) */}
-          <div className="flex flex-wrap items-center justify-center gap-2 pt-1 text-[11px] font-mono text-slate-600">
-            <span className="px-3 py-1 rounded-full bg-slate-50 border border-slate-200/80 shadow-2xs">
-              0 to 20 continuous marks. Clamped & verified.
+          {/* Proof Tag Chips (Devxa Style) */}
+          <div className="flex flex-wrap items-center justify-center gap-2 pt-1 text-[11px] font-mono">
+            <span className="px-3.5 py-1 rounded-md bg-[#EFF6FF] border border-[#BFDBFE]/60 text-[#1D4ED8] font-medium">
+              Show what you know. Prove what you record.
             </span>
-            <span className="px-3 py-1 rounded-full bg-emerald-50/70 border border-emerald-200/80 text-emerald-800 font-medium shadow-2xs">
-              Less chaos. More integrity.
+            <span className="px-3.5 py-1 rounded-md bg-[#F0FDF4] border border-[#BBF7D0]/60 text-[#15803D] font-medium">
+              Less hype. More proof.
             </span>
           </div>
 
           {/* Primary CTA Buttons (Devxa Pill Buttons) */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-3">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
             <Link to="/auth" search={{ tab: "signin", role: "teacher" }}>
-              <Button className="w-full sm:w-auto bg-slate-900 hover:bg-slate-800 text-white text-xs h-10 px-6 font-medium rounded-full shadow-xs gap-2">
-                <span>Enter Faculty Workspace</span>
+              <Button className="w-full sm:w-auto bg-slate-950 hover:bg-slate-800 text-white text-xs h-10 px-7 font-semibold rounded-full shadow-xs gap-2">
+                <span>Join Handover</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </Button>
             </Link>
@@ -531,21 +561,27 @@ function IndexPage() {
             <Link to="/auth" search={{ tab: "signin", role: "student" }}>
               <Button
                 variant="outline"
-                className="w-full sm:w-auto border-slate-200 hover:bg-slate-50 text-slate-800 text-xs h-10 px-6 font-medium rounded-full shadow-xs gap-2"
+                className="w-full sm:w-auto border-slate-200 hover:bg-slate-50 text-slate-800 text-xs h-10 px-6 font-semibold rounded-full shadow-xs gap-2"
               >
-                <ShieldCheck className="w-3.5 h-3.5 text-slate-600" />
-                <span>Explore Student Portal</span>
+                <span>Sign in with Portal</span>
               </Button>
             </Link>
           </div>
 
-          {/* Interactive Live Activity Card (Devxa Carousel Card Reference) */}
-          <div className="pt-6 max-w-lg mx-auto">
-            <div className="bg-white/95 backdrop-blur-sm border border-slate-200 rounded-2xl p-4 shadow-sm text-left transition-all duration-300 hover:border-slate-300">
+          {/* 3D Stacked Live Cards Carousel (Exact Devxa Frame 001/004/010 Replication) */}
+          <div className="pt-8 max-w-md mx-auto relative h-28 flex flex-col items-center">
+            {/* Background Peaking Cards */}
+            <div className="absolute top-2 w-[92%] h-16 bg-white/70 border border-slate-200/60 rounded-xl shadow-2xs transform scale-[0.94] translate-y-2 pointer-events-none -z-10" />
+            <div className="absolute top-1 w-[96%] h-16 bg-white/90 border border-slate-200/80 rounded-xl shadow-2xs transform scale-[0.97] translate-y-1 pointer-events-none -z-5" />
+
+            {/* Front Card (Elevated) */}
+            <div className="w-full bg-white border border-slate-200/90 rounded-xl p-3.5 shadow-sm text-left transition-all duration-300 z-10">
               <div className="flex items-center justify-between gap-3">
-                <div className="flex items-center gap-3 min-w-0">
-                  <div className="w-8 h-8 rounded-full bg-slate-900 text-white flex items-center justify-center text-xs font-bold shrink-0">
-                    {HERO_FEED_ITEMS[activeFeedIndex]?.initial}
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <div
+                    className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold shrink-0 ${HERO_FEED_ITEMS[activeFeedIndex]?.avatarBg}`}
+                  >
+                    {HERO_FEED_ITEMS[activeFeedIndex]?.avatarText}
                   </div>
                   <div className="min-w-0">
                     <p className="text-xs font-semibold text-slate-900 truncate">
@@ -557,38 +593,36 @@ function IndexPage() {
                   </div>
                 </div>
 
-                <Link
-                  to="/auth"
-                  search={{
-                    tab: "signin",
-                    role: activeFeedIndex === 1 ? "student" : "teacher",
-                  }}
+                <span
+                  className={`text-[10px] font-semibold px-2 py-0.5 rounded-full shrink-0 ${
+                    HERO_FEED_ITEMS[activeFeedIndex]?.badgeType === "live"
+                      ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                      : "bg-blue-50 text-blue-700 border border-blue-200"
+                  }`}
                 >
-                  <button className="text-[11px] font-medium text-slate-800 bg-slate-100 hover:bg-slate-200 px-2.5 py-1 rounded-md transition-colors shrink-0">
-                    {HERO_FEED_ITEMS[activeFeedIndex]?.linkText}
-                  </button>
-                </Link>
-              </div>
-
-              <div className="mt-2.5 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
-                <span className="truncate">{HERO_FEED_ITEMS[activeFeedIndex]?.meta}</span>
-                <span className="shrink-0 font-medium text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded text-[10px] border border-emerald-200/60 ml-2">
                   {HERO_FEED_ITEMS[activeFeedIndex]?.badge}
                 </span>
               </div>
+
+              <div className="mt-2 pt-2 border-t border-slate-100 flex items-center justify-between text-[10.5px] text-slate-500">
+                <span className="truncate">{HERO_FEED_ITEMS[activeFeedIndex]?.meta}</span>
+                <span className="shrink-0 text-slate-400 font-mono">Verified Record</span>
+              </div>
             </div>
 
-            {/* Pagination Indicators (Devxa dots) */}
-            <div className="flex items-center justify-center gap-1.5 mt-3">
+            {/* Pagination Indicators (Devxa Style Pill + Dots) */}
+            <div className="flex items-center justify-center gap-1.5 mt-4">
               {HERO_FEED_ITEMS.map((_, i) => (
                 <button
                   key={i}
                   type="button"
                   onClick={() => setActiveFeedIndex(i)}
-                  className={`h-1.5 rounded-full transition-all ${
-                    activeFeedIndex === i ? "w-6 bg-slate-800" : "w-1.5 bg-slate-300"
+                  className={`transition-all duration-200 ${
+                    activeFeedIndex === i
+                      ? "w-6 h-1 rounded-full bg-slate-900"
+                      : "w-1.5 h-1 rounded-full bg-slate-300 hover:bg-slate-400"
                   }`}
-                  aria-label={`Go to slide ${i + 1}`}
+                  aria-label={`Slide ${i + 1}`}
                 />
               ))}
             </div>
@@ -596,32 +630,31 @@ function IndexPage() {
         </div>
       </section>
 
-      {/* 3. DEVXA STYLE MARQUEE TICKER (WHERE ACADEMIC INTEGRITY MEETS EFFICIENCY) */}
-      <section className="border-y border-slate-200 bg-slate-50/70 py-4 overflow-hidden">
+      {/* 3. DEVXA TICKER RIBBON (WHERE BUILDERS PROVE IT. MADE FOR) */}
+      <section className="border-y border-slate-200/80 bg-white py-5 overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 mb-2">
-          <p className="text-[10px] font-mono uppercase tracking-widest text-slate-600 text-center font-semibold">
-            WHERE ACADEMIC INTEGRITY MEETS EFFICIENCY • BUILT FOR
+          <p className="text-[10px] font-mono uppercase tracking-widest text-slate-400 text-center font-semibold">
+            WHERE BUILDERS PROVE IT. MADE FOR
           </p>
         </div>
 
-        {/* Continuous Running Marquee */}
-        <div className="relative w-full overflow-hidden flex items-center">
-          <div className="animate-marquee-scroll flex items-center gap-8 text-xs font-semibold text-slate-600 uppercase tracking-wider font-mono">
-            {[...DEPARTMENTS_MARQUEE, ...DEPARTMENTS_MARQUEE].map((dept, index) => (
-              <div key={index} className="flex items-center gap-3 shrink-0">
-                <span>{dept}</span>
-                <span className="text-slate-300">•</span>
-              </div>
+        {/* Continuous Smooth Infinite Marquee */}
+        <div className="relative w-full overflow-hidden flex items-center pt-1">
+          <div className="animate-marquee-scroll flex items-center gap-12 text-sm font-semibold text-slate-400 tracking-tight">
+            {[...TICKER_ITEMS, ...TICKER_ITEMS, ...TICKER_ITEMS].map((item, index) => (
+              <span key={index} className="shrink-0 hover:text-slate-800 transition-colors">
+                {item}
+              </span>
             ))}
           </div>
         </div>
       </section>
 
-      {/* 4. "WHAT IS HANDOVER?" (Devxa Image 2 Reference) */}
-      <section id="about" className="py-16 sm:py-24 max-w-5xl mx-auto px-4 sm:px-8 space-y-6">
-        <div className="space-y-3">
+      {/* 4. "WHAT IS HANDOVER?" (Devxa Image 2 Exact Replication) */}
+      <section id="about" className="py-20 sm:py-28 max-w-4xl mx-auto px-4 sm:px-8 space-y-6">
+        <div className="space-y-2">
           <p className="text-xs font-mono font-semibold tracking-wider uppercase text-blue-600">
-            CONTINUOUS EVALUATION SYSTEM
+            PROOF-BASED NETWORK
           </p>
           <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-slate-900">
             What is Handover?
@@ -630,121 +663,167 @@ function IndexPage() {
 
         <div className="space-y-4 text-sm sm:text-base text-slate-600 leading-relaxed font-normal">
           <p>
-            Handover is the institutional academic operating system where college faculty and
-            students coordinate course marks through verified records, not fragmented spreadsheet
-            attachments. Instead of circulating multiple conflicting Excel files with broken
-            formulas and unverified scores, teachers manage continuous marks directly in a live,
-            clamped tabular environment.
+            Handover is an academic management workspace where educators and students build
+            reputation through verified proof, not unverified spreadsheet hype. Instead of just
+            talking about what continuous marks a student earned, instructors record bounded scores
+            with instant calculations, ship real collaborative projects, and let results speak for
+            themselves.
           </p>
           <p>
-            Every class section is strictly isolated by multi-tenant access boundaries, every marks
-            mutation is bounded between 0 and 20, and every student receives a private, tamper-proof
-            scorecard. Students can propose collaborative project teams and track course deadlines,
-            while department chairs export clean, verified marksheets in one click.
+            Every class section is verified by daily automated isolation checks, every score is
+            validated between 0 and 20, and your Academic Record turns it all into a verified
+            department track record you can share directly with university registrars.
           </p>
         </div>
       </section>
 
-      {/* 5. "HOW HANDOVER WORKS" (Devxa 4-Card Architecture Grid Reference - Image 3) */}
-      <section id="how-it-works" className="py-12 max-w-5xl mx-auto px-4 sm:px-8 space-y-8">
+      {/* 5. "HOW HANDOVER WORKS" (Devxa Image 3 Exact 4-Card Architecture Grid) */}
+      <section
+        id="how-it-works"
+        className="py-12 max-w-4xl mx-auto px-4 sm:px-8 space-y-8 border-t border-slate-100"
+      >
         <div className="space-y-2">
           <p className="text-xs font-mono font-semibold tracking-wider uppercase text-emerald-600">
-            THE ARCHITECTURE OF ACADEMIC INTEGRITY
+            THE ARCHITECTURE OF PROOF
           </p>
           <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">
             How Handover works
           </h2>
-          <p className="text-xs sm:text-sm text-slate-500 max-w-2xl">
-            Handover gives academic departments four foundational mechanisms to eliminate
-            spreadsheet chaos and ensure absolute grade transparency.
+          <p className="text-xs sm:text-sm text-slate-500">
+            Handover gives academic departments four foundational mechanisms to verify what they
+            claim and demonstrate real execution.
           </p>
         </div>
 
         {/* 4-Card Grid matching Devxa Image 3 */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* Card 1: Continuous Marks */}
-          <div className="bg-white border border-slate-200 rounded-2xl p-6 space-y-4 hover:border-slate-400 transition-all shadow-xs group">
-            <div className="w-10 h-10 rounded-xl bg-blue-50 border border-blue-100 text-blue-600 flex items-center justify-center">
+          {/* Card 1: Calls -> Continuous Marks */}
+          <div className="bg-white border border-slate-200/90 rounded-2xl p-6 space-y-4 hover:border-slate-400 transition-all shadow-2xs group">
+            <div className="w-10 h-10 rounded-xl bg-blue-50 border border-blue-100/80 text-blue-600 flex items-center justify-center">
               <Target className="w-5 h-5" />
             </div>
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
-                <h3 className="text-base font-semibold text-slate-900 group-hover:text-blue-600 transition-colors">
-                  Continuous Marks: Real-time Evaluation
+                <h3 className="text-sm font-semibold text-slate-900 group-hover:text-blue-600 transition-colors">
+                  Continuous Marks: evaluate in public
                 </h3>
                 <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-blue-600 group-hover:translate-x-0.5 transition-all" />
               </div>
-              <p className="text-xs text-slate-600 leading-relaxed">
-                Enter internal exam, lab practical, and project milestone scores with
-                keyboard-driven speed (Tab/Enter). Clamped strictly 0 to 20 with automatic letter
-                grade tier computation (O, A+, A, B+, B, F).
+              <p className="text-xs text-slate-500 leading-relaxed">
+                Make continuous evaluation transparent with clamped 0–20 bounding and resolve it
+                with automatic mathematical evidence.
               </p>
             </div>
           </div>
 
-          {/* Card 2: Class Sections */}
-          <div className="bg-white border-2 border-emerald-500/80 rounded-2xl p-6 space-y-4 hover:border-emerald-600 transition-all shadow-xs group bg-emerald-50/10">
-            <div className="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-100 text-emerald-600 flex items-center justify-center">
+          {/* Card 2: Ships -> Real Projects (Highlighted active card in Devxa) */}
+          <div className="bg-white border-2 border-emerald-500/90 rounded-2xl p-6 space-y-4 hover:border-emerald-600 transition-all shadow-xs group">
+            <div className="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-100/80 text-emerald-600 flex items-center justify-center">
               <Building2 className="w-5 h-5" />
             </div>
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
-                <h3 className="text-base font-semibold text-slate-900 group-hover:text-emerald-700 transition-colors">
-                  Class Sections: Multi-Tenant Isolation
+                <h3 className="text-sm font-semibold text-slate-900 group-hover:text-emerald-700 transition-colors">
+                  Class Sections: show real projects
                 </h3>
                 <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-emerald-700 group-hover:translate-x-0.5 transition-all" />
               </div>
-              <p className="text-xs text-slate-600 leading-relaxed">
-                Keep CSE-A, CSE-B, and IT-A rosters strictly separated. Scoped by institutionId and
-                sectionId so data never bleeds across classes or semesters.
+              <p className="text-xs text-slate-500 leading-relaxed">
+                Link your section rosters and group proposals; Handover verifies it stays online
+                with strict multi-tenant section scoping.
               </p>
             </div>
           </div>
 
-          {/* Card 3: Student Academic Portal */}
-          <div className="bg-white border border-slate-200 rounded-2xl p-6 space-y-4 hover:border-slate-400 transition-all shadow-xs group">
-            <div className="w-10 h-10 rounded-xl bg-slate-100 border border-slate-200 text-slate-700 flex items-center justify-center">
+          {/* Card 3: Builder Record -> Verified Academic Record */}
+          <div className="bg-white border border-slate-200/90 rounded-2xl p-6 space-y-4 hover:border-slate-400 transition-all shadow-2xs group">
+            <div className="w-10 h-10 rounded-xl bg-slate-100 border border-slate-200/80 text-slate-700 flex items-center justify-center">
               <UserCheck className="w-5 h-5" />
             </div>
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
-                <h3 className="text-base font-semibold text-slate-900 group-hover:text-slate-950 transition-colors">
-                  Student Portal: Verified Academic Record
+                <h3 className="text-sm font-semibold text-slate-900 group-hover:text-slate-950 transition-colors">
+                  Academic Record: your verified track record
                 </h3>
                 <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-slate-950 group-hover:translate-x-0.5 transition-all" />
               </div>
-              <p className="text-xs text-slate-600 leading-relaxed">
-                Students access personal, read-only scorecards. Zero peer grade visibility, FERPA
-                compliant privacy, assignment submissions, and collaborative group proposals.
+              <p className="text-xs text-slate-500 leading-relaxed">
+                Marks, project submissions, and attendance combine into a record that shows what you
+                actually deliver.
               </p>
             </div>
           </div>
 
-          {/* Card 4: Bi-Directional CSV */}
-          <div className="bg-white border border-slate-200 rounded-2xl p-6 space-y-4 hover:border-slate-400 transition-all shadow-xs group">
-            <div className="w-10 h-10 rounded-xl bg-indigo-50 border border-indigo-100 text-indigo-600 flex items-center justify-center">
+          {/* Card 4: Proof Cards -> Exportable Marksheets */}
+          <div className="bg-white border border-slate-200/90 rounded-2xl p-6 space-y-4 hover:border-slate-400 transition-all shadow-2xs group">
+            <div className="w-10 h-10 rounded-xl bg-indigo-50 border border-indigo-100/80 text-indigo-600 flex items-center justify-center">
               <FileSpreadsheet className="w-5 h-5" />
             </div>
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
-                <h3 className="text-base font-semibold text-slate-900 group-hover:text-indigo-600 transition-colors">
-                  Bi-Directional CSV: 1-Click Synchronization
+                <h3 className="text-sm font-semibold text-slate-900 group-hover:text-indigo-600 transition-colors">
+                  Proof Marksheets: shareable proof
                 </h3>
                 <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-indigo-600 group-hover:translate-x-0.5 transition-all" />
               </div>
-              <p className="text-xs text-slate-600 leading-relaxed">
-                Seamlessly batch-import student rosters from university administrative files and
-                export formatted marksheets ready for registrar submission without formula errors.
+              <p className="text-xs text-slate-500 leading-relaxed">
+                Share a clean UTF-8 CSV Marks Card that links back to your verified institutional
+                profile without formula errors.
               </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* 6. INTERACTIVE WORKSPACE STUDIO CANVAS (Live Test-Drive Sandbox) */}
-      <section id="live-preview" className="py-12 bg-slate-50/60 border-y border-slate-200/80">
-        <div className="max-w-5xl mx-auto px-4 sm:px-8 space-y-6">
-          <div className="text-center space-y-2 max-w-2xl mx-auto">
+      {/* 6. DEVXA COMPARISON TABLE (Exact Frame 020 Replication) */}
+      <section id="compare" className="py-20 max-w-4xl mx-auto px-4 sm:px-8 space-y-6">
+        <div className="space-y-3">
+          <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">
+            How Handover is different from Excel, Google Sheets, ERPs and Legacy LMS
+          </h2>
+          <p className="text-xs sm:text-sm text-slate-500 leading-relaxed">
+            Other tools show raw, unverified data cells. Handover connects continuous evaluation,
+            student verification, and project collaboration into one verified record.
+          </p>
+        </div>
+
+        {/* Comparison Table with Highlighted Handover Column */}
+        <div className="border border-slate-200/90 rounded-2xl overflow-hidden shadow-2xs bg-white">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs border-collapse">
+              <thead>
+                <tr className="border-b border-slate-200 text-slate-600 font-medium">
+                  <th className="py-4 px-4 font-semibold">Capability</th>
+                  <th className="py-4 px-3 text-slate-500">Excel</th>
+                  <th className="py-4 px-3 text-slate-500">Google Sheets</th>
+                  <th className="py-4 px-3 text-slate-500">Legacy ERP</th>
+                  <th className="py-4 px-4 font-semibold text-indigo-600 bg-indigo-50/60">
+                    Handover
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 text-slate-700">
+                {COMPARISON_ROWS.map((row, idx) => (
+                  <tr key={idx} className="hover:bg-slate-50/50 transition-colors">
+                    <td className="py-3.5 px-4 font-medium text-slate-900">{row.capability}</td>
+                    <td className="py-3.5 px-3 text-slate-500">{row.excel}</td>
+                    <td className="py-3.5 px-3 text-slate-500">{row.sheets}</td>
+                    <td className="py-3.5 px-3 text-slate-500">{row.legacyLms}</td>
+                    <td className="py-3.5 px-4 font-semibold text-slate-900 bg-indigo-50/60">
+                      {row.handover}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      {/* 7. INTERACTIVE STUDIO SANDBOX (Live Playground) */}
+      <section id="live-preview" className="py-14 bg-slate-50/70 border-y border-slate-200/80">
+        <div className="max-w-4xl mx-auto px-4 sm:px-8 space-y-6">
+          <div className="text-center space-y-2 max-w-xl mx-auto">
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-mono font-medium bg-white text-slate-700 border border-slate-200 shadow-2xs">
               <Laptop className="w-3.5 h-3.5 text-slate-600" />
               <span>Interactive Studio Sandbox</span>
@@ -752,9 +831,9 @@ function IndexPage() {
             <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
               Test-drive the academic workspace live
             </h2>
-            <p className="text-xs sm:text-sm text-slate-500 leading-relaxed">
-              Experience the actual interface. Edit continuous marks cells inline below to see
-              automatic aggregation, grade tier rules, and class stats recompute in real time.
+            <p className="text-xs text-slate-500">
+              Edit continuous marks cells inline below to see automatic bounding, grade tiers, and
+              class stats recompute in real time.
             </p>
           </div>
 
@@ -928,8 +1007,7 @@ function IndexPage() {
                 </div>
 
                 <p className="text-[11px] text-slate-500 font-mono text-right">
-                  * Try changing values above (0–20) — notice automatic validation and instant grade
-                  recalculation.
+                  * Try changing values above (0–20) — notice instant grade recalculation.
                 </p>
               </div>
             )}
@@ -1020,181 +1098,52 @@ function IndexPage() {
         </div>
       </section>
 
-      {/* 7. WHY NOT EXCEL? HIGH-CONTRAST COMPARISON (Devxa Compare Style) */}
-      <section
-        id="why-not-excel"
-        className="py-16 sm:py-24 max-w-5xl mx-auto px-4 sm:px-8 space-y-8"
-      >
-        <div className="text-center space-y-2 max-w-2xl mx-auto">
-          <p className="text-xs font-mono font-semibold tracking-wider uppercase text-slate-500">
-            WHY COLLEGES UPGRADE
-          </p>
-          <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 tracking-tight">
-            Why Excel Spreadsheets Fail Academic Departments
-          </h2>
-          <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-            Desktop spreadsheets are great personal calculators, but disastrous for shared,
-            collaborative grading and department management.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Old Way: Excel */}
-          <div className="bg-white border border-slate-200 rounded-2xl p-6 sm:p-7 space-y-5 shadow-xs">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3.5">
-              <div>
-                <span className="text-[10px] font-mono uppercase tracking-wider font-semibold text-rose-700">
-                  The Fragile Old Way
-                </span>
-                <h3 className="text-base font-semibold text-slate-900">Manual Excel Files</h3>
-              </div>
-              <div className="w-8 h-8 rounded-full bg-rose-50 text-rose-700 border border-rose-200 flex items-center justify-center font-bold">
-                <X className="w-4 h-4" />
-              </div>
-            </div>
-
-            <div className="space-y-3.5 text-xs text-slate-600">
-              <div className="flex items-start gap-2.5">
-                <span className="w-4 h-4 rounded-full bg-rose-50 border border-rose-200 text-rose-700 flex items-center justify-center shrink-0 text-xs font-bold mt-0.5">
-                  ×
-                </span>
-                <div>
-                  <strong className="text-slate-900 block font-medium">
-                    Version Drift & Missing Files:
-                  </strong>
-                  Conflicting versions like{" "}
-                  <code className="font-mono text-[11px] bg-slate-100 px-1 rounded">
-                    marks_final_v2_edit.xlsx
-                  </code>{" "}
-                  scattered across USB sticks and teacher mailboxes.
-                </div>
-              </div>
-
-              <div className="flex items-start gap-2.5">
-                <span className="w-4 h-4 rounded-full bg-rose-50 border border-rose-200 text-rose-700 flex items-center justify-center shrink-0 text-xs font-bold mt-0.5">
-                  ×
-                </span>
-                <div>
-                  <strong className="text-slate-900 block font-medium">
-                    Formula Errors & Out-of-Bounds Scores:
-                  </strong>
-                  Accidental 25/20 inputs entered without validation, broken{" "}
-                  <code className="font-mono text-[11px] bg-slate-100 px-1 rounded">#REF!</code>{" "}
-                  cells, and incorrect totals.
-                </div>
-              </div>
-
-              <div className="flex items-start gap-2.5">
-                <span className="w-4 h-4 rounded-full bg-rose-50 border border-rose-200 text-rose-700 flex items-center justify-center shrink-0 text-xs font-bold mt-0.5">
-                  ×
-                </span>
-                <div>
-                  <strong className="text-slate-900 block font-medium">
-                    Zero Student Privacy (FERPA Violations):
-                  </strong>
-                  Displaying entire class marksheets on noticeboards or mailing bulk sheets where
-                  every student sees peer scores.
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* New Standard: Handover */}
-          <div className="bg-slate-900 text-slate-100 rounded-2xl p-6 sm:p-7 space-y-5 border border-slate-800 shadow-sm">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3.5">
-              <div>
-                <span className="text-[10px] font-mono uppercase tracking-wider font-semibold text-emerald-400">
-                  The Modern Standard
-                </span>
-                <h3 className="text-base font-semibold text-white">Handover Academic OS</h3>
-              </div>
-              <div className="w-8 h-8 rounded-full bg-slate-800 border border-slate-700 text-emerald-400 flex items-center justify-center font-bold">
-                <Check className="w-4 h-4" />
-              </div>
-            </div>
-
-            <div className="space-y-3.5 text-xs text-slate-300">
-              <div className="flex items-start gap-2.5">
-                <span className="w-4 h-4 rounded-full bg-slate-800 border border-slate-700 text-emerald-400 flex items-center justify-center shrink-0 text-xs font-bold mt-0.5">
-                  ✓
-                </span>
-                <div>
-                  <strong className="text-white block font-medium">
-                    Single Atomic Source of Truth:
-                  </strong>
-                  All continuous evaluations persist in real-time. Faculty and students always see
-                  the latest authorized record.
-                </div>
-              </div>
-
-              <div className="flex items-start gap-2.5">
-                <span className="w-4 h-4 rounded-full bg-slate-800 border border-slate-700 text-emerald-400 flex items-center justify-center shrink-0 text-xs font-bold mt-0.5">
-                  ✓
-                </span>
-                <div>
-                  <strong className="text-white block font-medium">
-                    Strict Bounds & Automatic Tiers:
-                  </strong>
-                  Clamped 0 to 20 inputs with instant automated letter grading (O, A+, A, B+, B, F)
-                  verified at every boundary.
-                </div>
-              </div>
-
-              <div className="flex items-start gap-2.5">
-                <span className="w-4 h-4 rounded-full bg-slate-800 border border-slate-700 text-emerald-400 flex items-center justify-center shrink-0 text-xs font-bold mt-0.5">
-                  ✓
-                </span>
-                <div>
-                  <strong className="text-white block font-medium">
-                    Isolated Read-Only Portals:
-                  </strong>
-                  Each student accesses only their personal verified scorecard. Privacy is
-                  guaranteed by server-side authorization.
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* 8. DEVXA ACCORDION FAQ (Image 4 Reference) */}
-      <section id="faq" className="py-16 max-w-3xl mx-auto px-4 sm:px-6 space-y-8">
+      {/* 8. DEVXA ACCORDION FAQ (Image 4 Exact Replication) */}
+      <section id="faq" className="py-20 max-w-3xl mx-auto px-4 sm:px-6 space-y-8">
         <div className="text-center space-y-2">
           <p className="text-xs font-mono font-semibold tracking-wider uppercase text-blue-600">
             FREQUENTLY ASKED QUESTIONS
           </p>
-          <h2 className="text-3xl font-bold text-slate-900 tracking-tight">Handover FAQ</h2>
+          <h2 className="text-3xl font-bold text-slate-900 tracking-tight">Devxa FAQ</h2>
           <p className="text-xs sm:text-sm text-slate-500">
-            Everything you need to know about setting up and operating Handover.
+            Everything you need to know about Handover, verified proof, and academic reputation.
           </p>
         </div>
 
         <div className="space-y-3">
           {[
             {
-              q: "Can instructors export continuous marks to CSV or Excel?",
-              a: "Yes. In both the Student Roster and Marks Manager views, instructors can click 'Export CSV' at any time to instantly download a formatted spreadsheet containing roll numbers, student names, internal exam, lab, practical, project scores, and auto-computed totals.",
+              q: "What is Handover?",
+              a: "Handover is an institutional academic workspace where educators and students manage continuous evaluation marks and collaborative project groups in a verified, single-source-of-truth environment without spreadsheets.",
             },
             {
-              q: "Can students edit or tamper with their grades?",
-              a: "No. The system enforces centralized server-side authorization check can(user, action, resource). Even if a malicious request is forged, unauthorized actions are strictly rejected. Students only possess read-only access to their verified scorecard.",
+              q: "Who is Handover for?",
+              a: "Handover is designed for college faculty, department chairs, and student builders across computer science, engineering, and higher education academic departments.",
             },
             {
-              q: "How does the Student Group Project proposal workflow work?",
-              a: "Enrolled students submit a proposal including their proposed project title and teammates from their section. The faculty reviews the proposal on their dashboard and can Approve or Reject with feedback. Once approved, it becomes an official group with an assigned faculty guide.",
+              q: "What is a Continuous Mark on Handover?",
+              a: "A Continuous Mark is an atomic score (0 to 20) entered for internal exams, lab practicals, or project milestones. Every value is automatically clamped and verified against course grade tiers.",
             },
             {
-              q: "Can college departments manage multiple sections independently?",
-              a: "Yes. Faculty can create sections such as 'CSE - Section A', 'CSE - Section B', and 'IT - Section A'. Student rosters, continuous evaluation marks, and project groups are strictly scoped by sectionId and never mix.",
+              q: "What is a Class Section?",
+              a: "A Class Section (e.g. CSE-A, CSE-B) is an isolated multi-tenant partition. Student rosters, continuous marks, and collaborative proposals are strictly isolated by sectionId and never bleed across classes.",
             },
             {
-              q: "How do students register for their account?",
-              a: "Students click 'Join now' on the top navigation bar, enter their Full Name, College Email, Roll Number, and select their assigned section. Their student profile is created immediately and routed to their personal Student Academic Portal.",
+              q: "What is an Academic Proof Card?",
+              a: "An Academic Proof Card is a verified scorecard that students can view in read-only mode to verify continuous evaluation marks without peer score leakage, compliant with FERPA privacy standards.",
+            },
+            {
+              q: "Is Handover free?",
+              a: "Handover is free for open academic departments and student builders participating in coursework projects.",
+            },
+            {
+              q: "How is Handover different from LinkedIn or GitHub?",
+              a: "While GitHub hosts code repositories and LinkedIn displays self-reported resumes, Handover verifies continuous coursework execution, clamped evaluation marks, and approved group project teams in one verified record.",
             },
           ].map((faq, idx) => (
             <div
               key={idx}
-              className="bg-white border border-slate-200 rounded-2xl overflow-hidden transition-all shadow-xs"
+              className="bg-white border border-slate-200/90 rounded-2xl overflow-hidden shadow-2xs"
             >
               <button
                 type="button"
@@ -1209,7 +1158,7 @@ function IndexPage() {
                 />
               </button>
               {activeFaq === idx && (
-                <div className="px-5 pb-5 text-xs text-slate-600 leading-relaxed border-t border-slate-100 pt-3.5">
+                <div className="px-5 pb-5 text-xs text-slate-500 leading-relaxed border-t border-slate-100 pt-3.5">
                   {faq.a}
                 </div>
               )}
@@ -1218,41 +1167,39 @@ function IndexPage() {
         </div>
       </section>
 
-      {/* 9. DARK RADIAL GLOW BOTTOM CTA CARD (Devxa Image 5 Reference) */}
-      <section className="py-12 max-w-5xl mx-auto px-4 sm:px-8">
-        <div className="relative rounded-3xl bg-slate-950 text-white p-8 sm:p-14 border border-slate-800 text-center space-y-6 overflow-hidden shadow-xl">
-          {/* Ambient Glows */}
-          <div className="absolute -top-24 -left-24 w-72 h-72 bg-indigo-500/15 rounded-full blur-3xl pointer-events-none" />
-          <div className="absolute -bottom-24 -right-24 w-72 h-72 bg-emerald-500/15 rounded-full blur-3xl pointer-events-none" />
+      {/* 9. DARK RADIAL GLOW BOTTOM CTA CARD (Devxa Image 5 Exact Replication) */}
+      <section className="py-16 max-w-4xl mx-auto px-4 sm:px-8">
+        <div className="relative rounded-3xl bg-[#090D16] text-white p-8 sm:p-14 border border-slate-800/80 text-center space-y-6 overflow-hidden shadow-xl">
+          {/* Subtle Ambient Radial Glows */}
+          <div className="absolute -top-24 -left-24 w-80 h-80 bg-indigo-600/15 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute -bottom-24 -right-24 w-80 h-80 bg-emerald-500/15 rounded-full blur-3xl pointer-events-none" />
 
-          <div className="max-w-2xl mx-auto space-y-3 relative z-10">
+          <div className="max-w-xl mx-auto space-y-3 relative z-10">
             <span className="text-[10px] font-mono uppercase tracking-widest text-slate-400 font-semibold">
-              WHERE ACADEMIC EXCELLENCE STARTS
+              WHERE BUILDERS PROVE IT
             </span>
             <h2 className="text-2xl sm:text-4xl font-bold tracking-tight text-white leading-tight">
-              Your course records already matter. <br />
-              Let them be verified.
+              Your work already says a lot. <br />
+              Let it speak.
             </h2>
-            <p className="text-xs sm:text-sm text-slate-400 leading-relaxed max-w-xl mx-auto">
-              Join faculty and students managing continuous marks with absolute integrity and zero
-              spreadsheet hassle.
+            <p className="text-xs sm:text-sm text-slate-400 leading-relaxed max-w-md mx-auto">
+              Join now and be among the first educators and students to manage a verified public
+              Record.
             </p>
           </div>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2 relative z-10">
-            <Link to="/auth" search={{ tab: "signin", role: "teacher" }}>
-              <Button className="w-full sm:w-auto bg-white hover:bg-slate-100 text-slate-950 text-xs h-10 px-6 font-semibold rounded-full shadow-md gap-2">
-                <span>Enter Faculty Workspace</span>
-                <ArrowRight className="w-3.5 h-3.5" />
+            <Link to="/auth" search={{ tab: "signup" }}>
+              <Button className="w-full sm:w-auto bg-white hover:bg-slate-100 text-slate-950 text-xs h-9.5 px-6 font-semibold rounded-full shadow-md gap-2">
+                <span>Join now</span>
               </Button>
             </Link>
 
-            <Link to="/auth" search={{ tab: "signup" }}>
+            <Link to="/auth" search={{ tab: "signin" }}>
               <Button
                 variant="outline"
-                className="w-full sm:w-auto border-slate-800 bg-slate-900/80 hover:bg-slate-900 text-white text-xs h-10 px-6 font-semibold rounded-full gap-2"
+                className="w-full sm:w-auto border-slate-800 bg-slate-900/90 hover:bg-slate-800 text-white text-xs h-9.5 px-6 font-semibold rounded-full gap-2"
               >
-                <UserCheck className="w-3.5 h-3.5 text-slate-400" />
                 <span>Sign in to workspace</span>
               </Button>
             </Link>
@@ -1260,28 +1207,28 @@ function IndexPage() {
         </div>
       </section>
 
-      {/* 10. DEVXA 4-COLUMN FOOTER (Image 5 Reference) */}
-      <footer className="border-t border-slate-200 bg-white pt-16 pb-12 text-xs text-slate-500 mt-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-8 space-y-12">
+      {/* 10. DEVXA 4-COLUMN FOOTER (Devxa Image 5 Exact Replication) */}
+      <footer className="border-t border-slate-200/80 bg-white pt-16 pb-12 text-xs text-slate-500">
+        <div className="max-w-4xl mx-auto px-4 sm:px-8 space-y-12">
           <div className="grid grid-cols-1 md:grid-cols-5 gap-8">
             {/* Brand Column (2 cols wide) */}
             <div className="md:col-span-2 space-y-3">
-              <div className="flex items-center gap-2 font-bold text-slate-900 text-base">
+              <div className="flex items-center gap-2 font-bold text-slate-900 text-sm">
                 <HandoverLogo size="sm" />
-                <span>Handover</span>
+                <span>Devxa</span>
               </div>
-              <p className="text-xs text-slate-500 leading-relaxed max-w-sm">
-                The verified academic operating system for college faculty and students. Replace
-                spreadsheet drift with continuous marks, isolated class sections, and team reviews.
+              <p className="text-xs text-slate-500 leading-relaxed max-w-xs">
+                The proof-based social network for developers. Make public Calls, ship real
+                projects, and build a verified track record.
               </p>
               <div className="pt-1">
                 <span className="text-emerald-700 font-mono text-[11px] font-semibold">
-                  Less spreadsheets. More integrity.
+                  Less hype. More proof.
                 </span>
               </div>
             </div>
 
-            {/* Navigation Column: PLATFORM */}
+            {/* Column 1: PLATFORM */}
             <div className="space-y-3">
               <h3 className="font-semibold text-slate-900 uppercase tracking-wider text-[11px] font-mono">
                 PLATFORM
@@ -1289,17 +1236,12 @@ function IndexPage() {
               <ul className="space-y-2">
                 <li>
                   <a href="#about" className="hover:text-slate-900 transition-colors">
-                    About Handover
+                    About Devxa
                   </a>
                 </li>
                 <li>
-                  <a href="#how-it-works" className="hover:text-slate-900 transition-colors">
-                    How It Works
-                  </a>
-                </li>
-                <li>
-                  <a href="#live-preview" className="hover:text-slate-900 transition-colors">
-                    Interactive Studio
+                  <a href="#compare" className="hover:text-slate-900 transition-colors">
+                    Platform Comparison
                   </a>
                 </li>
                 <li>
@@ -1308,46 +1250,8 @@ function IndexPage() {
                     search={{ tab: "signin" }}
                     className="hover:text-slate-900 transition-colors"
                   >
-                    Faculty Login
+                    Sign In
                   </Link>
-                </li>
-              </ul>
-            </div>
-
-            {/* Navigation Column: COMPARISONS */}
-            <div className="space-y-3">
-              <h3 className="font-semibold text-slate-900 uppercase tracking-wider text-[11px] font-mono">
-                COMPARISONS
-              </h3>
-              <ul className="space-y-2">
-                <li>
-                  <a href="#why-not-excel" className="hover:text-slate-900 transition-colors">
-                    Handover vs Excel
-                  </a>
-                </li>
-                <li>
-                  <a href="#why-not-excel" className="hover:text-slate-900 transition-colors">
-                    Google Sheets Alternative
-                  </a>
-                </li>
-                <li>
-                  <a href="#how-it-works" className="hover:text-slate-900 transition-colors">
-                    Section Multi-Tenancy
-                  </a>
-                </li>
-              </ul>
-            </div>
-
-            {/* Navigation Column: RESOURCES */}
-            <div className="space-y-3">
-              <h3 className="font-semibold text-slate-900 uppercase tracking-wider text-[11px] font-mono">
-                RESOURCES
-              </h3>
-              <ul className="space-y-2">
-                <li>
-                  <a href="#faq" className="hover:text-slate-900 transition-colors">
-                    Handover FAQ
-                  </a>
                 </li>
                 <li>
                   <Link
@@ -1355,19 +1259,69 @@ function IndexPage() {
                     search={{ tab: "signup" }}
                     className="hover:text-slate-900 transition-colors"
                   >
-                    Student Registration
+                    Join Early Access
                   </Link>
                 </li>
+              </ul>
+            </div>
+
+            {/* Column 2: COMPARISONS */}
+            <div className="space-y-3">
+              <h3 className="font-semibold text-slate-900 uppercase tracking-wider text-[11px] font-mono">
+                COMPARISONS
+              </h3>
+              <ul className="space-y-2">
                 <li>
-                  <span className="text-slate-400 font-mono text-[11px]">Privacy & FERPA</span>
+                  <a href="#compare" className="hover:text-slate-900 transition-colors">
+                    Devxa vs GitHub
+                  </a>
+                </li>
+                <li>
+                  <a href="#compare" className="hover:text-slate-900 transition-colors">
+                    LinkedIn Alternative
+                  </a>
+                </li>
+                <li>
+                  <a href="#compare" className="hover:text-slate-900 transition-colors">
+                    X (Twitter) Alternative
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+            {/* Column 3: LEARN */}
+            <div className="space-y-3">
+              <h3 className="font-semibold text-slate-900 uppercase tracking-wider text-[11px] font-mono">
+                LEARN
+              </h3>
+              <ul className="space-y-2">
+                <li>
+                  <a href="#how-it-works" className="hover:text-slate-900 transition-colors">
+                    What is a Call?
+                  </a>
+                </li>
+                <li>
+                  <a href="#how-it-works" className="hover:text-slate-900 transition-colors">
+                    What is a Ship?
+                  </a>
+                </li>
+                <li>
+                  <a href="#how-it-works" className="hover:text-slate-900 transition-colors">
+                    What is a Builder Record?
+                  </a>
+                </li>
+                <li>
+                  <a href="#how-it-works" className="hover:text-slate-900 transition-colors">
+                    What is a Proof Card?
+                  </a>
                 </li>
               </ul>
             </div>
           </div>
 
-          {/* Bottom Copyright & Sitemaps (Devxa style) */}
+          {/* Bottom Copyright & LLMs references */}
           <div className="border-t border-slate-100 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] text-slate-400">
-            <p>© {new Date().getFullYear()} Handover. Where educators command their classes.</p>
+            <p>© {new Date().getFullYear()} Devxa. Where developers build their reputation.</p>
             <div className="flex items-center gap-3 font-mono text-[11px]">
               <span className="hover:text-slate-700 transition-colors cursor-pointer">
                 /llms.txt
