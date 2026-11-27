@@ -1,37 +1,6 @@
 # Handover — College Teacher & Student Management System
 
-A simple, minimal, clean, and professional web application designed for college faculty to manage classes, students, assignments, group projects, and continuous examination marks in a digital spreadsheet-like dashboard, with a restricted portal for students to track their coursework and submit group proposals.
-
----
-
-## Architecture Overview (3-Tier Modular Monolith)
-
-The project is structured into three independent, decoupled modules:
-
-```
-handover/
-├── frontend/    # React 19 + TanStack Start / Router + Tailwind CSS v4 (Port 5173)
-│   ├── src/
-│   │   ├── components/  # Teacher spreadsheet, student gradebook, layout, Radix UI
-│   │   ├── routes/      # TanStack file-based routes (/, /auth, /dashboard)
-│   │   ├── services/    # Client state, auth hook, and HTTP REST API client
-│   │   └── styles.css   # Modern gradients & vibrant professional design system
-│   ├── package.json
-│   └── vite.config.ts
-├── backend/     # Pure TypeScript business logic, models, controllers & tests (Zero UI dependencies)
-│   ├── controllers/     # Auth, teacher, student, and marks controllers
-│   ├── services/        # Permissions engine, RBAC matrix, database, validators
-│   ├── models/          # Shared domain interfaces and schemas
-│   ├── test/            # Vitest suite (17 comprehensive tests)
-│   └── package.json
-├── server/      # Node.js + Express REST API Server (Port 5000)
-│   ├── api/             # REST route bindings for controllers
-│   ├── middleware/      # Authentication, RBAC, CSRF, error handling
-│   ├── config.ts        # Port 5000, CORS, rate limits
-│   ├── index.ts         # Express server listener
-│   └── package.json
-└── package.json # Root orchestrator for concurrent local development
-```
+A simple, minimal, clean, and professional web application designed for college teachers to manage classes, students, assignments, group projects, and continuous examination marks in a digital spreadsheet-like dashboard, with a restricted portal for students to track their coursework and submit group proposals.
 
 ---
 
@@ -50,7 +19,7 @@ handover/
   - Column sorting by Roll No, Name, and Total Marks.
   - CSV Export and CSV Import tools.
 - **Section Management**:
-  - Create, rename, and delete class sections (e.g., `CS-301 (Sec A)`, `CS-302 (Sec B)`, `CS-405 (Sec C)`).
+  - Create, rename, and delete class sections (e.g., `CSE - Section A`, `CSE - Section B`, `IT - Section A`).
   - Isolated student rosters per section.
 - **Group Projects Management**:
   - View all teams per section.
@@ -62,7 +31,7 @@ handover/
   - Create, edit, and delete coursework assignments with firm deadlines and instructions.
   - Assign to specific sections.
 - **Marks & Results Gradebook**:
-  - Dedicated continuous assessment sheet with configurable maximum marks and class performance metrics.
+  - Dedicated continuous assessment sheet with configurable maximum marks and class performance metrics (Class Average, Highest Score, Pass Rate).
 - **Teacher Reports**:
   - Grade distribution analytics and one-click full section export.
 - **Class Announcements**:
@@ -87,67 +56,86 @@ handover/
 
 ---
 
-## Development Workflow & Commands
+## Demo Credentials & One-Click Login
 
-### Root Command (Runs Frontend + Server Concurrently)
+The application comes pre-seeded with realistic college data. You can log in using either the one-click demo buttons on the home/auth page or via the role switcher in the top navigation bar:
+
+| Role        | Name                | Email                 | Details                                     |
+| :---------- | :------------------ | :-------------------- | :------------------------------------------ |
+| **Teacher** | Prof. Ramesh Sharma | `teacher@college.edu` | Full administrative & spreadsheet control   |
+| **Student** | Rahul Sharma        | `rahul@college.edu`   | Roll 01, CSE - Section A (Team Alpha)       |
+| **Student** | Aman Verma          | `aman@college.edu`    | Roll 02, CSE - Section A (Team Alpha)       |
+| **Student** | Priya Patel         | `priya@college.edu`   | Roll 03, CSE - Section A (Team Beta)        |
+| **Student** | Rohan Joshi         | `rohan@college.edu`   | Roll 01, CSE - Section B (Pending Proposal) |
+
+_(No password required in demo mode; click any demo login button or enter any email to sign in)._
+
+---
+
+## Modular Architecture
+
+Handover is structured into three clean, decoupled, and independently executable tiers:
+
+```
+handover/
+├── frontend/          # React 19 + TanStack Start / Router + Tailwind CSS v4 UI (port 5173)
+├── backend/           # Pure TypeScript domain logic, RBAC can(), controllers, database models & test suite
+├── server/            # Node.js + Express REST API server, CORS & CSRF middleware (port 5000)
+└── src/               # Baseline application workspace
+```
+
+- **`frontend/`**: Presentation layer running on `http://localhost:5173`. Uses TanStack Start with SSR, file-based routing, Radix UI primitives, Lucide icons, and modern gradients. Communicates with the backend server via HTTP REST requests with credentialed cookies.
+- **`backend/`**: Pure TypeScript business logic, controllers (`authController`, `teacherController`, `studentController`, `marksController`), RBAC authorization engine (`can()`), Zod validation, and JSON store persistence. Has **zero DOM or frontend dependencies** and runs standalone unit tests.
+- **`server/`**: Express HTTP server running on `http://localhost:5000`. Configures credentialed CORS for port `5173`, JSON/cookie parsers, CSRF protection, centralized error handling, and mounts backend REST API routes.
+
+---
+
+## Independent Execution & Development
+
+### 1. Root Command (Starts Frontend & Server Concurrently)
 
 ```sh
 npm run dev
 ```
 
-Starts:
+This uses `concurrently` to spin up both the Express REST API on `http://localhost:5000` and the TanStack Start frontend on `http://localhost:5173`.
 
-- **Server**: [http://localhost:5000](http://localhost:5000) (Express REST API)
-- **Frontend**: [http://localhost:5173](http://localhost:5173) (TanStack Start App)
+### 2. Independent Execution by Tier
 
-### Independent Package Execution
-
-#### Frontend (React 19 + TanStack Start):
-
+#### Frontend (`http://localhost:5173`)
 ```sh
 cd frontend
 npm run dev
 ```
 
-Runs independently on [http://localhost:5173](http://localhost:5173).
+To build for production:
+```sh
+cd frontend
+npm run build
+```
 
-#### Server (Express REST API):
-
+#### Server (`http://localhost:5000`)
 ```sh
 cd server
 npm run dev
 ```
 
-Runs independently on [http://localhost:5000](http://localhost:5000).
+To run the end-to-end integration suite:
+```sh
+cd server
+npm run test:e2e
+```
 
-#### Backend (Test Suite & TypeScript):
-
+#### Backend (Pure Logic & Unit Tests)
 ```sh
 cd backend
 npm test
 ```
 
-Runs the 17 isolated business logic and RBAC tests via Vitest.
-
----
-
-## Full Verification Commands
-
+To run TypeScript verification:
 ```sh
-# Run backend test suite
-npm test
-
-# Run TypeScript checks across all packages
-npx tsc --noEmit
-
-# Run ESLint across all packages
-npm run lint
-
-# Format codebase
-npm run format
-
-# Production build of frontend
-npm run build
+cd backend
+npm run typecheck
 ```
 
 ---
@@ -155,5 +143,6 @@ npm run build
 ## Tech Stack
 
 - **Frontend**: React 19, TypeScript, TanStack Start, TanStack Router, Tailwind CSS v4, Lucide React icons, Radix UI primitives
-- **Server**: Node.js, Express, CORS, CSRF Protection, Cookie Parser
-- **Backend**: Pure TypeScript, Zod Schema Validation, Centralized RBAC (`can()`), Vitest
+- **Backend**: TypeScript, Zod Schema Validation, Centralized RBAC (`can()`), JSON Persistence Engine
+- **Server**: Node.js, Express, CORS, Cookie-Parser, CSRF Protection
+- **Testing**: Vitest, E2E HTTP Test Suite

@@ -25,13 +25,6 @@ import type { UserRole } from "@/types";
 import { HandoverLogo } from "@/components/common/HandoverLogo";
 
 export const Route = createFileRoute("/auth")({
-  validateSearch: (
-    search: Record<string, unknown>,
-  ): { tab?: string | undefined; mode?: string | undefined; role?: string | undefined } => ({
-    tab: typeof search["tab"] === "string" ? search["tab"] : undefined,
-    mode: typeof search["mode"] === "string" ? search["mode"] : undefined,
-    role: typeof search["role"] === "string" ? search["role"] : undefined,
-  }),
   head: () => ({
     meta: [
       { title: "Handover — Sign In & Account Registration" },
@@ -67,8 +60,7 @@ function AuthPage() {
   const [signUpName, setSignUpName] = useState("");
   const [signUpEmail, setSignUpEmail] = useState("");
   const [signUpRoll, setSignUpRoll] = useState("");
-  const [signUpSectionId, setSignUpSectionId] = useState(sections[0]?.id || "__custom__");
-  const [customSectionName, setCustomSectionName] = useState("");
+  const [signUpSectionId, setSignUpSectionId] = useState(sections[0]?.id || "");
   // Faculty Sign Up
   const [teacherDepartment, setTeacherDepartment] = useState("");
   const [teacherSectionName, setTeacherSectionName] = useState("");
@@ -148,21 +140,11 @@ function AuthPage() {
     }
 
     // Student Registration
-    const resolvedSection =
-      sections.length === 0 || signUpSectionId === "__custom__"
-        ? customSectionName.trim()
-        : signUpSectionId;
-
-    if (!resolvedSection) {
-      setSignUpError("Please specify or enter your class / section.");
-      return;
-    }
-
     const res = registerStudent({
       name: signUpName,
       email: signUpEmail,
       rollNumber: signUpRoll,
-      sectionId: resolvedSection,
+      sectionId: signUpSectionId,
       password: signUpPassword || undefined,
     });
 
@@ -195,7 +177,7 @@ function AuthPage() {
         <div className="flex justify-center mx-auto">
           <HandoverLogo size="lg" />
         </div>
-        <h1 className="mt-3 text-2xl font-semibold tracking-tight text-slate-900">
+        <h1 className="mt-3 text-2xl font-bold tracking-tight text-slate-900">
           Handover Academic OS
         </h1>
         <p className="mt-1 text-xs text-slate-500">
@@ -204,9 +186,9 @@ function AuthPage() {
       </div>
 
       <div className="mt-6 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white py-7 px-6 shadow-xs border border-slate-200/80 rounded-xl sm:px-8 space-y-6">
+        <div className="bg-white py-7 px-6 shadow-xs border border-slate-200 rounded-2xl sm:px-8 space-y-6">
           {/* Main Mode Toggle: Sign In vs Register */}
-          <div className="bg-slate-100 p-1 rounded-lg grid grid-cols-2 gap-1">
+          <div className="bg-slate-100 p-1 rounded-xl grid grid-cols-2 gap-1">
             <button
               type="button"
               onClick={() => {
@@ -214,7 +196,7 @@ function AuthPage() {
                 setSignInError(null);
                 setSignUpError(null);
               }}
-              className={`text-xs py-2 font-medium rounded-md transition-all ${
+              className={`text-xs py-2 font-semibold rounded-lg transition-all ${
                 authMode === "signin"
                   ? "bg-white text-slate-900 shadow-xs"
                   : "text-slate-600 hover:text-slate-900"
@@ -229,9 +211,9 @@ function AuthPage() {
                 setSignInError(null);
                 setSignUpError(null);
               }}
-              className={`text-xs py-2 font-medium rounded-md transition-all ${
+              className={`text-xs py-2 font-semibold rounded-lg transition-all ${
                 authMode === "signup"
-                  ? "bg-white text-slate-900 shadow-xs"
+                  ? "bg-white text-indigo-700 shadow-xs"
                   : "text-slate-600 hover:text-slate-900"
               }`}
             >
@@ -245,7 +227,7 @@ function AuthPage() {
               {/* Role Selector Tabs */}
               <div className="space-y-1.5">
                 <div className="flex items-center justify-between">
-                  <label className="text-xs font-medium text-slate-700">Choose Portal Role</label>
+                  <label className="text-xs font-semibold text-slate-700">Choose Portal Role</label>
                   <span className="text-[10px] text-slate-400">
                     Redirects to your specific portal
                   </span>
@@ -258,12 +240,12 @@ function AuthPage() {
                   }}
                 >
                   <TabsList className="grid w-full grid-cols-2 bg-slate-100 p-1 rounded-lg">
-                    <TabsTrigger value="teacher" className="text-xs font-medium">
-                      <GraduationCap className="w-3.5 h-3.5 mr-1.5 text-slate-600" />
+                    <TabsTrigger value="teacher" className="text-xs font-semibold">
+                      <GraduationCap className="w-3.5 h-3.5 mr-1.5 text-indigo-600" />
                       Teacher Portal
                     </TabsTrigger>
-                    <TabsTrigger value="student" className="text-xs font-medium">
-                      <Users className="w-3.5 h-3.5 mr-1.5 text-slate-600" />
+                    <TabsTrigger value="student" className="text-xs font-semibold">
+                      <Users className="w-3.5 h-3.5 mr-1.5 text-emerald-600" />
                       Student Portal
                     </TabsTrigger>
                   </TabsList>
@@ -281,7 +263,7 @@ function AuthPage() {
               {/* Sign In Form */}
               <form onSubmit={handleSignInSubmit} className="space-y-4">
                 <div>
-                  <label className="block text-xs font-medium text-slate-700 mb-1">
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">
                     {signInRole === "teacher"
                       ? "Faculty Institutional Email"
                       : "Student College Email"}
@@ -294,8 +276,8 @@ function AuthPage() {
                       onChange={(e) => setSignInEmail(e.target.value)}
                       placeholder={
                         signInRole === "teacher"
-                          ? "e.g. faculty@college.edu"
-                          : "e.g. student@college.edu"
+                          ? "e.g. e.vance@university.edu"
+                          : "e.g. a.wright@student.university.edu"
                       }
                       required
                       className="text-xs h-9 pl-9 bg-slate-50 focus:bg-white"
@@ -305,7 +287,7 @@ function AuthPage() {
 
                 <div>
                   <div className="flex items-center justify-between mb-1">
-                    <label className="block text-xs font-medium text-slate-700">Password</label>
+                    <label className="block text-xs font-semibold text-slate-700">Password</label>
                   </div>
                   <div className="relative">
                     <Lock className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
@@ -322,7 +304,11 @@ function AuthPage() {
 
                 <Button
                   type="submit"
-                  className="w-full text-white text-xs h-9 font-medium shadow-xs justify-center gap-1.5 bg-slate-900 hover:bg-slate-800 rounded-lg"
+                  className={`w-full text-white text-xs h-9.5 font-medium shadow-xs justify-center gap-1.5 ${
+                    signInRole === "teacher"
+                      ? "bg-indigo-600 hover:bg-indigo-700"
+                      : "bg-emerald-600 hover:bg-emerald-700"
+                  }`}
                 >
                   <span>
                     Sign In to {signInRole === "teacher" ? "Teacher Workspace" : "Student Portal"}
@@ -342,7 +328,7 @@ function AuthPage() {
                       setSignUpRole(signInRole);
                       setSignUpError(null);
                     }}
-                    className="font-medium text-slate-800 hover:underline"
+                    className="font-semibold text-indigo-600 hover:text-indigo-700 hover:underline"
                   >
                     Register here
                   </button>
@@ -357,7 +343,7 @@ function AuthPage() {
               {/* Role Toggle for Registration */}
               <div className="space-y-1.5">
                 <div className="flex items-center justify-between">
-                  <label className="text-xs font-medium text-slate-700">
+                  <label className="text-xs font-semibold text-slate-700">
                     Register Account Type
                   </label>
                   <span className="text-[10px] text-slate-400">Select your college role</span>
@@ -370,12 +356,12 @@ function AuthPage() {
                   }}
                 >
                   <TabsList className="grid w-full grid-cols-2 bg-slate-100 p-1 rounded-lg">
-                    <TabsTrigger value="student" className="text-xs font-medium">
-                      <Users className="w-3.5 h-3.5 mr-1.5 text-slate-600" />
+                    <TabsTrigger value="student" className="text-xs font-semibold">
+                      <Users className="w-3.5 h-3.5 mr-1.5 text-emerald-600" />
                       Student Account
                     </TabsTrigger>
-                    <TabsTrigger value="teacher" className="text-xs font-medium">
-                      <GraduationCap className="w-3.5 h-3.5 mr-1.5 text-slate-600" />
+                    <TabsTrigger value="teacher" className="text-xs font-semibold">
+                      <GraduationCap className="w-3.5 h-3.5 mr-1.5 text-indigo-600" />
                       Faculty Account
                     </TabsTrigger>
                   </TabsList>
@@ -415,8 +401,8 @@ function AuthPage() {
                       onChange={(e) => setSignUpName(e.target.value)}
                       placeholder={
                         signUpRole === "teacher"
-                          ? "e.g. Dr. Jane Smith"
-                          : "e.g. John Doe"
+                          ? "e.g. Dr. Eleanor Vance, Ph.D."
+                          : "e.g. Alexander Wright"
                       }
                       required
                       className="text-xs h-9 pl-9 bg-slate-50 focus:bg-white"
@@ -438,8 +424,8 @@ function AuthPage() {
                       onChange={(e) => setSignUpEmail(e.target.value)}
                       placeholder={
                         signUpRole === "teacher"
-                          ? "e.g. faculty@college.edu"
-                          : "e.g. student@college.edu"
+                          ? "e.g. e.vance@university.edu"
+                          : "e.g. a.wright@student.university.edu"
                       }
                       required
                       className="text-xs h-9 pl-9 bg-slate-50 focus:bg-white"
@@ -449,7 +435,7 @@ function AuthPage() {
 
                 {/* ROLE-SPECIFIC FIELDS */}
                 {signUpRole === "student" ? (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="grid grid-cols-2 gap-3">
                     <div>
                       <label className="block text-xs font-semibold text-slate-700 mb-1">
                         Roll Number
@@ -460,7 +446,7 @@ function AuthPage() {
                           type="text"
                           value={signUpRoll}
                           onChange={(e) => setSignUpRoll(e.target.value)}
-                          placeholder="e.g. CS-001 or 101"
+                          placeholder="e.g. 2024-CS-001"
                           required
                           className="text-xs h-9 pl-9 bg-slate-50 focus:bg-white font-mono"
                         />
@@ -469,44 +455,21 @@ function AuthPage() {
 
                     <div>
                       <label className="block text-xs font-semibold text-slate-700 mb-1">
-                        Assigned Class / Section
+                        Assigned Section
                       </label>
-                      <div className="space-y-2">
-                        {sections.length > 0 ? (
-                          <>
-                            <select
-                              value={signUpSectionId}
-                              onChange={(e) => setSignUpSectionId(e.target.value)}
-                              className="w-full text-xs h-9 px-3 bg-slate-50 border border-slate-200 rounded-md focus:bg-white focus:outline-none focus:ring-1 focus:ring-slate-400 font-medium text-slate-800"
-                            >
-                              {sections.map((sec) => (
-                                <option key={sec.id} value={sec.id}>
-                                  {sec.sectionName}
-                                </option>
-                              ))}
-                              <option value="__custom__">+ Enter new section...</option>
-                            </select>
-                            {signUpSectionId === "__custom__" && (
-                              <Input
-                                type="text"
-                                value={customSectionName}
-                                onChange={(e) => setCustomSectionName(e.target.value)}
-                                placeholder="e.g. CSE - Section A"
-                                required
-                                className="text-xs h-9 bg-slate-50 focus:bg-white"
-                              />
-                            )}
-                          </>
-                        ) : (
-                          <Input
-                            type="text"
-                            value={customSectionName}
-                            onChange={(e) => setCustomSectionName(e.target.value)}
-                            placeholder="e.g. CSE - Section A"
-                            required
-                            className="text-xs h-9 bg-slate-50 focus:bg-white"
-                          />
-                        )}
+                      <div className="relative">
+                        <select
+                          value={signUpSectionId}
+                          onChange={(e) => setSignUpSectionId(e.target.value)}
+                          required
+                          className="w-full text-xs h-9 px-3 bg-slate-50 border border-slate-200 rounded-md focus:bg-white focus:outline-none focus:ring-1 focus:ring-emerald-500 font-medium text-slate-800"
+                        >
+                          {sections.map((sec) => (
+                            <option key={sec.id} value={sec.id}>
+                              {sec.sectionName}
+                            </option>
+                          ))}
+                        </select>
                       </div>
                     </div>
                   </div>
@@ -539,7 +502,7 @@ function AuthPage() {
                           type="text"
                           value={teacherSectionName}
                           onChange={(e) => setTeacherSectionName(e.target.value)}
-                          placeholder="e.g. CSE - Section A"
+                          placeholder="e.g. CS-301: Section A"
                           required
                           className="text-xs h-9 pl-9 bg-slate-50 focus:bg-white"
                         />
@@ -587,11 +550,15 @@ function AuthPage() {
                 <Button
                   type="submit"
                   disabled={signUpSuccess}
-                  className="w-full text-white text-xs h-9 font-medium shadow-xs justify-center gap-1.5 mt-2 bg-slate-900 hover:bg-slate-800 rounded-lg"
+                  className={`w-full text-white text-xs h-9.5 font-medium shadow-xs justify-center gap-1.5 mt-2 ${
+                    signUpRole === "teacher"
+                      ? "bg-indigo-600 hover:bg-indigo-700"
+                      : "bg-emerald-600 hover:bg-emerald-700"
+                  }`}
                 >
                   <UserCheck className="w-3.5 h-3.5" />
                   <span>
-                    Register & enter{" "}
+                    Register & Enter{" "}
                     {signUpRole === "teacher" ? "Faculty Workspace" : "Student Portal"}
                   </span>
                   <ArrowRight className="w-3.5 h-3.5" />
@@ -608,7 +575,7 @@ function AuthPage() {
                       setSignInRole(signUpRole);
                       setSignInError(null);
                     }}
-                    className="font-medium text-slate-800 hover:underline"
+                    className="font-semibold text-indigo-600 hover:text-indigo-700 hover:underline"
                   >
                     Sign in here
                   </button>

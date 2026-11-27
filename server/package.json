@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "tsx watch index.ts",
     "start": "tsx index.ts",
+    "test:e2e": "tsx test/e2e-verification.ts",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

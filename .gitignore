@@ -31,9 +31,6 @@ dist-ssr
 *.rar
 *.7z
 
-# Local persistence
-backend/data/*.json
-
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

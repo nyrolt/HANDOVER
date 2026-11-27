@@ -1,9 +1,13 @@
 {
   "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx",
     "backend/**/*.ts",
     "frontend/**/*.ts",
     "frontend/**/*.tsx",
     "server/**/*.ts",
+    "vite.config.ts",
+    "vitest.config.ts",
     "eslint.config.js"
   ],
   "compilerOptions": {
@@ -30,7 +34,7 @@
     "exactOptionalPropertyTypes": true,
     "noUncheckedSideEffectImports": true,
     "paths": {
-      "@/*": ["./frontend/src/*"],
+      "@/*": ["./src/*"],
       "@/backend/*": ["./backend/*"],
       "@/frontend/*": ["./frontend/*"],
       "@/server/*": ["./server/*"]

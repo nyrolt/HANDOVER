@@ -71,6 +71,9 @@ apiRoutes.forEach((route) => {
   );
 });
 
+import { fileURLToPath } from "url";
+import path from "path";
+
 // Centralized error handling
 app.use(
   (err: unknown, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
@@ -78,14 +81,39 @@ app.use(
   },
 );
 
-// Start listener
-if (process.env["NODE_ENV"] !== "test") {
-  app.listen(serverConfig.port, () => {
+const isMainModule = () => {
+  if (!process.argv[1]) return false;
+  try {
+    const currentFilePath = fileURLToPath(import.meta.url);
+    const entryPath = path.resolve(process.argv[1]);
+    return (
+      currentFilePath === entryPath ||
+      entryPath.endsWith(path.join("server", "index.ts")) ||
+      entryPath.endsWith(path.join("server", "index.js"))
+    );
+  } catch {
+    return false;
+  }
+};
+
+// Start listener only when run directly and not in test environment
+if (process.env["NODE_ENV"] !== "test" && isMainModule()) {
+  const listener = app.listen(serverConfig.port, () => {
     logger.info(`Handover REST API Server running on http://localhost:${serverConfig.port}`, {
       port: serverConfig.port,
       env: serverConfig.nodeEnv,
       endpoints: apiRoutes.length + 1,
     });
+  });
+
+  listener.on("error", (err: NodeJS.ErrnoException) => {
+    if (err.code === "EADDRINUSE") {
+      logger.error(
+        `Port ${serverConfig.port} is already in use by another active server process.`,
+      );
+    } else {
+      logger.error(`Server listener error: ${err.message}`);
+    }
   });
 }
 

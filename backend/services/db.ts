@@ -1,5 +1,6 @@
 import fs from "fs";
 import path from "path";
+import { fileURLToPath } from "url";
 import type {
   User,
   Section,
@@ -14,6 +15,7 @@ import type {
 } from "../models/types";
 
 const STORAGE_KEY = "handover_academic_system_v2";
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DATA_DIR = path.resolve(__dirname, "..", "data");
 const DB_FILE = path.join(DATA_DIR, "handover-store.json");
 
