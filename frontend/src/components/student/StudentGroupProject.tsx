@@ -1,24 +1,5 @@
 import React, { useState } from "react";
-import {
-  Layers,
-  Send,
-  Users,
-  CheckCircle2,
-  Clock,
-  Award,
-  Sparkles,
-  Search,
-  Plus,
-  Mail,
-  UserCheck,
-  Check,
-  AlertCircle,
-  X,
-  UserPlus,
-  ShieldCheck,
-  Crown,
-  ExternalLink,
-} from "lucide-react";
+import { Layers, Send, Users, CheckCircle2, Clock, Search, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { db } from "@/services/db";
@@ -36,8 +17,6 @@ const SUGGESTED_TEAM_NAMES = [
   "Team Nexus",
   "Team Apex",
   "Team Synthetix",
-  "Team Algorhythm",
-  "Team BitCrafters",
 ];
 
 export function StudentGroupProject({ student }: StudentGroupProjectProps) {
@@ -65,25 +44,6 @@ export function StudentGroupProject({ student }: StudentGroupProjectProps) {
     (r) => r.status === "Pending" && r.studentId === student.id,
   );
 
-  // 3. Check pending proposal: added by another classmate
-  const addedByOtherRequest = allSectionRequests.find(
-    (r) =>
-      r.status === "Pending" &&
-      r.studentId !== student.id &&
-      r.proposedMembers.some((m) => {
-        const query = m.trim().toLowerCase();
-        return (
-          query === student.name.toLowerCase() ||
-          query === student.email.toLowerCase() ||
-          query === student.id.toLowerCase() ||
-          query === student.rollNumber.toLowerCase() ||
-          query === `roll ${student.rollNumber}`.toLowerCase() ||
-          query.includes(student.email.toLowerCase()) ||
-          query.includes(student.name.toLowerCase())
-        );
-      }),
-  );
-
   // Proposal form state
   const [proposedGroupName, setProposedGroupName] = useState("");
   const [proposedProjectTitle, setProposedProjectTitle] = useState("");
@@ -104,19 +64,6 @@ export function StudentGroupProject({ student }: StudentGroupProjectProps) {
     } else {
       setSelectedPartnerIds([...selectedPartnerIds, id]);
     }
-  };
-
-  const handleAddCustomTeammate = () => {
-    const trimmed = customTeammateInput.trim();
-    if (!trimmed) return;
-    if (!customTeammates.includes(trimmed)) {
-      setCustomTeammates([...customTeammates, trimmed]);
-    }
-    setCustomTeammateInput("");
-  };
-
-  const handleRemoveCustomTeammate = (val: string) => {
-    setCustomTeammates(customTeammates.filter((t) => t !== val));
   };
 
   const handleSubmitProposal = (e: React.FormEvent) => {
@@ -165,33 +112,30 @@ export function StudentGroupProject({ student }: StudentGroupProjectProps) {
   return (
     <div className="space-y-6">
       {/* Top Header Card */}
-      <div className="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="bg-white border border-slate-200 rounded-lg p-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-600 text-white flex items-center justify-center shadow-xs shadow-indigo-600/30">
-              <Layers className="w-4 h-4" />
-            </div>
-            <h2 className="text-lg font-bold text-slate-900 tracking-tight">
+          <div className="flex items-center gap-2">
+            <Layers className="w-5 h-5 text-slate-700" />
+            <h2 className="text-base font-semibold text-slate-900">
               Project Groups & Collaborative Teams
             </h2>
           </div>
           <p className="text-xs text-slate-500 mt-1">
-            Official group projects, evaluation milestones, and collaborative team proposals for{" "}
+            Official group projects, evaluation milestones, and team proposals for{" "}
             <strong>{section?.sectionName || "your section"}</strong>.
           </p>
         </div>
 
-        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-50 border border-slate-200/80 text-xs font-semibold text-slate-700">
-          <span className="w-2 h-2 rounded-full bg-indigo-600 animate-pulse" />
+        <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded bg-slate-50 border border-slate-200 text-xs font-mono font-medium text-slate-700">
           <span>Section: {section?.sectionName}</span>
         </div>
       </div>
 
       {/* Submission Success Alert */}
       {submittedNotice && (
-        <div className="bg-emerald-50/90 border border-emerald-200 rounded-2xl p-4 flex items-center justify-between text-xs text-emerald-900 animate-in fade-in">
-          <div className="flex items-center gap-2.5">
-            <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
+        <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-3.5 flex items-center justify-between text-xs text-emerald-900 animate-in fade-in">
+          <div className="flex items-center gap-2">
+            <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
             <span>
               Your group proposal has been submitted to <strong>{teacherName}</strong>. Your team
               members can now see this proposal on their portal!
@@ -206,28 +150,26 @@ export function StudentGroupProject({ student }: StudentGroupProjectProps) {
         </div>
       )}
 
-      {/* =========================================================================
-          STATE 1: STUDENT HAS AN OFFICIAL APPROVED GROUP
-         ========================================================================= */}
+      {/* STATE 1: STUDENT HAS AN OFFICIAL APPROVED GROUP */}
       {approvedGroup ? (
-        <div className="relative overflow-hidden bg-white border border-slate-200/80 rounded-3xl p-6 sm:p-7 shadow-xs space-y-6">
+        <div className="bg-white border border-slate-200 rounded-lg p-5 sm:p-6 space-y-5">
           <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
-            <div className="space-y-1.5">
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/80">
-                <CheckCircle2 className="w-3.5 h-3.5" />
-                <span>Official Approved Project Group</span>
+            <div className="space-y-1">
+              <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[11px] font-mono font-medium bg-slate-100 text-slate-700 border border-slate-200">
+                <CheckCircle2 className="w-3.5 h-3.5 text-slate-600" />
+                <span>Official Approved Group</span>
               </div>
-              <h3 className="text-2xl font-black text-slate-900 tracking-tight">
+              <h3 className="text-xl font-semibold text-slate-900 tracking-tight">
                 {approvedGroup.groupName}
               </h3>
-              <p className="text-sm font-semibold text-indigo-700">{approvedGroup.projectTitle}</p>
+              <p className="text-xs text-slate-600">{approvedGroup.projectTitle}</p>
             </div>
 
-            <div className="sm:text-right bg-gradient-to-br from-indigo-50/50 to-violet-50/30 p-4 rounded-2xl border border-indigo-100/80 shrink-0">
-              <div className="text-[11px] font-bold uppercase tracking-wider text-indigo-900/70">
+            <div className="sm:text-right bg-slate-50 border border-slate-200 px-3 py-1.5 rounded font-mono shrink-0">
+              <div className="text-[10px] font-medium uppercase text-slate-400">
                 Project Milestone Score
               </div>
-              <div className="text-3xl font-black text-indigo-700 font-mono mt-0.5">
+              <div className="text-xl font-semibold text-slate-900 tabular-nums">
                 {approvedGroup.projectMarks}
                 <span className="text-xs font-normal text-slate-400 font-sans">
                   {" "}
@@ -238,49 +180,44 @@ export function StudentGroupProject({ student }: StudentGroupProjectProps) {
           </div>
 
           {approvedGroup.projectDescription && (
-            <p className="text-xs text-slate-600 leading-relaxed bg-slate-50/80 p-4 rounded-2xl border border-slate-100">
+            <p className="text-xs text-slate-600 leading-relaxed bg-slate-50 p-3 rounded border border-slate-100">
               {approvedGroup.projectDescription}
             </p>
           )}
 
           {/* Project Details Bar */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs text-slate-600 p-4 bg-slate-50/60 rounded-2xl border border-slate-100">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs text-slate-600 p-3.5 bg-slate-50 rounded border border-slate-200">
             <div>
-              <span className="text-slate-400 block text-[10px] uppercase font-bold">
+              <span className="text-slate-400 block text-[10px] uppercase font-mono">
                 Faculty Guide
               </span>
-              <strong className="text-slate-900 font-semibold mt-0.5 block">
+              <strong className="text-slate-900 font-medium mt-0.5 block">
                 {approvedGroup.guide}
               </strong>
             </div>
             <div>
-              <span className="text-slate-400 block text-[10px] uppercase font-bold">
+              <span className="text-slate-400 block text-[10px] uppercase font-mono">
                 Authorized By
               </span>
-              <strong className="text-slate-900 font-semibold mt-0.5 block">
+              <strong className="text-slate-900 font-medium mt-0.5 block">
                 {approvedGroup.approvedBy}
               </strong>
             </div>
             <div>
-              <span className="text-slate-400 block text-[10px] uppercase font-bold">
-                Milestone Status
-              </span>
-              <span className="inline-flex items-center gap-1.5 font-bold text-emerald-600 mt-0.5">
-                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              <span className="text-slate-400 block text-[10px] uppercase font-mono">Status</span>
+              <span className="inline-flex items-center gap-1.5 font-medium text-slate-900 mt-0.5 font-mono">
                 {approvedGroup.status}
               </span>
             </div>
           </div>
 
           {/* Official Team Roster */}
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400">
-                Official Team Roster ({approvedGroup.members.length} Members)
-              </h4>
-            </div>
+          <div className="space-y-2.5">
+            <h4 className="text-xs font-semibold text-slate-700">
+              Team Roster ({approvedGroup.members.length} Members)
+            </h4>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
               {approvedGroup.members.map((m) => {
                 const isYou =
                   m.studentId === student.id ||
@@ -289,38 +226,25 @@ export function StudentGroupProject({ student }: StudentGroupProjectProps) {
                 return (
                   <div
                     key={m.studentId}
-                    className={`p-3.5 rounded-2xl border transition-all flex items-center justify-between gap-3 ${
-                      isYou
-                        ? "bg-indigo-50/60 border-indigo-200/80 shadow-xs"
-                        : "bg-white border-slate-200/80 hover:border-slate-300"
-                    }`}
+                    className="p-3 rounded border border-slate-200 bg-white flex items-center justify-between gap-3 text-xs"
                   >
-                    <div className="flex items-center gap-3 min-w-0">
-                      <div
-                        className={`w-8 h-8 rounded-xl flex items-center justify-center font-bold text-xs shrink-0 ${
-                          isYou ? "bg-indigo-600 text-white" : "bg-slate-100 text-slate-700"
-                        }`}
-                      >
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <div className="w-7 h-7 rounded bg-slate-100 text-slate-700 flex items-center justify-center font-semibold text-xs shrink-0">
                         {m.studentName.charAt(0).toUpperCase()}
                       </div>
                       <div className="min-w-0">
-                        <div className="text-xs font-bold text-slate-900 truncate">
-                          {m.studentName} {isYou && <span className="text-indigo-600">(You)</span>}
+                        <div className="font-medium text-slate-900 truncate">
+                          {m.studentName}{" "}
+                          {isYou && <span className="text-slate-500 font-normal">(You)</span>}
                         </div>
-                        <div className="text-[10px] font-mono text-slate-500">
-                          Roll: {m.rollNumber}
+                        <div className="text-[10px] font-mono text-slate-400">
+                          Roll {m.rollNumber}
                         </div>
                       </div>
                     </div>
 
-                    <span
-                      className={`text-[10px] px-2 py-0.5 rounded-md font-bold shrink-0 ${
-                        m.role === "Leader"
-                          ? "bg-amber-100 text-amber-900 border border-amber-200"
-                          : "bg-slate-100 text-slate-600"
-                      }`}
-                    >
-                      {m.role === "Leader" ? "👑 Leader" : "Member"}
+                    <span className="font-mono text-[10px] px-1.5 py-0.5 rounded border border-slate-200 bg-slate-50 text-slate-600 shrink-0">
+                      {m.role}
                     </span>
                   </div>
                 );
@@ -329,34 +253,28 @@ export function StudentGroupProject({ student }: StudentGroupProjectProps) {
           </div>
         </div>
       ) : myCreatedRequest ? (
-        /* =========================================================================
-            STATE 2: PENDING PROPOSAL (CREATED BY YOU)
-           ========================================================================= */
-        <div className="bg-white border border-amber-200/80 rounded-3xl p-6 sm:p-7 shadow-xs space-y-5">
-          <div className="flex items-start justify-between">
-            <div className="space-y-1">
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-800 border border-amber-200">
-                <Clock className="w-3.5 h-3.5 text-amber-600" />
-                <span>Proposal Pending Review</span>
-              </div>
-              <h3 className="text-xl font-bold text-slate-900 mt-1">
-                {myCreatedRequest.proposedGroupName}
-              </h3>
-              <p className="text-sm font-semibold text-indigo-700">
-                {myCreatedRequest.proposedProjectTitle}
-              </p>
+        /* STATE 2: PENDING PROPOSAL */
+        <div className="bg-amber-50/40 border border-amber-200 rounded-lg p-5 space-y-4">
+          <div className="space-y-1">
+            <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[11px] font-mono font-medium bg-white text-amber-800 border border-amber-200">
+              <Clock className="w-3.5 h-3.5 text-amber-700" />
+              <span>Proposal Pending Review</span>
             </div>
+            <h3 className="text-base font-semibold text-slate-900 mt-1">
+              {myCreatedRequest.proposedGroupName}
+            </h3>
+            <p className="text-xs text-slate-600">{myCreatedRequest.proposedProjectTitle}</p>
           </div>
 
-          <div className="space-y-2">
-            <span className="text-xs font-semibold text-slate-500">Proposed Teammates:</span>
-            <div className="flex flex-wrap gap-2">
+          <div className="space-y-1.5">
+            <span className="text-xs font-medium text-slate-600">Proposed Teammates:</span>
+            <div className="flex flex-wrap gap-1.5">
               {myCreatedRequest.proposedMembers.map((member, i) => (
                 <span
                   key={i}
-                  className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-slate-100 text-xs font-semibold text-slate-800"
+                  className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-white text-xs font-mono text-slate-700 border border-amber-200"
                 >
-                  <Users className="w-3.5 h-3.5 text-slate-500" />
+                  <Users className="w-3 h-3 text-slate-400" />
                   <span>{member}</span>
                 </span>
               ))}
@@ -364,41 +282,35 @@ export function StudentGroupProject({ student }: StudentGroupProjectProps) {
           </div>
         </div>
       ) : (
-        /* =========================================================================
-            STATE 3: NO GROUP YET -> PROPOSAL FORM
-           ========================================================================= */
-        <div className="bg-white border border-slate-200/80 rounded-3xl p-6 sm:p-8 shadow-xs space-y-6">
+        /* STATE 3: NO GROUP YET -> PROPOSAL FORM */
+        <div className="bg-white border border-slate-200 rounded-lg p-5 sm:p-6 space-y-5">
           <div className="space-y-1">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200/80">
-              <Sparkles className="w-3.5 h-3.5 text-indigo-600" />
-              <span>Team Formation Active</span>
-            </div>
-            <h3 className="text-xl font-bold text-slate-900">Propose a Project Group</h3>
+            <h3 className="text-base font-semibold text-slate-900">Propose a Project Group</h3>
             <p className="text-xs text-slate-500">
-              Submit your team name, project topic, and invite classmates from{" "}
-              <strong>{section?.sectionName}</strong> for faculty approval.
+              Submit your team name, project topic, and invite available classmates from{" "}
+              <strong>{section?.sectionName}</strong> for instructor approval.
             </p>
           </div>
 
-          <form onSubmit={handleSubmitProposal} className="space-y-5">
+          <form onSubmit={handleSubmitProposal} className="space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <label className="text-xs font-bold text-slate-700">Proposed Group Name</label>
+              <div className="space-y-1.5">
+                <label className="text-xs font-medium text-slate-700">Proposed Group Name</label>
                 <Input
                   value={proposedGroupName}
                   onChange={(e) => setProposedGroupName(e.target.value)}
                   placeholder="e.g. Team ByteForge"
-                  className="h-10 text-xs border-slate-200 rounded-xl"
+                  className="h-8 text-xs border-slate-200 rounded-md"
                   required
                 />
                 {/* One-click suggestions */}
-                <div className="flex flex-wrap gap-1.5 pt-1">
+                <div className="flex flex-wrap gap-1 pt-1">
                   {SUGGESTED_TEAM_NAMES.map((name) => (
                     <button
                       key={name}
                       type="button"
                       onClick={() => setProposedGroupName(name)}
-                      className="text-[11px] px-2 py-0.5 rounded-lg bg-slate-50 border border-slate-200/80 hover:bg-indigo-50 hover:text-indigo-700 hover:border-indigo-200 font-medium transition-colors"
+                      className="text-[10px] px-1.5 py-0.5 rounded bg-slate-50 border border-slate-200 hover:bg-slate-100 text-slate-600 font-mono transition-colors"
                     >
                       {name}
                     </button>
@@ -406,29 +318,29 @@ export function StudentGroupProject({ student }: StudentGroupProjectProps) {
                 </div>
               </div>
 
-              <div className="space-y-2">
-                <label className="text-xs font-bold text-slate-700">Proposed Project Title</label>
+              <div className="space-y-1.5">
+                <label className="text-xs font-medium text-slate-700">Proposed Project Title</label>
                 <Input
                   value={proposedProjectTitle}
                   onChange={(e) => setProposedProjectTitle(e.target.value)}
                   placeholder="e.g. Autonomous Drone Navigation System"
-                  className="h-10 text-xs border-slate-200 rounded-xl"
+                  className="h-8 text-xs border-slate-200 rounded-md"
                   required
                 />
               </div>
             </div>
 
             {/* Select Classmates from Section */}
-            <div className="space-y-2.5">
-              <label className="text-xs font-bold text-slate-700 flex items-center justify-between">
+            <div className="space-y-2">
+              <label className="text-xs font-medium text-slate-700 flex items-center justify-between">
                 <span>Select Classmates from {section?.sectionName}</span>
-                <span className="text-[11px] font-normal text-slate-400">
-                  {availableClassmates.length} classmates available
+                <span className="text-[11px] font-mono text-slate-400">
+                  {availableClassmates.length} available
                 </span>
               </label>
 
               {availableClassmates.length > 0 ? (
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 max-h-48 overflow-y-auto p-1">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 max-h-48 overflow-y-auto p-1 border border-slate-200 rounded-md">
                   {availableClassmates.map((cm) => {
                     const isSelected = selectedPartnerIds.includes(cm.id);
                     return (
@@ -436,31 +348,31 @@ export function StudentGroupProject({ student }: StudentGroupProjectProps) {
                         type="button"
                         key={cm.id}
                         onClick={() => handleTogglePartner(cm.id)}
-                        className={`p-3 rounded-xl border text-left text-xs transition-all flex items-center justify-between ${
+                        className={`p-2.5 rounded border text-left text-xs transition-colors flex items-center justify-between ${
                           isSelected
-                            ? "bg-indigo-50 border-indigo-300 text-indigo-900 font-semibold shadow-xs"
-                            : "bg-slate-50 border-slate-200/80 text-slate-700 hover:bg-white hover:border-slate-300"
+                            ? "bg-slate-100 border-slate-300 text-slate-900 font-medium"
+                            : "bg-white border-slate-200 text-slate-700 hover:bg-slate-50"
                         }`}
                       >
                         <div className="min-w-0 pr-2">
-                          <div className="truncate font-bold">{cm.name}</div>
+                          <div className="truncate font-medium">{cm.name}</div>
                           <div className="text-[10px] font-mono text-slate-400">
                             Roll {cm.rollNumber}
                           </div>
                         </div>
                         <div
-                          className={`w-5 h-5 rounded-md flex items-center justify-center shrink-0 ${
-                            isSelected ? "bg-indigo-600 text-white" : "border border-slate-300"
+                          className={`w-4 h-4 rounded flex items-center justify-center shrink-0 ${
+                            isSelected ? "bg-slate-900 text-white" : "border border-slate-300"
                           }`}
                         >
-                          {isSelected && <Check className="w-3.5 h-3.5" />}
+                          {isSelected && <Check className="w-3 h-3" />}
                         </div>
                       </button>
                     );
                   })}
                 </div>
               ) : (
-                <div className="p-4 bg-slate-50 rounded-xl text-xs text-slate-500 text-center border border-slate-200/70">
+                <div className="p-3 bg-slate-50 rounded-md text-xs text-slate-500 text-center border border-slate-200">
                   All classmates in this section are currently assigned to project groups.
                 </div>
               )}
@@ -468,22 +380,20 @@ export function StudentGroupProject({ student }: StudentGroupProjectProps) {
 
             <Button
               type="submit"
-              className="bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white text-xs h-10 px-6 font-semibold rounded-xl shadow-xs shadow-indigo-600/30 gap-2"
+              className="bg-slate-900 hover:bg-slate-800 text-white text-xs h-8 px-4 font-medium rounded-md gap-1.5"
             >
               <Send className="w-3.5 h-3.5" />
-              <span>Submit Proposal for Faculty Approval</span>
+              <span>Submit Proposal</span>
             </Button>
           </form>
         </div>
       )}
 
-      {/* =========================================================================
-          SECTION TEAMS MASTER DIRECTORY
-         ========================================================================= */}
-      <div className="bg-white border border-slate-200/80 rounded-3xl p-6 sm:p-7 shadow-xs space-y-5">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      {/* SECTION TEAMS MASTER DIRECTORY */}
+      <div className="bg-white border border-slate-200 rounded-lg p-5 space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
-            <h3 className="text-base font-bold text-slate-900 tracking-tight">
+            <h3 className="text-sm font-semibold text-slate-900">
               {section?.sectionName || "Section"} Teams Directory
             </h3>
             <p className="text-xs text-slate-500 mt-0.5">
@@ -492,29 +402,29 @@ export function StudentGroupProject({ student }: StudentGroupProjectProps) {
           </div>
 
           <div className="relative w-full sm:w-64">
-            <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-3" />
+            <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5" />
             <Input
               value={searchDirectoryQuery}
               onChange={(e) => setSearchDirectoryQuery(e.target.value)}
               placeholder="Search group, topic, member..."
-              className="pl-8 text-xs h-9 border-slate-200 rounded-xl"
+              className="pl-8 text-xs h-8 border-slate-200 rounded-md"
             />
           </div>
         </div>
 
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto border border-slate-200 rounded-md">
           <table className="w-full text-left text-xs border-collapse">
-            <thead className="border-b border-slate-200 text-slate-500 font-bold uppercase text-[10px] tracking-wider bg-slate-50/50">
+            <thead className="border-b border-slate-200 text-slate-600 font-medium text-[11px] bg-slate-50">
               <tr>
-                <th className="py-3 px-4">Group Name</th>
-                <th className="py-3 px-4">Project Topic</th>
-                <th className="py-3 px-4">Members</th>
-                <th className="py-3 px-4">Faculty Guide</th>
-                <th className="py-3 px-4 text-center">Status</th>
-                <th className="py-3 px-4 text-right">Marks</th>
+                <th className="py-2.5 px-3">Group Name</th>
+                <th className="py-2.5 px-4">Project Topic</th>
+                <th className="py-2.5 px-3">Members</th>
+                <th className="py-2.5 px-3">Faculty Guide</th>
+                <th className="py-2.5 px-3 text-center">Status</th>
+                <th className="py-2.5 px-3 text-right">Score</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-slate-100 font-sans">
               {filteredDirectoryGroups.map((g) => {
                 const isMyGroup =
                   g.id === approvedGroup?.id || g.members.some((m) => m.studentId === student.id);
@@ -522,31 +432,31 @@ export function StudentGroupProject({ student }: StudentGroupProjectProps) {
                   <tr
                     key={g.id}
                     className={`transition-colors ${
-                      isMyGroup ? "bg-indigo-50/40 font-semibold" : "hover:bg-slate-50/60"
+                      isMyGroup ? "bg-slate-50/80 font-medium" : "hover:bg-slate-50/60"
                     }`}
                   >
-                    <td className="py-3.5 px-4">
+                    <td className="py-2.5 px-3">
                       <div className="flex items-center gap-2">
-                        <span className="font-bold text-slate-900">{g.groupName}</span>
+                        <span className="font-medium text-slate-900">{g.groupName}</span>
                         {isMyGroup && (
-                          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-100 text-indigo-800">
+                          <span className="font-mono text-[10px] px-1.5 py-0.5 rounded border border-slate-200 bg-white text-slate-700">
                             Your Team
                           </span>
                         )}
                       </div>
                     </td>
-                    <td className="py-3.5 px-4 font-medium text-slate-700 max-w-xs truncate">
+                    <td className="py-2.5 px-4 text-slate-700 max-w-xs truncate">
                       {g.projectTitle}
                     </td>
-                    <td className="py-3.5 px-4">
+                    <td className="py-2.5 px-3">
                       <div className="flex flex-wrap gap-1">
                         {g.members.map((m) => (
                           <span
                             key={m.studentId}
-                            className={`px-2 py-0.5 rounded-md text-[10px] font-medium ${
+                            className={`px-1.5 py-0.5 rounded text-[10px] font-mono ${
                               m.studentId === student.id
-                                ? "bg-indigo-600 text-white font-bold"
-                                : "bg-slate-100 text-slate-700"
+                                ? "bg-slate-900 text-white"
+                                : "bg-slate-100 text-slate-700 border border-slate-200"
                             }`}
                           >
                             {m.studentName}
@@ -554,13 +464,13 @@ export function StudentGroupProject({ student }: StudentGroupProjectProps) {
                         ))}
                       </div>
                     </td>
-                    <td className="py-3.5 px-4 text-slate-600">{g.guide}</td>
-                    <td className="py-3.5 px-4 text-center">
-                      <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                    <td className="py-2.5 px-3 text-slate-600">{g.guide}</td>
+                    <td className="py-2.5 px-3 text-center">
+                      <span className="font-mono text-[10px] px-2 py-0.5 rounded border border-slate-200 bg-slate-50 text-slate-700">
                         {g.status}
                       </span>
                     </td>
-                    <td className="py-3.5 px-4 text-right font-mono font-bold text-indigo-700">
+                    <td className="py-2.5 px-3 text-right font-mono tabular-nums font-semibold text-slate-900">
                       {g.projectMarks}/20
                     </td>
                   </tr>

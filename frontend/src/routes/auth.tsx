@@ -4,7 +4,6 @@ import {
   GraduationCap,
   Users,
   ArrowRight,
-  ShieldCheck,
   CheckCircle2,
   AlertCircle,
   ArrowLeft,
@@ -15,6 +14,7 @@ import {
   User as UserIcon,
   Hash,
   BookOpen,
+  KeyRound,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -92,6 +92,20 @@ function AuthPage() {
       }
     }
   }, []);
+
+  // Quick fill helper for review & testing
+  const handleQuickFill = (role: UserRole) => {
+    if (role === "teacher") {
+      setSignInRole("teacher");
+      setSignInEmail("e.vance@university.edu");
+      setSignInPassword("Faculty@2026");
+    } else {
+      setSignInRole("student");
+      setSignInEmail("a.wright@student.university.edu");
+      setSignInPassword("Password@123");
+    }
+    setSignInError(null);
+  };
 
   // Handle Sign In submission
   const handleSignInSubmit = (e: React.FormEvent) => {
@@ -177,7 +191,7 @@ function AuthPage() {
         <div className="flex justify-center mx-auto">
           <HandoverLogo size="lg" />
         </div>
-        <h1 className="mt-3 text-2xl font-bold tracking-tight text-slate-900">
+        <h1 className="mt-3 text-xl font-bold tracking-tight text-slate-900">
           Handover Academic OS
         </h1>
         <p className="mt-1 text-xs text-slate-500">
@@ -186,9 +200,9 @@ function AuthPage() {
       </div>
 
       <div className="mt-6 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white py-7 px-6 shadow-xs border border-slate-200 rounded-2xl sm:px-8 space-y-6">
+        <div className="bg-white py-6 px-6 border border-slate-200 rounded-lg sm:px-8 space-y-5">
           {/* Main Mode Toggle: Sign In vs Register */}
-          <div className="bg-slate-100 p-1 rounded-xl grid grid-cols-2 gap-1">
+          <div className="bg-slate-100 p-1 rounded-md grid grid-cols-2 gap-1">
             <button
               type="button"
               onClick={() => {
@@ -196,7 +210,7 @@ function AuthPage() {
                 setSignInError(null);
                 setSignUpError(null);
               }}
-              className={`text-xs py-2 font-semibold rounded-lg transition-all ${
+              className={`text-xs py-1.5 font-medium rounded transition-all ${
                 authMode === "signin"
                   ? "bg-white text-slate-900 shadow-xs"
                   : "text-slate-600 hover:text-slate-900"
@@ -211,9 +225,9 @@ function AuthPage() {
                 setSignInError(null);
                 setSignUpError(null);
               }}
-              className={`text-xs py-2 font-semibold rounded-lg transition-all ${
+              className={`text-xs py-1.5 font-medium rounded transition-all ${
                 authMode === "signup"
-                  ? "bg-white text-indigo-700 shadow-xs"
+                  ? "bg-white text-slate-900 shadow-xs"
                   : "text-slate-600 hover:text-slate-900"
               }`}
             >
@@ -223,13 +237,13 @@ function AuthPage() {
 
           {/* MODE 1: SIGN IN */}
           {authMode === "signin" && (
-            <div className="space-y-5">
+            <div className="space-y-4">
               {/* Role Selector Tabs */}
               <div className="space-y-1.5">
                 <div className="flex items-center justify-between">
-                  <label className="text-xs font-semibold text-slate-700">Choose Portal Role</label>
-                  <span className="text-[10px] text-slate-400">
-                    Redirects to your specific portal
+                  <label className="text-xs font-medium text-slate-700">Choose Portal Role</label>
+                  <span className="text-[10px] text-slate-400 font-mono">
+                    Directs to your portal
                   </span>
                 </div>
                 <Tabs
@@ -239,13 +253,19 @@ function AuthPage() {
                     setSignInError(null);
                   }}
                 >
-                  <TabsList className="grid w-full grid-cols-2 bg-slate-100 p-1 rounded-lg">
-                    <TabsTrigger value="teacher" className="text-xs font-semibold">
-                      <GraduationCap className="w-3.5 h-3.5 mr-1.5 text-indigo-600" />
+                  <TabsList className="grid w-full grid-cols-2 bg-slate-100 p-1 rounded-md">
+                    <TabsTrigger
+                      value="teacher"
+                      className="text-xs font-medium data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-xs"
+                    >
+                      <GraduationCap className="w-3.5 h-3.5 mr-1.5 text-slate-600" />
                       Teacher Portal
                     </TabsTrigger>
-                    <TabsTrigger value="student" className="text-xs font-semibold">
-                      <Users className="w-3.5 h-3.5 mr-1.5 text-emerald-600" />
+                    <TabsTrigger
+                      value="student"
+                      className="text-xs font-medium data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-xs"
+                    >
+                      <Users className="w-3.5 h-3.5 mr-1.5 text-slate-600" />
                       Student Portal
                     </TabsTrigger>
                   </TabsList>
@@ -254,16 +274,16 @@ function AuthPage() {
 
               {/* Error Alert */}
               {signInError && (
-                <div className="bg-rose-50 border border-rose-200 rounded-lg p-3 text-xs text-rose-700 flex items-start gap-2">
+                <div className="bg-rose-50 border border-rose-200 rounded-md p-3 text-xs text-rose-700 flex items-start gap-2">
                   <AlertCircle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
                   <div className="flex-1 leading-relaxed">{signInError}</div>
                 </div>
               )}
 
               {/* Sign In Form */}
-              <form onSubmit={handleSignInSubmit} className="space-y-4">
+              <form onSubmit={handleSignInSubmit} className="space-y-3.5">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  <label className="block text-xs font-medium text-slate-700 mb-1">
                     {signInRole === "teacher"
                       ? "Faculty Institutional Email"
                       : "Student College Email"}
@@ -280,14 +300,14 @@ function AuthPage() {
                           : "e.g. a.wright@student.university.edu"
                       }
                       required
-                      className="text-xs h-9 pl-9 bg-slate-50 focus:bg-white"
+                      className="text-xs h-9 pl-9 border-slate-200 rounded-md focus:border-slate-400"
                     />
                   </div>
                 </div>
 
                 <div>
                   <div className="flex items-center justify-between mb-1">
-                    <label className="block text-xs font-semibold text-slate-700">Password</label>
+                    <label className="block text-xs font-medium text-slate-700">Password</label>
                   </div>
                   <div className="relative">
                     <Lock className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
@@ -297,25 +317,51 @@ function AuthPage() {
                       onChange={(e) => setSignInPassword(e.target.value)}
                       placeholder="Enter your account password"
                       required
-                      className="text-xs h-9 pl-9 bg-slate-50 focus:bg-white"
+                      className="text-xs h-9 pl-9 border-slate-200 rounded-md focus:border-slate-400"
                     />
                   </div>
                 </div>
 
                 <Button
                   type="submit"
-                  className={`w-full text-white text-xs h-9.5 font-medium shadow-xs justify-center gap-1.5 ${
-                    signInRole === "teacher"
-                      ? "bg-indigo-600 hover:bg-indigo-700"
-                      : "bg-emerald-600 hover:bg-emerald-700"
-                  }`}
+                  className="w-full bg-slate-900 hover:bg-slate-800 text-white text-xs h-9 font-medium rounded-md justify-center gap-1.5"
                 >
                   <span>
-                    Sign In to {signInRole === "teacher" ? "Teacher Workspace" : "Student Portal"}
+                    Sign In to {signInRole === "teacher" ? "Faculty Workspace" : "Student Portal"}
                   </span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </Button>
               </form>
+
+              {/* Quick-fill Demo Accounts Helper */}
+              <div className="p-3 bg-slate-50 border border-slate-200 rounded-md space-y-2 text-xs">
+                <div className="flex items-center gap-1.5 text-slate-600 font-medium text-[11px]">
+                  <KeyRound className="w-3.5 h-3.5 text-slate-500" />
+                  <span>Quick Test Accounts</span>
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => handleQuickFill("teacher")}
+                    className="p-2 bg-white border border-slate-200 hover:bg-slate-100 rounded text-left transition-colors"
+                  >
+                    <div className="font-medium text-slate-800 text-[11px]">Faculty Demo</div>
+                    <div className="text-[10px] text-slate-500 font-mono truncate">
+                      e.vance@univ.edu
+                    </div>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleQuickFill("student")}
+                    className="p-2 bg-white border border-slate-200 hover:bg-slate-100 rounded text-left transition-colors"
+                  >
+                    <div className="font-medium text-slate-800 text-[11px]">Student Demo</div>
+                    <div className="text-[10px] text-slate-500 font-mono truncate">
+                      a.wright@univ.edu
+                    </div>
+                  </button>
+                </div>
+              </div>
 
               {/* Toggle to signup prompt */}
               <div className="text-center pt-2 border-t border-slate-100">
@@ -328,7 +374,7 @@ function AuthPage() {
                       setSignUpRole(signInRole);
                       setSignUpError(null);
                     }}
-                    className="font-semibold text-indigo-600 hover:text-indigo-700 hover:underline"
+                    className="font-medium text-slate-900 hover:underline"
                   >
                     Register here
                   </button>
@@ -343,10 +389,10 @@ function AuthPage() {
               {/* Role Toggle for Registration */}
               <div className="space-y-1.5">
                 <div className="flex items-center justify-between">
-                  <label className="text-xs font-semibold text-slate-700">
+                  <label className="text-xs font-medium text-slate-700">
                     Register Account Type
                   </label>
-                  <span className="text-[10px] text-slate-400">Select your college role</span>
+                  <span className="text-[10px] text-slate-400 font-mono">Select portal role</span>
                 </div>
                 <Tabs
                   value={signUpRole}
@@ -355,13 +401,19 @@ function AuthPage() {
                     setSignUpError(null);
                   }}
                 >
-                  <TabsList className="grid w-full grid-cols-2 bg-slate-100 p-1 rounded-lg">
-                    <TabsTrigger value="student" className="text-xs font-semibold">
-                      <Users className="w-3.5 h-3.5 mr-1.5 text-emerald-600" />
+                  <TabsList className="grid w-full grid-cols-2 bg-slate-100 p-1 rounded-md">
+                    <TabsTrigger
+                      value="student"
+                      className="text-xs font-medium data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-xs"
+                    >
+                      <Users className="w-3.5 h-3.5 mr-1.5 text-slate-600" />
                       Student Account
                     </TabsTrigger>
-                    <TabsTrigger value="teacher" className="text-xs font-semibold">
-                      <GraduationCap className="w-3.5 h-3.5 mr-1.5 text-indigo-600" />
+                    <TabsTrigger
+                      value="teacher"
+                      className="text-xs font-medium data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-xs"
+                    >
+                      <GraduationCap className="w-3.5 h-3.5 mr-1.5 text-slate-600" />
                       Faculty Account
                     </TabsTrigger>
                   </TabsList>
@@ -370,7 +422,7 @@ function AuthPage() {
 
               {/* Error Alert */}
               {signUpError && (
-                <div className="bg-rose-50 border border-rose-200 rounded-lg p-3 text-xs text-rose-700 flex items-start gap-2">
+                <div className="bg-rose-50 border border-rose-200 rounded-md p-3 text-xs text-rose-700 flex items-start gap-2">
                   <AlertCircle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
                   <div className="flex-1 leading-relaxed">{signUpError}</div>
                 </div>
@@ -378,7 +430,7 @@ function AuthPage() {
 
               {/* Success Notification */}
               {signUpSuccess && (
-                <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-3 text-xs text-emerald-800 flex items-center gap-2">
+                <div className="bg-emerald-50 border border-emerald-200 rounded-md p-3 text-xs text-emerald-800 flex items-center gap-2">
                   <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
                   <span>
                     Account created successfully! Redirecting to your{" "}
@@ -390,9 +442,7 @@ function AuthPage() {
               {/* Registration Form */}
               <form onSubmit={handleSignUpSubmit} className="space-y-3.5">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">
-                    Full Name
-                  </label>
+                  <label className="block text-xs font-medium text-slate-700 mb-1">Full Name</label>
                   <div className="relative">
                     <UserIcon className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
                     <Input
@@ -405,13 +455,13 @@ function AuthPage() {
                           : "e.g. Alexander Wright"
                       }
                       required
-                      className="text-xs h-9 pl-9 bg-slate-50 focus:bg-white"
+                      className="text-xs h-9 pl-9 border-slate-200 rounded-md focus:border-slate-400"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  <label className="block text-xs font-medium text-slate-700 mb-1">
                     {signUpRole === "teacher"
                       ? "Institutional Faculty Email"
                       : "Student College Email"}
@@ -428,7 +478,7 @@ function AuthPage() {
                           : "e.g. a.wright@student.university.edu"
                       }
                       required
-                      className="text-xs h-9 pl-9 bg-slate-50 focus:bg-white"
+                      className="text-xs h-9 pl-9 border-slate-200 rounded-md focus:border-slate-400"
                     />
                   </div>
                 </div>
@@ -437,7 +487,7 @@ function AuthPage() {
                 {signUpRole === "student" ? (
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-xs font-semibold text-slate-700 mb-1">
+                      <label className="block text-xs font-medium text-slate-700 mb-1">
                         Roll Number
                       </label>
                       <div className="relative">
@@ -448,13 +498,13 @@ function AuthPage() {
                           onChange={(e) => setSignUpRoll(e.target.value)}
                           placeholder="e.g. 2024-CS-001"
                           required
-                          className="text-xs h-9 pl-9 bg-slate-50 focus:bg-white font-mono"
+                          className="text-xs h-9 pl-9 border-slate-200 rounded-md focus:border-slate-400 font-mono"
                         />
                       </div>
                     </div>
 
                     <div>
-                      <label className="block text-xs font-semibold text-slate-700 mb-1">
+                      <label className="block text-xs font-medium text-slate-700 mb-1">
                         Assigned Section
                       </label>
                       <div className="relative">
@@ -462,7 +512,7 @@ function AuthPage() {
                           value={signUpSectionId}
                           onChange={(e) => setSignUpSectionId(e.target.value)}
                           required
-                          className="w-full text-xs h-9 px-3 bg-slate-50 border border-slate-200 rounded-md focus:bg-white focus:outline-none focus:ring-1 focus:ring-emerald-500 font-medium text-slate-800"
+                          className="w-full text-xs h-9 px-3 bg-white border border-slate-200 rounded-md focus:border-slate-400 focus:outline-none font-medium text-slate-800"
                         >
                           {sections.map((sec) => (
                             <option key={sec.id} value={sec.id}>
@@ -476,7 +526,7 @@ function AuthPage() {
                 ) : (
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-xs font-semibold text-slate-700 mb-1">
+                      <label className="block text-xs font-medium text-slate-700 mb-1">
                         Department
                       </label>
                       <div className="relative">
@@ -487,13 +537,13 @@ function AuthPage() {
                           onChange={(e) => setTeacherDepartment(e.target.value)}
                           placeholder="e.g. Computer Science"
                           required
-                          className="text-xs h-9 pl-9 bg-slate-50 focus:bg-white"
+                          className="text-xs h-9 pl-9 border-slate-200 rounded-md focus:border-slate-400"
                         />
                       </div>
                     </div>
 
                     <div>
-                      <label className="block text-xs font-semibold text-slate-700 mb-1">
+                      <label className="block text-xs font-medium text-slate-700 mb-1">
                         Initial Class Section
                       </label>
                       <div className="relative">
@@ -504,7 +554,7 @@ function AuthPage() {
                           onChange={(e) => setTeacherSectionName(e.target.value)}
                           placeholder="e.g. CS-301: Section A"
                           required
-                          className="text-xs h-9 pl-9 bg-slate-50 focus:bg-white"
+                          className="text-xs h-9 pl-9 border-slate-200 rounded-md focus:border-slate-400"
                         />
                       </div>
                     </div>
@@ -513,7 +563,7 @@ function AuthPage() {
 
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-xs font-semibold text-slate-700 mb-1">
+                    <label className="block text-xs font-medium text-slate-700 mb-1">
                       Password
                     </label>
                     <div className="relative">
@@ -524,13 +574,13 @@ function AuthPage() {
                         onChange={(e) => setSignUpPassword(e.target.value)}
                         placeholder="••••••••"
                         required
-                        className="text-xs h-9 pl-9 bg-slate-50 focus:bg-white"
+                        className="text-xs h-9 pl-9 border-slate-200 rounded-md focus:border-slate-400"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-slate-700 mb-1">
+                    <label className="block text-xs font-medium text-slate-700 mb-1">
                       Confirm Password
                     </label>
                     <div className="relative">
@@ -541,7 +591,7 @@ function AuthPage() {
                         onChange={(e) => setSignUpConfirmPassword(e.target.value)}
                         placeholder="••••••••"
                         required
-                        className="text-xs h-9 pl-9 bg-slate-50 focus:bg-white"
+                        className="text-xs h-9 pl-9 border-slate-200 rounded-md focus:border-slate-400"
                       />
                     </div>
                   </div>
@@ -550,11 +600,7 @@ function AuthPage() {
                 <Button
                   type="submit"
                   disabled={signUpSuccess}
-                  className={`w-full text-white text-xs h-9.5 font-medium shadow-xs justify-center gap-1.5 mt-2 ${
-                    signUpRole === "teacher"
-                      ? "bg-indigo-600 hover:bg-indigo-700"
-                      : "bg-emerald-600 hover:bg-emerald-700"
-                  }`}
+                  className="w-full bg-slate-900 hover:bg-slate-800 text-white text-xs h-9 font-medium rounded-md justify-center gap-1.5 mt-2"
                 >
                   <UserCheck className="w-3.5 h-3.5" />
                   <span>
@@ -575,7 +621,7 @@ function AuthPage() {
                       setSignInRole(signUpRole);
                       setSignInError(null);
                     }}
-                    className="font-semibold text-indigo-600 hover:text-indigo-700 hover:underline"
+                    className="font-medium text-slate-900 hover:underline"
                   >
                     Sign in here
                   </button>
