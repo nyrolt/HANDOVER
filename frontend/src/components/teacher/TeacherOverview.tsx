@@ -12,6 +12,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { db } from "@/services/db";
 import { useAuth } from "@/services/auth";
+import { AsciiGlitchRipple } from "@/components/ui/ascii-glitch-ripple";
+import { FeatCard } from "@/components/ui/feat-card";
 
 interface TeacherOverviewProps {
   onNavigate: (tab: string, sectionId?: string) => void;
@@ -85,7 +87,7 @@ export function TeacherOverview({
         <div>
           <div className="text-xs font-medium text-slate-500 mb-1">Academic Administration</div>
           <h2 className="text-xl sm:text-2xl font-semibold text-slate-900 tracking-tight">
-            Faculty Overview
+            <AsciiGlitchRipple as="span">Faculty Command Overview</AsciiGlitchRipple>
           </h2>
           <p className="text-xs text-slate-500 mt-1 max-w-xl leading-relaxed">
             Monitor class enrollments, spreadsheet marksheets, project group proposals, and
@@ -265,7 +267,12 @@ export function TeacherOverview({
               <TrendingUp className="w-4 h-4 text-slate-600" />
               Recent Activity
             </h3>
-            <span className="text-[10px] font-mono text-slate-400">Audit Trail</span>
+            <AsciiGlitchRipple
+              as="span"
+              className="text-[10px] font-mono text-slate-600 bg-slate-100 px-2 py-0.5 rounded border border-slate-200 font-semibold"
+            >
+              Audit Trail
+            </AsciiGlitchRipple>
           </div>
 
           <div className="bg-white border border-slate-200 rounded-lg p-4 divide-y divide-slate-100 max-h-[400px] overflow-y-auto">

@@ -103,36 +103,42 @@ This uses `concurrently` to spin up both the Express REST API on `http://localho
 ### 2. Independent Execution by Tier
 
 #### Frontend (`http://localhost:5173`)
+
 ```sh
 cd frontend
 npm run dev
 ```
 
 To build for production:
+
 ```sh
 cd frontend
 npm run build
 ```
 
 #### Server (`http://localhost:5000`)
+
 ```sh
 cd server
 npm run dev
 ```
 
 To run the end-to-end integration suite:
+
 ```sh
 cd server
 npm run test:e2e
 ```
 
 #### Backend (Pure Logic & Unit Tests)
+
 ```sh
 cd backend
 npm test
 ```
 
 To run TypeScript verification:
+
 ```sh
 cd backend
 npm run typecheck

@@ -12,6 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { getStudentDashboardData } from "@/services/student";
 import type { Student } from "@/types";
+import { AsciiGlitchRipple } from "@/components/ui/ascii-glitch-ripple";
 
 interface StudentOverviewProps {
   student: Student;
@@ -80,7 +81,7 @@ export function StudentOverview({ student, onNavigate }: StudentOverviewProps) {
           <div>
             <div className="text-[10px] uppercase font-medium text-slate-400 font-mono">Grade</div>
             <div className="text-sm font-semibold text-slate-900 font-mono">
-              {grade.split(" ")[0]}
+              <AsciiGlitchRipple as="span">{grade.split(" ")[0] || "N/A"}</AsciiGlitchRipple>
             </div>
           </div>
         </div>
@@ -151,7 +152,9 @@ export function StudentOverview({ student, onNavigate }: StudentOverviewProps) {
               {percentage}%
             </div>
             <div className="mt-1 text-[11px] text-slate-500 flex items-center justify-between font-normal">
-              <span>Verified Scorecard</span>
+              <span>
+                <AsciiGlitchRipple as="span">Verified Scorecard</AsciiGlitchRipple>
+              </span>
               <ArrowRight className="w-3 h-3 text-slate-400 group-hover:text-slate-700 transition-colors" />
             </div>
           </div>

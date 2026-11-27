@@ -45,6 +45,12 @@ import {
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/services/auth";
 import { HandoverLogo } from "@/components/common/HandoverLogo";
+import { AsciiGlitchRipple } from "@/components/ui/ascii-glitch-ripple";
+import TextAnimation from "@/components/ui/stagger-text";
+import { InteractiveParticles } from "@/components/ui/interactive-particles";
+import { NotchNavbar } from "@/components/ui/notch-navbar";
+import { KineticTextLoader } from "@/components/ui/kinetic-text-loader";
+import { AgentBentoGrid } from "@/components/ui/agent-bento-grid";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -363,141 +369,24 @@ function IndexPage() {
 
   return (
     <div className="min-h-screen bg-white text-slate-900 flex flex-col font-sans selection:bg-slate-900 selection:text-white antialiased overflow-x-hidden">
-      {/* 1. TOP NAVBAR */}
-      <header className="h-16 border-b border-slate-200/80 bg-white/95 backdrop-blur-md sticky top-0 z-50 px-4 sm:px-8">
-        <div className="max-w-7xl mx-auto h-full flex items-center justify-between">
-          {/* Brand Logo */}
-          <Link to="/" className="flex items-center gap-2.5 font-bold text-slate-900">
-            <HandoverLogo size="md" />
-            <span className="tracking-tight text-base font-bold text-slate-900">Handover</span>
-          </Link>
+      {/* 1. TOP NOTCH NAVBAR */}
+      <NotchNavbar userRole={user?.role} onLogout={logout} />
+      <div className="h-16" />
 
-          {/* Center Navigation Links */}
-          <nav className="hidden md:flex items-center gap-7 text-xs font-medium text-slate-600">
-            <a href="#about" className="hover:text-slate-900 transition-colors">
-              About
-            </a>
-            <a href="#how-it-works" className="hover:text-slate-900 transition-colors">
-              How It Works
-            </a>
-            <a href="#compare" className="hover:text-slate-900 transition-colors">
-              Compare
-            </a>
-            <a href="#live-preview" className="hover:text-slate-900 transition-colors">
-              Interactive Studio
-            </a>
-            <a href="#faq" className="hover:text-slate-900 transition-colors">
-              FAQ
-            </a>
-            <span className="text-emerald-700 font-mono text-[11px] px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200/80 font-medium">
-              Less hype. More proof.
-            </span>
-          </nav>
-
-          {/* Right Action Zone */}
-          <div className="flex items-center gap-3">
-            {user ? (
-              <div className="flex items-center gap-2.5">
-                <div className="hidden sm:flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 border border-slate-200 text-xs font-medium text-slate-700">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-600" />
-                  <span>
-                    {user.role === "teacher" ? "Faculty" : "Student"}: {user.name}
-                  </span>
-                </div>
-
-                <Button
-                  onClick={() => navigate({ to: "/dashboard" })}
-                  className="bg-slate-950 hover:bg-slate-800 text-white text-xs h-8.5 px-4 font-semibold rounded-full shadow-xs gap-1.5"
-                >
-                  <span>Dashboard</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </Button>
-
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={logout}
-                  className="text-xs text-slate-500 hover:text-slate-900 hover:bg-slate-100 h-8.5 rounded-full"
-                >
-                  <LogOut className="w-3.5 h-3.5" />
-                </Button>
-              </div>
-            ) : (
-              <div className="flex items-center gap-3">
-                <Link
-                  to="/auth"
-                  search={{ tab: "signin" }}
-                  className="text-xs font-medium text-slate-700 hover:text-slate-950 transition-colors px-2 py-1"
-                >
-                  Log in
-                </Link>
-
-                <Link to="/auth" search={{ tab: "signup" }}>
-                  <Button className="bg-slate-950 hover:bg-slate-800 text-white text-xs h-8.5 px-4.5 font-semibold rounded-full shadow-xs gap-1.5">
-                    <span>Join now</span>
-                  </Button>
-                </Link>
-              </div>
-            )}
-
-            {/* Mobile Hamburger Menu */}
-            <button
-              type="button"
-              onClick={() => setMobileNavOpen(!mobileNavOpen)}
-              className="md:hidden p-2 rounded-md text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors"
-              aria-label="Toggle Navigation Menu"
-            >
-              {mobileNavOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-            </button>
-          </div>
-        </div>
-      </header>
-
-      {/* Mobile Drawer */}
-      {mobileNavOpen && (
-        <div className="md:hidden border-b border-slate-200 bg-white px-5 py-4 space-y-3 z-40 sticky top-16 shadow-md">
-          <nav className="flex flex-col space-y-1 text-xs font-medium text-slate-700">
-            <a
-              href="#about"
-              onClick={() => setMobileNavOpen(false)}
-              className="py-2 px-3 rounded-md hover:bg-slate-100 text-slate-800 transition-colors"
-            >
-              About Handover
-            </a>
-            <a
-              href="#how-it-works"
-              onClick={() => setMobileNavOpen(false)}
-              className="py-2 px-3 rounded-md hover:bg-slate-100 text-slate-800 transition-colors"
-            >
-              How It Works
-            </a>
-            <a
-              href="#compare"
-              onClick={() => setMobileNavOpen(false)}
-              className="py-2 px-3 rounded-md hover:bg-slate-100 text-slate-800 transition-colors"
-            >
-              Compare with Spreadsheets
-            </a>
-            <a
-              href="#live-preview"
-              onClick={() => setMobileNavOpen(false)}
-              className="py-2 px-3 rounded-md hover:bg-slate-100 text-slate-800 transition-colors"
-            >
-              Interactive Studio Preview
-            </a>
-            <a
-              href="#faq"
-              onClick={() => setMobileNavOpen(false)}
-              className="py-2 px-3 rounded-md hover:bg-slate-100 text-slate-800 transition-colors"
-            >
-              Frequently Asked Questions
-            </a>
-          </nav>
-        </div>
-      )}
-
-      {/* 2. HERO SECTION — DENSE, IMPACTFUL, WITH FULL ORBIT CANVASES */}
+      {/* 2. HERO SECTION — DENSE, IMPACTFUL, WITH INTERACTIVE PARTICLES & FULL ORBIT CANVASES */}
       <section className="relative pt-12 pb-16 sm:pt-20 sm:pb-24 overflow-hidden flex flex-col items-center justify-center">
+        {/* Interactive Ambient Particles in Background */}
+        <div className="absolute inset-0 pointer-events-auto opacity-35 dark:opacity-20 -z-20 overflow-hidden">
+          <InteractiveParticles
+            className="w-full h-full"
+            color="#6366F1"
+            size={1.5}
+            depth={3.0}
+            randomness={1.8}
+            touchRadius={0.16}
+          />
+        </div>
+
         {/* Background Concentric Rotating Orbit Rings */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1400px] h-[1400px] pointer-events-none -z-10 flex items-center justify-center">
           {/* Subtle Radial Glow in Center */}
@@ -554,10 +443,11 @@ function IndexPage() {
             </span>
           </div>
 
-          {/* Primary Headline */}
+          {/* Primary Headline with TextAnimation */}
           <h1 className="text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-slate-900 leading-[1.08] max-w-4xl mx-auto">
-            Stop saying you're managing. Start{" "}
-            <span className="text-[#6366F1] inline-block">commanding it.</span>
+            <TextAnimation divideBy="word">
+              Stop saying you're managing. Start commanding it.
+            </TextAnimation>
           </h1>
 
           {/* Subtitle */}
@@ -572,22 +462,26 @@ function IndexPage() {
             </p>
           </div>
 
-          {/* Proof Tag Chips */}
+          {/* Proof Tag Chips with AsciiGlitchRipple */}
           <div className="flex flex-wrap items-center justify-center gap-2 pt-1 text-[11px] font-mono">
             <span className="px-3.5 py-1 rounded-md bg-[#EFF6FF] border border-[#BFDBFE]/60 text-[#1D4ED8] font-medium">
-              Show what you know. Prove what you record.
+              <AsciiGlitchRipple as="span">
+                Show what you know. Prove what you record.
+              </AsciiGlitchRipple>
             </span>
             <span className="px-3.5 py-1 rounded-md bg-[#F0FDF4] border border-[#BBF7D0]/60 text-[#15803D] font-medium">
-              Less hype. More proof.
+              <AsciiGlitchRipple as="span">Less hype. More proof.</AsciiGlitchRipple>
             </span>
           </div>
 
-          {/* Primary CTA Buttons */}
+          {/* Primary CTA Buttons with AsciiGlitchRipple */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
             <Link to="/auth" search={{ tab: "signin", role: "teacher" }}>
-              <Button className="w-full sm:w-auto bg-slate-950 hover:bg-slate-800 text-white text-xs h-10 px-7 font-semibold rounded-full shadow-xs gap-2">
-                <span>Join Handover</span>
-                <ArrowRight className="w-3.5 h-3.5" />
+              <Button className="w-full sm:w-auto bg-slate-950 hover:bg-slate-800 text-white text-xs h-10 px-7 font-semibold rounded-full shadow-xs gap-2 group">
+                <AsciiGlitchRipple as="span" className="text-white">
+                  Join Handover
+                </AsciiGlitchRipple>
+                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
               </Button>
             </Link>
 
@@ -596,7 +490,7 @@ function IndexPage() {
                 variant="outline"
                 className="w-full sm:w-auto border-slate-200 hover:bg-slate-50 text-slate-800 text-xs h-10 px-6 font-semibold rounded-full shadow-xs gap-2"
               >
-                <span>Sign in with Portal</span>
+                <AsciiGlitchRipple as="span">Sign in with Portal</AsciiGlitchRipple>
               </Button>
             </Link>
           </div>
@@ -838,9 +732,10 @@ function IndexPage() {
 
       {/* 5. "HOW HANDOVER WORKS" (EXPANDED 4-CARD ARCHITECTURE GRID - 6XL) */}
       <section
-        id="how-it-works"
-        className="py-16 max-w-6xl mx-auto px-4 sm:px-8 space-y-8 border-t border-slate-100"
+        id="architecture"
+        className="py-16 max-w-6xl mx-auto px-4 sm:px-8 space-y-8 border-t border-slate-100 scroll-mt-20 relative"
       >
+        <span id="how-it-works" className="absolute -top-20 pointer-events-none" />
         <div className="space-y-2">
           <p className="text-xs font-mono font-semibold tracking-wider uppercase text-emerald-600">
             THE ARCHITECTURE OF PROOF
@@ -971,8 +866,34 @@ function IndexPage() {
         </div>
       </section>
 
+      {/* 5.5. VENGEANCE UI RESPONSIVE BENTO GRID SECTION */}
+      <section
+        id="capabilities"
+        className="py-20 max-w-6xl mx-auto px-4 sm:px-8 space-y-8 border-t border-slate-100 scroll-mt-20"
+      >
+        <div className="space-y-3">
+          <p className="text-xs font-mono font-semibold tracking-wider uppercase text-indigo-600">
+            <AsciiGlitchRipple as="span">BENTO CAPABILITIES MATRIX</AsciiGlitchRipple>
+          </p>
+          <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">
+            <TextAnimation divideBy="word">Engineered for Real Academic Workloads</TextAnimation>
+          </h2>
+          <p className="text-xs sm:text-sm text-slate-500 max-w-2xl leading-relaxed">
+            From real-time pipeline telemetry to student grade isolation and continuous marks audit
+            logs.
+          </p>
+        </div>
+
+        {/* 5-Card Responsive Bento Grid */}
+        <AgentBentoGrid />
+      </section>
+
       {/* 6. DEVXA COMPARISON TABLE (EXPANDED TO FULL 6XL WIDTH ELIMINATING EMPTY MARGINS) */}
-      <section id="compare" className="py-20 max-w-6xl mx-auto px-4 sm:px-8 space-y-6">
+      <section
+        id="comparison"
+        className="py-20 max-w-6xl mx-auto px-4 sm:px-8 space-y-6 scroll-mt-20 relative"
+      >
+        <span id="compare" className="absolute -top-20 pointer-events-none" />
         <div className="space-y-3">
           <p className="text-xs font-mono font-semibold tracking-wider uppercase text-blue-600">
             COMPARISON MATRIX
@@ -1020,7 +941,11 @@ function IndexPage() {
       </section>
 
       {/* 7. INTERACTIVE STUDIO SANDBOX (EXPANDED TO FULL 6XL WITH PRO TOOLBAR) */}
-      <section id="live-preview" className="py-16 bg-slate-50/70 border-y border-slate-200/80">
+      <section
+        id="studio"
+        className="py-16 bg-slate-50/70 border-y border-slate-200/80 scroll-mt-20 relative"
+      >
+        <span id="live-preview" className="absolute -top-20 pointer-events-none" />
         <div className="max-w-6xl mx-auto px-4 sm:px-8 space-y-6">
           <div className="text-center space-y-2 max-w-2xl mx-auto">
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-mono font-medium bg-white text-slate-700 border border-slate-200 shadow-2xs">
@@ -1307,7 +1232,7 @@ function IndexPage() {
       </section>
 
       {/* 8. DEVXA 2-COLUMN BALANCED FAQ SECTION (ELIMINATES EMPTY SIDES) */}
-      <section id="faq" className="py-20 max-w-6xl mx-auto px-4 sm:px-8">
+      <section id="faq" className="py-20 max-w-6xl mx-auto px-4 sm:px-8 scroll-mt-20">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           {/* Left Column (5 cols): Context and Help info */}
           <div className="lg:col-span-5 space-y-4">
