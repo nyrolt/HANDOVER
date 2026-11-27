@@ -3,13 +3,8 @@ import {
   BookOpen,
   Plus,
   Calendar,
-  Clock,
   Edit2,
   Trash2,
-  CheckCircle2,
-  AlertCircle,
-  FileText,
-  Send,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -87,15 +82,14 @@ export function AssignmentManager() {
   return (
     <div className="space-y-6">
       {/* Top Header */}
-      <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="bg-white border border-slate-200 rounded-lg p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <BookOpen className="w-5 h-5 text-indigo-600" />
-            <h2 className="text-base font-bold text-slate-800">Assignment Management</h2>
+            <BookOpen className="w-5 h-5 text-slate-700" />
+            <h2 className="text-base font-semibold text-slate-900">Assignment Management</h2>
           </div>
           <p className="text-xs text-slate-500 mt-1">
-            Publish academic coursework, set firm submission deadlines, and monitor completion per
-            section.
+            Publish academic coursework, set firm submission deadlines, and monitor completion per section.
           </p>
         </div>
 
@@ -104,7 +98,7 @@ export function AssignmentManager() {
           <select
             value={selectedSectionId}
             onChange={(e) => setSelectedSectionId(e.target.value)}
-            className="h-8 px-3 text-xs font-semibold bg-slate-50 border border-slate-200 rounded-lg text-slate-800 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+            className="h-8 px-2.5 text-xs font-semibold bg-slate-50 border border-slate-200 rounded-md text-slate-900 focus:outline-none focus:border-slate-400"
           >
             <option value="all">All Sections</option>
             {sections.map((s) => (
@@ -117,7 +111,7 @@ export function AssignmentManager() {
           <Button
             size="sm"
             onClick={() => setCreateOpen(true)}
-            className="bg-indigo-600 hover:bg-indigo-700 text-white text-xs gap-1.5 h-8 shadow-xs"
+            className="bg-slate-900 hover:bg-slate-800 text-white text-xs gap-1.5 h-8 rounded-md font-medium px-3"
           >
             <Plus className="w-3.5 h-3.5" />
             Create Assignment
@@ -128,10 +122,10 @@ export function AssignmentManager() {
       {/* Assignments List */}
       <div className="space-y-3.5">
         {assignments.length === 0 ? (
-          <div className="bg-white border border-slate-200 rounded-xl p-12 text-center text-slate-400">
+          <div className="bg-white border border-slate-200 rounded-lg p-12 text-center text-slate-400">
             <BookOpen className="w-8 h-8 mx-auto text-slate-300 mb-2" />
-            <p className="text-sm font-semibold text-slate-700">No assignments created yet.</p>
-            <p className="text-xs mt-1">
+            <p className="text-sm font-medium text-slate-700">No assignments created yet.</p>
+            <p className="text-xs mt-1 text-slate-400">
               Click "Create Assignment" to post coursework for your sections.
             </p>
           </div>
@@ -143,44 +137,38 @@ export function AssignmentManager() {
             return (
               <div
                 key={assignment.id}
-                className="bg-white border border-slate-200 rounded-xl p-5 hover:border-indigo-300 hover:shadow-xs transition-all space-y-3"
+                className="bg-white border border-slate-200 rounded-lg p-5 space-y-3"
               >
                 <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
                   <div>
                     <div className="flex flex-wrap items-center gap-2">
-                      <span className="text-[11px] font-bold px-2 py-0.5 rounded bg-indigo-50 text-indigo-700 border border-indigo-100">
+                      <span className="text-[11px] font-mono font-medium px-2 py-0.5 rounded bg-slate-100 text-slate-700 border border-slate-200">
                         {assignment.subject}
                       </span>
-                      <span className="text-[11px] font-semibold px-2 py-0.5 rounded bg-slate-100 text-slate-600">
+                      <span className="text-[11px] text-slate-500 font-medium">
                         {section?.sectionName || "All Sections"}
                       </span>
-                      <span
-                        className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                          !isClosed
-                            ? "bg-emerald-100 text-emerald-800"
-                            : "bg-slate-100 text-slate-500"
-                        }`}
-                      >
+                      <span className="font-mono text-[10px] px-2 py-0.5 rounded border border-slate-200 bg-slate-50 text-slate-700">
                         {assignment.status}
                       </span>
                     </div>
 
-                    <h3 className="text-base font-bold text-slate-800 mt-2">{assignment.title}</h3>
+                    <h3 className="text-sm font-semibold text-slate-900 mt-2">{assignment.title}</h3>
                   </div>
 
                   {/* Deadline Box */}
-                  <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs self-start shrink-0">
-                    <Calendar className="w-4 h-4 text-slate-400" />
+                  <div className="flex items-center gap-2 px-2.5 py-1 bg-slate-50 border border-slate-200 rounded text-xs self-start shrink-0">
+                    <Calendar className="w-3.5 h-3.5 text-slate-500" />
                     <div>
-                      <div className="text-[10px] text-slate-400 uppercase font-semibold">
-                        Due Deadline
+                      <div className="text-[10px] text-slate-400 font-mono">
+                        Due Date
                       </div>
-                      <div className="font-semibold text-slate-700">{assignment.deadline}</div>
+                      <div className="font-mono tabular-nums font-medium text-slate-800">{assignment.deadline}</div>
                     </div>
                   </div>
                 </div>
 
-                <p className="text-xs text-slate-600 leading-relaxed bg-slate-50/50 p-3 rounded-lg border border-slate-100">
+                <p className="text-xs text-slate-600 leading-relaxed bg-slate-50 p-2.5 rounded border border-slate-100">
                   {assignment.description}
                 </p>
 
@@ -198,7 +186,7 @@ export function AssignmentManager() {
                         setEditDescription(assignment.description);
                         setEditStatus(assignment.status);
                       }}
-                      className="p-1.5 text-slate-500 hover:text-indigo-600 rounded flex items-center gap-1 font-medium"
+                      className="p-1 text-slate-500 hover:text-slate-800 rounded flex items-center gap-1 font-medium transition-colors"
                     >
                       <Edit2 className="w-3.5 h-3.5" />
                       Edit
@@ -206,7 +194,7 @@ export function AssignmentManager() {
 
                     <button
                       onClick={() => handleDelete(assignment.id)}
-                      className="p-1.5 text-slate-500 hover:text-rose-600 rounded flex items-center gap-1 font-medium"
+                      className="p-1 text-slate-500 hover:text-rose-600 rounded flex items-center gap-1 font-medium transition-colors"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                       Delete
@@ -222,12 +210,12 @@ export function AssignmentManager() {
       {/* Create Assignment Modal */}
       {createOpen && (
         <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl shadow-xl border border-slate-200 max-w-lg w-full p-6 animate-in fade-in-50 zoom-in-95">
-            <h3 className="text-base font-bold text-slate-800">Create New Course Assignment</h3>
+          <div className="bg-white rounded-lg shadow-xl border border-slate-200 max-w-lg w-full p-6 animate-in fade-in-50 zoom-in-95">
+            <h3 className="text-base font-semibold text-slate-900">Create New Course Assignment</h3>
 
             <form onSubmit={handleCreateSubmit} className="mt-4 space-y-3.5">
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                <label className="block text-xs font-medium text-slate-700 mb-1">
                   Assignment Title
                 </label>
                 <Input
@@ -235,13 +223,13 @@ export function AssignmentManager() {
                   onChange={(e) => setNewTitle(e.target.value)}
                   placeholder="e.g. AWS S3 Versioning & Lifecycle Experiment"
                   required
-                  className="text-xs h-9"
+                  className="text-xs h-8 rounded-md"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  <label className="block text-xs font-medium text-slate-700 mb-1">
                     Subject / Course
                   </label>
                   <Input
@@ -249,18 +237,18 @@ export function AssignmentManager() {
                     onChange={(e) => setNewSubject(e.target.value)}
                     placeholder="Cloud Computing Lab"
                     required
-                    className="text-xs h-9"
+                    className="text-xs h-8 rounded-md"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  <label className="block text-xs font-medium text-slate-700 mb-1">
                     Target Section
                   </label>
                   <select
                     value={newSectionId}
                     onChange={(e) => setNewSectionId(e.target.value)}
-                    className="w-full text-xs h-9 bg-white border border-slate-200 rounded-md px-2 font-medium"
+                    className="w-full text-xs h-8 bg-white border border-slate-200 rounded-md px-2 font-medium"
                   >
                     {sections.map((s) => (
                       <option key={s.id} value={s.id}>
@@ -272,7 +260,7 @@ export function AssignmentManager() {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                <label className="block text-xs font-medium text-slate-700 mb-1">
                   Submission Deadline Date
                 </label>
                 <Input
@@ -280,19 +268,19 @@ export function AssignmentManager() {
                   value={newDeadline}
                   onChange={(e) => setNewDeadline(e.target.value)}
                   required
-                  className="text-xs h-9"
+                  className="text-xs h-8 rounded-md font-mono"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                <label className="block text-xs font-medium text-slate-700 mb-1">
                   Instructions & Description
                 </label>
                 <Textarea
                   value={newDescription}
                   onChange={(e) => setNewDescription(e.target.value)}
                   placeholder="Provide detailed submission requirements, format specifications, and deliverables..."
-                  className="text-xs"
+                  className="text-xs rounded-md"
                   rows={4}
                   required
                 />
@@ -304,14 +292,14 @@ export function AssignmentManager() {
                   variant="outline"
                   size="sm"
                   onClick={() => setCreateOpen(false)}
-                  className="text-xs"
+                  className="text-xs h-8 rounded-md border-slate-200 text-slate-700"
                 >
                   Cancel
                 </Button>
                 <Button
                   type="submit"
                   size="sm"
-                  className="bg-indigo-600 hover:bg-indigo-700 text-white text-xs"
+                  className="bg-slate-900 hover:bg-slate-800 text-white text-xs h-8 rounded-md font-medium"
                 >
                   Publish Assignment
                 </Button>
@@ -324,39 +312,39 @@ export function AssignmentManager() {
       {/* Edit Assignment Modal */}
       {editingAssignment && (
         <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl shadow-xl border border-slate-200 max-w-lg w-full p-6 animate-in fade-in-50 zoom-in-95">
-            <h3 className="text-base font-bold text-slate-800">Edit Assignment</h3>
+          <div className="bg-white rounded-lg shadow-xl border border-slate-200 max-w-lg w-full p-6 animate-in fade-in-50 zoom-in-95">
+            <h3 className="text-base font-semibold text-slate-900">Edit Assignment</h3>
 
             <form onSubmit={handleEditSubmit} className="mt-4 space-y-3.5">
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                <label className="block text-xs font-medium text-slate-700 mb-1">
                   Assignment Title
                 </label>
                 <Input
                   value={editTitle}
                   onChange={(e) => setEditTitle(e.target.value)}
                   required
-                  className="text-xs h-9"
+                  className="text-xs h-8 rounded-md"
                 />
               </div>
 
               <div className="grid grid-cols-3 gap-2">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">Subject</label>
+                  <label className="block text-xs font-medium text-slate-700 mb-1">Subject</label>
                   <Input
                     value={editSubject}
                     onChange={(e) => setEditSubject(e.target.value)}
                     required
-                    className="text-xs h-9"
+                    className="text-xs h-8 rounded-md"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">Section</label>
+                  <label className="block text-xs font-medium text-slate-700 mb-1">Section</label>
                   <select
                     value={editSectionId}
                     onChange={(e) => setEditSectionId(e.target.value)}
-                    className="w-full text-xs h-9 bg-white border border-slate-200 rounded-md px-2"
+                    className="w-full text-xs h-8 bg-white border border-slate-200 rounded-md px-2"
                   >
                     {sections.map((s) => (
                       <option key={s.id} value={s.id}>
@@ -367,11 +355,11 @@ export function AssignmentManager() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">Status</label>
+                  <label className="block text-xs font-medium text-slate-700 mb-1">Status</label>
                   <select
                     value={editStatus}
                     onChange={(e) => setEditStatus(e.target.value as Assignment["status"])}
-                    className="w-full text-xs h-9 bg-white border border-slate-200 rounded-md px-2"
+                    className="w-full text-xs h-8 bg-white border border-slate-200 rounded-md px-2"
                   >
                     <option value="Active">Active</option>
                     <option value="Closed">Closed</option>
@@ -380,7 +368,7 @@ export function AssignmentManager() {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                <label className="block text-xs font-medium text-slate-700 mb-1">
                   Deadline Date
                 </label>
                 <Input
@@ -388,18 +376,18 @@ export function AssignmentManager() {
                   value={editDeadline}
                   onChange={(e) => setEditDeadline(e.target.value)}
                   required
-                  className="text-xs h-9"
+                  className="text-xs h-8 rounded-md font-mono"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                <label className="block text-xs font-medium text-slate-700 mb-1">
                   Description
                 </label>
                 <Textarea
                   value={editDescription}
                   onChange={(e) => setEditDescription(e.target.value)}
-                  className="text-xs"
+                  className="text-xs rounded-md"
                   rows={4}
                   required
                 />
@@ -411,14 +399,14 @@ export function AssignmentManager() {
                   variant="outline"
                   size="sm"
                   onClick={() => setEditingAssignment(null)}
-                  className="text-xs"
+                  className="text-xs h-8 rounded-md border-slate-200 text-slate-700"
                 >
                   Cancel
                 </Button>
                 <Button
                   type="submit"
                   size="sm"
-                  className="bg-indigo-600 hover:bg-indigo-700 text-white text-xs"
+                  className="bg-slate-900 hover:bg-slate-800 text-white text-xs h-8 rounded-md font-medium"
                 >
                   Save Changes
                 </Button>
