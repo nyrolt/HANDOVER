@@ -199,7 +199,12 @@
   }
 
   /* Headings: Authoritative weights (500-600), clean line height, zero uppercase bloat */
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     font-family: var(--font-sans);
     font-weight: 600;
     letter-spacing: -0.015em;
@@ -207,7 +212,9 @@
   }
 
   /* Academic Tabular Figures for marksheets, figures, and calculations */
-  table, .tabular-nums, [data-tabular] {
+  table,
+  .tabular-nums,
+  [data-tabular] {
     font-variant-numeric: tabular-nums;
   }
 
@@ -246,6 +253,56 @@
   transition-property: color, background-color, border-color, opacity;
   transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
   transition-duration: 150ms;
+}
+
+/* Devxa-inspired Hero Orbit & Marquee Keyframes */
+@keyframes marquee-scroll {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee-scroll {
+  display: flex;
+  width: max-content;
+  animation: marquee-scroll 32s linear infinite;
+}
+
+.animate-marquee-scroll:hover {
+  animation-play-state: paused;
+}
+
+@keyframes orbit-pulse {
+  0%,
+  100% {
+    opacity: 0.4;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.02);
+  }
+}
+
+.animate-orbit-pulse {
+  animation: orbit-pulse 8s ease-in-out infinite;
+}
+
+@keyframes float-subtle {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+.animate-float-subtle {
+  animation: float-subtle 4s ease-in-out infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {
