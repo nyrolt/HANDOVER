@@ -22,7 +22,10 @@ export function StudentAssignments({ student }: StudentAssignmentsProps) {
             <h2 className="text-base font-semibold text-slate-900">Course Assignments</h2>
             <p className="text-xs text-slate-500 mt-0.5">
               Coursework, practical tasks, and deadlines posted for{" "}
-              <span className="font-medium text-slate-700">{section?.sectionName || "your section"}</span>.
+              <span className="font-medium text-slate-700">
+                {section?.sectionName || "your section"}
+              </span>
+              .
             </p>
           </div>
         </div>
@@ -66,7 +69,9 @@ export function StudentAssignments({ student }: StudentAssignmentsProps) {
                         {assignment.status}
                       </span>
                     </div>
-                    <h3 className="text-sm font-semibold text-slate-900 mt-2">{assignment.title}</h3>
+                    <h3 className="text-sm font-semibold text-slate-900 mt-2">
+                      {assignment.title}
+                    </h3>
                   </div>
 
                   <div className="flex items-center gap-2.5 px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-md text-xs self-start shrink-0">
@@ -89,7 +94,8 @@ export function StudentAssignments({ student }: StudentAssignmentsProps) {
 
                 <div className="flex items-center justify-between text-xs text-slate-500 pt-1 border-t border-slate-100">
                   <span>
-                    Assigned by <strong className="font-medium text-slate-700">{assignment.createdBy}</strong>
+                    Assigned by{" "}
+                    <strong className="font-medium text-slate-700">{assignment.createdBy}</strong>
                   </span>
                   <span className="font-normal text-slate-600 flex items-center gap-1.5">
                     <CheckCircle2 className="w-3.5 h-3.5 text-slate-500" /> Syllabus aligned

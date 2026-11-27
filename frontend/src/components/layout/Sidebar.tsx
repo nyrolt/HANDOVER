@@ -178,9 +178,7 @@ export function Sidebar({
                   <div className="flex items-center gap-2.5">
                     <Icon
                       className={`w-4 h-4 shrink-0 transition-colors ${
-                        isActive
-                          ? "text-slate-900"
-                          : "text-slate-400 group-hover:text-slate-600"
+                        isActive ? "text-slate-900" : "text-slate-400 group-hover:text-slate-600"
                       }`}
                     />
                     <span>{item.label}</span>
@@ -211,9 +209,7 @@ export function Sidebar({
             <ShieldCheck className="w-3.5 h-3.5 text-slate-400" />
             <span>Multi-tenant scoped</span>
           </div>
-          <span className="text-[10px] font-mono text-slate-400">
-            RBAC v2.1
-          </span>
+          <span className="text-[10px] font-mono text-slate-400">RBAC v2.1</span>
         </div>
       </div>
     </div>
@@ -222,9 +218,7 @@ export function Sidebar({
   return (
     <>
       {/* Desktop Persistent Sidebar */}
-      <aside className="hidden md:block shrink-0 h-full">
-        {sidebarContent}
-      </aside>
+      <aside className="hidden md:block shrink-0 h-full">{sidebarContent}</aside>
 
       {/* Mobile Drawer Overlay */}
       {mobileOpen && (

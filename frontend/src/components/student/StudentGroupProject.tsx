@@ -1,13 +1,5 @@
 import React, { useState } from "react";
-import {
-  Layers,
-  Send,
-  Users,
-  CheckCircle2,
-  Clock,
-  Search,
-  Check,
-} from "lucide-react";
+import { Layers, Send, Users, CheckCircle2, Clock, Search, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { db } from "@/services/db";
@@ -212,9 +204,7 @@ export function StudentGroupProject({ student }: StudentGroupProjectProps) {
               </strong>
             </div>
             <div>
-              <span className="text-slate-400 block text-[10px] uppercase font-mono">
-                Status
-              </span>
+              <span className="text-slate-400 block text-[10px] uppercase font-mono">Status</span>
               <span className="inline-flex items-center gap-1.5 font-medium text-slate-900 mt-0.5 font-mono">
                 {approvedGroup.status}
               </span>
@@ -244,7 +234,8 @@ export function StudentGroupProject({ student }: StudentGroupProjectProps) {
                       </div>
                       <div className="min-w-0">
                         <div className="font-medium text-slate-900 truncate">
-                          {m.studentName} {isYou && <span className="text-slate-500 font-normal">(You)</span>}
+                          {m.studentName}{" "}
+                          {isYou && <span className="text-slate-500 font-normal">(You)</span>}
                         </div>
                         <div className="text-[10px] font-mono text-slate-400">
                           Roll {m.rollNumber}
@@ -272,9 +263,7 @@ export function StudentGroupProject({ student }: StudentGroupProjectProps) {
             <h3 className="text-base font-semibold text-slate-900 mt-1">
               {myCreatedRequest.proposedGroupName}
             </h3>
-            <p className="text-xs text-slate-600">
-              {myCreatedRequest.proposedProjectTitle}
-            </p>
+            <p className="text-xs text-slate-600">{myCreatedRequest.proposedProjectTitle}</p>
           </div>
 
           <div className="space-y-1.5">

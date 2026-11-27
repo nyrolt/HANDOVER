@@ -111,7 +111,7 @@ export function generateSectionMarksCSV(sectionId: string): string {
 export function exportSectionMarksToCSV(sectionId: string): void {
   const section = db.getSectionById(sectionId);
   const csvContent = generateSectionMarksCSV(sectionId);
-  const globalObj = globalThis as unknown as { document?: any };
+  const globalObj = globalThis as unknown as { document?: Document };
   if (typeof globalObj.document !== "undefined") {
     const doc = globalObj.document;
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
@@ -163,7 +163,7 @@ export function exportToCSV(section: Section | undefined, rows: SpreadsheetRow[]
     csvRows.push(line.join(","));
   });
 
-  const globalObj = globalThis as unknown as { document?: any };
+  const globalObj = globalThis as unknown as { document?: Document };
   if (typeof globalObj.document !== "undefined") {
     const doc = globalObj.document;
     const blob = new Blob([csvRows.join("\n")], { type: "text/csv;charset=utf-8;" });

@@ -266,9 +266,7 @@ export function StudentSpreadsheet({
         <div className="flex flex-wrap items-center gap-3">
           <div className="flex items-center gap-2">
             <FileSpreadsheet className="w-4 h-4 text-slate-600 shrink-0" />
-            <span className="text-xs font-medium text-slate-500">
-              Section:
-            </span>
+            <span className="text-xs font-medium text-slate-500">Section:</span>
           </div>
 
           <select
@@ -387,7 +385,9 @@ export function StudentSpreadsheet({
                     <ArrowUpDown className="w-3 h-3 text-slate-400" />
                   </div>
                 </th>
-                <th className="py-2.5 px-3 font-medium text-[11px] min-w-[170px] text-slate-500">Email</th>
+                <th className="py-2.5 px-3 font-medium text-[11px] min-w-[170px] text-slate-500">
+                  Email
+                </th>
                 <th className="py-2.5 px-3 font-medium text-[11px] min-w-[130px] text-slate-500">
                   Project Group
                 </th>
@@ -413,8 +413,12 @@ export function StudentSpreadsheet({
                     <ArrowUpDown className="w-3 h-3 text-slate-400" />
                   </div>
                 </th>
-                <th className="py-2.5 px-3 font-medium text-[11px] text-center w-24 text-slate-600">Grade</th>
-                <th className="py-2.5 px-3 font-medium text-[11px] text-right w-20 text-slate-600">Actions</th>
+                <th className="py-2.5 px-3 font-medium text-[11px] text-center w-24 text-slate-600">
+                  Grade
+                </th>
+                <th className="py-2.5 px-3 font-medium text-[11px] text-right w-20 text-slate-600">
+                  Actions
+                </th>
               </tr>
             </thead>
 
@@ -591,9 +595,7 @@ export function StudentSpreadsheet({
 
             <form onSubmit={handleSaveStudentDetails} className="mt-4 space-y-3.5">
               <div>
-                <label className="block text-xs font-medium text-slate-700 mb-1">
-                  Roll Number
-                </label>
+                <label className="block text-xs font-medium text-slate-700 mb-1">Roll Number</label>
                 <Input
                   value={editStudentRoll}
                   onChange={(e) => setEditStudentRoll(e.target.value)}

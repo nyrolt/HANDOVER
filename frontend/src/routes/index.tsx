@@ -384,8 +384,8 @@ function IndexPage() {
 
           <p className="text-sm sm:text-base text-slate-600 leading-relaxed max-w-2xl mx-auto font-normal">
             Eliminate chaotic, version-drifted Excel spreadsheets. Empower faculty with an inline
-            continuous marks engine, class sections, and 1-click CSV synchronization — while students
-            track verified transcripts and organize collaborative project teams.
+            continuous marks engine, class sections, and 1-click CSV synchronization — while
+            students track verified transcripts and organize collaborative project teams.
           </p>
 
           {/* Quick Capability Highlights */}
@@ -424,13 +424,11 @@ function IndexPage() {
               </div>
 
               <div className="space-y-1.5">
-                <h2 className="text-xl font-semibold text-slate-900">
-                  Faculty Workspace
-                </h2>
+                <h2 className="text-xl font-semibold text-slate-900">Faculty Workspace</h2>
                 <p className="text-xs text-slate-600 leading-relaxed">
-                  Designed for course instructors and department chairs. Rapid continuous marks entry
-                  with keyboard navigation (Tab/Enter), automated grade distributions, coursework
-                  assignments, and one-click project proposal reviews.
+                  Designed for course instructors and department chairs. Rapid continuous marks
+                  entry with keyboard navigation (Tab/Enter), automated grade distributions,
+                  coursework assignments, and one-click project proposal reviews.
                 </p>
               </div>
 
@@ -503,13 +501,11 @@ function IndexPage() {
               </div>
 
               <div className="space-y-1.5">
-                <h2 className="text-xl font-semibold text-slate-900">
-                  Student Academic Portal
-                </h2>
+                <h2 className="text-xl font-semibold text-slate-900">Student Academic Portal</h2>
                 <p className="text-xs text-slate-600 leading-relaxed">
                   Personalized, protected student hub. View official continuous marks transcripts,
-                  verify assignment deadlines, propose project groups with section peers, and receive
-                  official instructor notices.
+                  verify assignment deadlines, propose project groups with section peers, and
+                  receive official instructor notices.
                 </p>
               </div>
 
@@ -615,9 +611,7 @@ function IndexPage() {
             {/* Mode Switcher Tabs */}
             <div className="bg-slate-50 border-b border-slate-200 px-4 sm:px-6 py-2.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div className="flex items-center gap-2">
-                <span className="text-xs font-medium text-slate-500 font-mono">
-                  View:
-                </span>
+                <span className="text-xs font-medium text-slate-500 font-mono">View:</span>
                 <div className="flex items-center gap-1 bg-slate-200/70 p-0.5 rounded-md text-xs">
                   <button
                     onClick={() => setActiveDemoTab("spreadsheet")}
@@ -865,9 +859,7 @@ function IndexPage() {
                     </div>
                     <div>
                       <div className="flex items-center gap-2">
-                        <h4 className="font-semibold text-slate-900 text-sm">
-                          Alexander Wright
-                        </h4>
+                        <h4 className="font-semibold text-slate-900 text-sm">Alexander Wright</h4>
                         <span className="text-[10px] font-mono font-medium text-emerald-700 bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 rounded">
                           Enrolled
                         </span>
@@ -1165,7 +1157,9 @@ function IndexPage() {
                 <Building2 className="w-4 h-4" />
               </div>
               <div className="space-y-1.5">
-                <h3 className="text-base font-semibold text-slate-900">Independent Class Sections</h3>
+                <h3 className="text-base font-semibold text-slate-900">
+                  Independent Class Sections
+                </h3>
                 <p className="text-xs text-slate-600 leading-relaxed">
                   Strict multi-tenancy ensures CSE-A, CSE-B, and IT-A records never leak. Each
                   section maintains isolated roll rosters, coursework, and teams.
@@ -1184,7 +1178,9 @@ function IndexPage() {
                 <Layers className="w-4 h-4" />
               </div>
               <div className="space-y-1.5">
-                <h3 className="text-base font-semibold text-slate-900">Dual Group Project Engine</h3>
+                <h3 className="text-base font-semibold text-slate-900">
+                  Dual Group Project Engine
+                </h3>
                 <p className="text-xs text-slate-600 leading-relaxed">
                   Students propose project titles and invite classmates. Instructors verify
                   eligibility, assign faculty guides, and record milestone marks in one click.
@@ -1301,8 +1297,8 @@ function IndexPage() {
                       Version Drift & File Loss:
                     </strong>
                     Conflicting copies like{" "}
-                    <code className="font-mono text-[11px]">marks_final_v2_edit.xlsx</code> scattered
-                    across USB sticks and mailboxes.
+                    <code className="font-mono text-[11px]">marks_final_v2_edit.xlsx</code>{" "}
+                    scattered across USB sticks and mailboxes.
                   </div>
                 </div>
 

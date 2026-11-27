@@ -47,7 +47,9 @@ export function StudentOverview({ student, onNavigate }: StudentOverviewProps) {
           <div className="flex flex-wrap items-center gap-3 mt-1.5 text-xs text-slate-500">
             <span>
               Roll Number:{" "}
-              <strong className="text-slate-900 font-mono tabular-nums">{student.rollNumber}</strong>
+              <strong className="text-slate-900 font-mono tabular-nums">
+                {student.rollNumber}
+              </strong>
             </span>
             <span>•</span>
             <span>
@@ -64,7 +66,9 @@ export function StudentOverview({ student, onNavigate }: StudentOverviewProps) {
         {/* Quick Marks Summary */}
         <div className="bg-slate-50 border border-slate-200 rounded-lg p-3.5 flex items-center gap-4 self-start md:self-auto shrink-0">
           <div>
-            <div className="text-[10px] uppercase font-medium text-slate-400 font-mono">Continuous Score</div>
+            <div className="text-[10px] uppercase font-medium text-slate-400 font-mono">
+              Continuous Score
+            </div>
             <div className="text-2xl font-semibold text-slate-900 font-mono tabular-nums">
               {marks?.total ?? 0}
               <span className="text-xs font-normal text-slate-400 font-sans">
@@ -75,7 +79,9 @@ export function StudentOverview({ student, onNavigate }: StudentOverviewProps) {
           <div className="h-8 w-px bg-slate-200" />
           <div>
             <div className="text-[10px] uppercase font-medium text-slate-400 font-mono">Grade</div>
-            <div className="text-sm font-semibold text-slate-900 font-mono">{grade.split(" ")[0]}</div>
+            <div className="text-sm font-semibold text-slate-900 font-mono">
+              {grade.split(" ")[0]}
+            </div>
           </div>
         </div>
       </div>
@@ -141,7 +147,9 @@ export function StudentOverview({ student, onNavigate }: StudentOverviewProps) {
             </div>
           </div>
           <div className="mt-3">
-            <div className="text-2xl font-semibold text-slate-900 font-mono tabular-nums">{percentage}%</div>
+            <div className="text-2xl font-semibold text-slate-900 font-mono tabular-nums">
+              {percentage}%
+            </div>
             <div className="mt-1 text-[11px] text-slate-500 flex items-center justify-between font-normal">
               <span>Verified Scorecard</span>
               <ArrowRight className="w-3 h-3 text-slate-400 group-hover:text-slate-700 transition-colors" />
@@ -214,7 +222,9 @@ export function StudentOverview({ student, onNavigate }: StudentOverviewProps) {
 
                   <div className="sm:text-right shrink-0">
                     <div className="text-[10px] text-slate-400 font-mono">Deadline</div>
-                    <div className="text-xs font-mono font-medium text-slate-800 tabular-nums">{a.deadline}</div>
+                    <div className="text-xs font-mono font-medium text-slate-800 tabular-nums">
+                      {a.deadline}
+                    </div>
                   </div>
                 </div>
               ))
@@ -316,7 +326,9 @@ export function StudentOverview({ student, onNavigate }: StudentOverviewProps) {
               </div>
             ) : pendingRequest ? (
               <div className="p-3.5 bg-amber-50/50 rounded-md border border-amber-200 text-xs space-y-2">
-                <div className="font-semibold text-amber-900">{pendingRequest.proposedGroupName}</div>
+                <div className="font-semibold text-amber-900">
+                  {pendingRequest.proposedGroupName}
+                </div>
                 <div className="text-amber-800 text-[11px]">
                   {pendingRequest.proposedProjectTitle}
                 </div>
@@ -357,7 +369,9 @@ export function StudentOverview({ student, onNavigate }: StudentOverviewProps) {
                   >
                     <div className="font-medium text-slate-900">{ann.title}</div>
                     <p className="text-slate-600 text-[11px] leading-relaxed">{ann.message}</p>
-                    <div className="text-[10px] font-mono text-slate-400 pt-0.5">Faculty Announcement</div>
+                    <div className="text-[10px] font-mono text-slate-400 pt-0.5">
+                      Faculty Announcement
+                    </div>
                   </div>
                 ))}
               </div>

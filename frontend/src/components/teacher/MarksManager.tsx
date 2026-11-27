@@ -188,9 +188,7 @@ export function MarksManager() {
       {/* 4 KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
         <div className="bg-white border border-slate-200 rounded-lg p-4">
-          <div className="text-[11px] font-medium text-slate-500">
-            Class Average
-          </div>
+          <div className="text-[11px] font-medium text-slate-500">Class Average</div>
           <div className="text-2xl font-semibold text-slate-900 mt-1 font-mono tabular-nums">
             {classAvg}{" "}
             <span className="text-xs font-normal text-slate-400 font-sans">/{maxTotal}</span>
@@ -199,9 +197,7 @@ export function MarksManager() {
         </div>
 
         <div className="bg-white border border-slate-200 rounded-lg p-4">
-          <div className="text-[11px] font-medium text-slate-500">
-            Highest Score
-          </div>
+          <div className="text-[11px] font-medium text-slate-500">Highest Score</div>
           <div className="text-2xl font-semibold text-slate-900 mt-1 font-mono tabular-nums">
             {highestScore}{" "}
             <span className="text-xs font-normal text-slate-400 font-sans">/{maxTotal}</span>
@@ -210,19 +206,17 @@ export function MarksManager() {
         </div>
 
         <div className="bg-white border border-slate-200 rounded-lg p-4">
-          <div className="text-[11px] font-medium text-slate-500">
-            Pass Rate
+          <div className="text-[11px] font-medium text-slate-500">Pass Rate</div>
+          <div className="text-2xl font-semibold text-slate-900 mt-1 font-mono tabular-nums">
+            {passRate}%
           </div>
-          <div className="text-2xl font-semibold text-slate-900 mt-1 font-mono tabular-nums">{passRate}%</div>
           <div className="text-xs text-slate-500 mt-0.5">
             {passCount} of {totalStudents} passing
           </div>
         </div>
 
         <div className="bg-white border border-slate-200 rounded-lg p-4 flex flex-col justify-between">
-          <div className="text-[11px] font-medium text-slate-500">
-            Sync Status
-          </div>
+          <div className="text-[11px] font-medium text-slate-500">Sync Status</div>
           <div className="flex items-center gap-1.5 mt-2">
             <span className="w-2 h-2 rounded-full bg-emerald-600" />
             <span className="text-xs font-medium text-slate-900 font-mono">{statusMsg}</span>
@@ -281,7 +275,9 @@ export function MarksManager() {
                 const isPass = pct >= 40;
                 return (
                   <tr key={r.studentId} className="hover:bg-slate-50/70 transition-colors">
-                    <td className="py-2 px-3 font-mono tabular-nums font-semibold text-slate-800">{r.rollNumber}</td>
+                    <td className="py-2 px-3 font-mono tabular-nums font-semibold text-slate-800">
+                      {r.rollNumber}
+                    </td>
                     <td className="py-2 px-4">
                       <div className="font-medium text-slate-900">{r.name}</div>
                       <div className="text-[10px] text-slate-400 font-mono truncate max-w-[150px]">

@@ -4,23 +4,25 @@ import { serverConfig } from "../config";
 import { db } from "../../backend/services/db";
 import http from "http";
 
-async function json(res: Response): Promise<any> {
-  return (await res.json()) as any;
+async function json(res: Response): Promise<Record<string, unknown>> {
+  return (await res.json()) as Record<string, unknown>;
 }
 
 async function runE2EVerification() {
   console.log("=== STARTING FULL STACK E2E VERIFICATION ===");
-  
+
   // 1. Reset state
   db.resetToDefault();
-  
+
   // 2. Check if a server is already actively listening on port 5000
   let isExternalServer = false;
-  let testPort = serverConfig.port || 5000;
+  const testPort = serverConfig.port || 5000;
   let serverInstance: http.Server | null = null;
 
   try {
-    const existingCheck = await fetch(`http://localhost:${testPort}/api/health`, { signal: AbortSignal.timeout(1000) });
+    const existingCheck = await fetch(`http://localhost:${testPort}/api/health`, {
+      signal: AbortSignal.timeout(1000),
+    });
     if (existingCheck.status === 200) {
       isExternalServer = true;
       console.log(`[INFO] Connected to active dev server running on port ${testPort}`);
@@ -92,7 +94,7 @@ async function runE2EVerification() {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${teacherToken}`,
+        Authorization: `Bearer ${teacherToken}`,
       },
       body: JSON.stringify({
         sectionName: "CS-401: Distributed Systems",
@@ -147,20 +149,24 @@ async function runE2EVerification() {
     const forbiddenSecRes = await fetch(`${baseUrl}/api/teacher/sections`, {
       method: "GET",
       headers: {
-        "Authorization": `Bearer ${studentToken}`,
+        Authorization: `Bearer ${studentToken}`,
       },
     });
     if (forbiddenSecRes.status !== 403) {
-      throw new Error(`Expected 403 Forbidden for student accessing teacher sections, got ${forbiddenSecRes.status}`);
+      throw new Error(
+        `Expected 403 Forbidden for student accessing teacher sections, got ${forbiddenSecRes.status}`,
+      );
     }
-    console.log("[PASS] RBAC Enforcement verified: Student rejected from teacher sections (403 Forbidden)");
+    console.log(
+      "[PASS] RBAC Enforcement verified: Student rejected from teacher sections (403 Forbidden)",
+    );
 
     // 9. RBAC Enforcement: Student cannot update marks
     const forbiddenMarksRes = await fetch(`${baseUrl}/api/marks/update`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${studentToken}`,
+        Authorization: `Bearer ${studentToken}`,
       },
       body: JSON.stringify({
         studentId: "some-id",
@@ -168,16 +174,20 @@ async function runE2EVerification() {
       }),
     });
     if (forbiddenMarksRes.status !== 403) {
-      throw new Error(`Expected 403 Forbidden for student updating marks, got ${forbiddenMarksRes.status}`);
+      throw new Error(
+        `Expected 403 Forbidden for student updating marks, got ${forbiddenMarksRes.status}`,
+      );
     }
-    console.log("[PASS] RBAC Enforcement verified: Student prohibited from mutating marks (403 Forbidden)");
+    console.log(
+      "[PASS] RBAC Enforcement verified: Student prohibited from mutating marks (403 Forbidden)",
+    );
 
     // 10. Teacher Spreadsheet Mark Updates
     // Retrieve students in section
     const secStudentsRes = await fetch(`${baseUrl}/api/teacher/sections/${sectionId}/students`, {
       method: "GET",
       headers: {
-        "Authorization": `Bearer ${teacherToken}`,
+        Authorization: `Bearer ${teacherToken}`,
       },
     });
     const secStudentsData = await json(secStudentsRes);
@@ -190,7 +200,7 @@ async function runE2EVerification() {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${teacherToken}`,
+        Authorization: `Bearer ${teacherToken}`,
       },
       body: JSON.stringify({
         studentId: studentRecord.studentId,
@@ -212,7 +222,7 @@ async function runE2EVerification() {
     const studentDashRes = await fetch(`${baseUrl}/api/student/dashboard`, {
       method: "GET",
       headers: {
-        "Authorization": `Bearer ${studentToken}`,
+        Authorization: `Bearer ${studentToken}`,
       },
     });
     const studentDashData = await json(studentDashRes);
@@ -230,7 +240,7 @@ async function runE2EVerification() {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${studentToken}`,
+        Authorization: `Bearer ${studentToken}`,
       },
       body: JSON.stringify({
         proposedGroupName: "Team Distributed Core",
@@ -249,14 +259,21 @@ async function runE2EVerification() {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${teacherToken}`,
+        Authorization: `Bearer ${teacherToken}`,
       },
       body: JSON.stringify({
         groupName: "Team Distributed Core",
         projectTitle: "Byzantine Fault Tolerant Replication Engine",
         projectDescription: "Byzantine Fault Tolerant Replication Engine",
         sectionId: sectionId,
-        members: [{ studentId: studentRecord.studentId, studentName: studentRecord.name, rollNumber: studentRecord.rollNumber, role: "Leader" }],
+        members: [
+          {
+            studentId: studentRecord.studentId,
+            studentName: studentRecord.name,
+            rollNumber: studentRecord.rollNumber,
+            role: "Leader",
+          },
+        ],
       }),
     });
     const reviewData = await json(reviewRes);
@@ -269,7 +286,7 @@ async function runE2EVerification() {
     const studentGroupRes = await fetch(`${baseUrl}/api/student/project-group`, {
       method: "GET",
       headers: {
-        "Authorization": `Bearer ${studentToken}`,
+        Authorization: `Bearer ${studentToken}`,
       },
     });
     const studentGroupData = await json(studentGroupRes);
@@ -280,12 +297,15 @@ async function runE2EVerification() {
 
     // 13. Multi-tenancy Isolation Check
     // Attempting to access an invalid/cross-tenant section
-    const crossTenantRes = await fetch(`${baseUrl}/api/teacher/sections/non-existent-or-foreign-section/students`, {
-      method: "GET",
-      headers: {
-        "Authorization": `Bearer ${teacherToken}`,
+    const crossTenantRes = await fetch(
+      `${baseUrl}/api/teacher/sections/non-existent-or-foreign-section/students`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${teacherToken}`,
+        },
       },
-    });
+    );
     const crossTenantData = await json(crossTenantRes);
     // Non-existent or foreign section returns empty list or error
     if (crossTenantData.data && crossTenantData.data.length > 0) {

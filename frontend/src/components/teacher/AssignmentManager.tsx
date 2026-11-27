@@ -1,11 +1,5 @@
 import React, { useState } from "react";
-import {
-  BookOpen,
-  Plus,
-  Calendar,
-  Edit2,
-  Trash2,
-} from "lucide-react";
+import { BookOpen, Plus, Calendar, Edit2, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -89,7 +83,8 @@ export function AssignmentManager() {
             <h2 className="text-base font-semibold text-slate-900">Assignment Management</h2>
           </div>
           <p className="text-xs text-slate-500 mt-1">
-            Publish academic coursework, set firm submission deadlines, and monitor completion per section.
+            Publish academic coursework, set firm submission deadlines, and monitor completion per
+            section.
           </p>
         </div>
 
@@ -153,17 +148,19 @@ export function AssignmentManager() {
                       </span>
                     </div>
 
-                    <h3 className="text-sm font-semibold text-slate-900 mt-2">{assignment.title}</h3>
+                    <h3 className="text-sm font-semibold text-slate-900 mt-2">
+                      {assignment.title}
+                    </h3>
                   </div>
 
                   {/* Deadline Box */}
                   <div className="flex items-center gap-2 px-2.5 py-1 bg-slate-50 border border-slate-200 rounded text-xs self-start shrink-0">
                     <Calendar className="w-3.5 h-3.5 text-slate-500" />
                     <div>
-                      <div className="text-[10px] text-slate-400 font-mono">
-                        Due Date
+                      <div className="text-[10px] text-slate-400 font-mono">Due Date</div>
+                      <div className="font-mono tabular-nums font-medium text-slate-800">
+                        {assignment.deadline}
                       </div>
-                      <div className="font-mono tabular-nums font-medium text-slate-800">{assignment.deadline}</div>
                     </div>
                   </div>
                 </div>
@@ -381,9 +378,7 @@ export function AssignmentManager() {
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-slate-700 mb-1">
-                  Description
-                </label>
+                <label className="block text-xs font-medium text-slate-700 mb-1">Description</label>
                 <Textarea
                   value={editDescription}
                   onChange={(e) => setEditDescription(e.target.value)}

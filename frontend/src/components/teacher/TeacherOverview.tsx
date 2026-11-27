@@ -47,7 +47,11 @@ export function TeacherOverview({
     {
       title: "Active Sections",
       value: sections.length,
-      subtitle: sections.map((s) => s.sectionName).slice(0, 3).join(", ") || "No sections",
+      subtitle:
+        sections
+          .map((s) => s.sectionName)
+          .slice(0, 3)
+          .join(", ") || "No sections",
       icon: FolderGit2,
       actionTab: "sections",
     },
@@ -84,7 +88,8 @@ export function TeacherOverview({
             Faculty Overview
           </h2>
           <p className="text-xs text-slate-500 mt-1 max-w-xl leading-relaxed">
-            Monitor class enrollments, spreadsheet marksheets, project group proposals, and continuous academic assessments.
+            Monitor class enrollments, spreadsheet marksheets, project group proposals, and
+            continuous academic assessments.
           </p>
         </div>
 
@@ -179,7 +184,9 @@ export function TeacherOverview({
                 >
                   <div className="flex items-start justify-between">
                     <div>
-                      <h4 className="text-sm font-semibold text-slate-900">{section.sectionName}</h4>
+                      <h4 className="text-sm font-semibold text-slate-900">
+                        {section.sectionName}
+                      </h4>
                       <p className="text-xs text-slate-500">{section.courseName}</p>
                     </div>
                     <span className="text-[10px] font-mono font-medium px-2 py-0.5 rounded bg-slate-100 text-slate-600 border border-slate-200">
@@ -272,12 +279,17 @@ export function TeacherOverview({
                   : date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 
                 return (
-                  <div key={log.id} className="py-2.5 first:pt-0 last:pb-0 flex items-start gap-2.5">
+                  <div
+                    key={log.id}
+                    className="py-2.5 first:pt-0 last:pb-0 flex items-start gap-2.5"
+                  >
                     <div className="w-1.5 h-1.5 rounded-full bg-slate-400 mt-1.5 shrink-0" />
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center justify-between text-xs">
                         <span className="font-medium text-slate-800 truncate">{log.action}</span>
-                        <span className="text-[10px] font-mono text-slate-400 shrink-0">{timeString}</span>
+                        <span className="text-[10px] font-mono text-slate-400 shrink-0">
+                          {timeString}
+                        </span>
                       </div>
                       <p className="text-[11px] text-slate-500 mt-0.5 leading-relaxed">
                         {log.description}

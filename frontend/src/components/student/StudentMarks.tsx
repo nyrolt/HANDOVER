@@ -79,7 +79,8 @@ export function StudentMarks({ student }: StudentMarksProps) {
             </h2>
           </div>
           <p className="text-xs text-slate-500 mt-1">
-            Continuous comprehensive assessment verified by course instructors and academic department.
+            Continuous comprehensive assessment verified by course instructors and academic
+            department.
           </p>
         </div>
 
@@ -112,7 +113,10 @@ export function StudentMarks({ student }: StudentMarksProps) {
             </h3>
             <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500 mt-1.5">
               <span>
-                Roll Number: <strong className="text-slate-900 font-mono tabular-nums">{student.rollNumber}</strong>
+                Roll Number:{" "}
+                <strong className="text-slate-900 font-mono tabular-nums">
+                  {student.rollNumber}
+                </strong>
               </span>
               <span>•</span>
               <span>{section?.courseName || "Computer Science & Engineering"}</span>
@@ -128,22 +132,15 @@ export function StudentMarks({ student }: StudentMarksProps) {
               </div>
               <div className="text-2xl font-semibold text-slate-900 tabular-nums">
                 {total}
-                <span className="text-xs font-normal text-slate-400 font-sans">
-                  {" "}
-                  / {maxTotal}
-                </span>
+                <span className="text-xs font-normal text-slate-400 font-sans"> / {maxTotal}</span>
               </div>
             </div>
 
             <div className="h-8 w-px bg-slate-200" />
 
             <div>
-              <div className="text-[10px] font-medium uppercase text-slate-400">
-                Percentage
-              </div>
-              <div className="text-sm font-semibold text-slate-900 tabular-nums">
-                {percentage}%
-              </div>
+              <div className="text-[10px] font-medium uppercase text-slate-400">Percentage</div>
+              <div className="text-sm font-semibold text-slate-900 tabular-nums">{percentage}%</div>
               <div className="text-[11px] font-medium text-slate-600 mt-0.5">
                 Grade {grade.split(" ")[0]}
               </div>
@@ -178,9 +175,7 @@ export function StudentMarks({ student }: StudentMarksProps) {
                     {c.score}
                     <span className="text-xs font-normal text-slate-400">/{c.max}</span>
                   </div>
-                  <span className="text-[10px] font-medium text-slate-500">
-                    {c.weightage}
-                  </span>
+                  <span className="text-[10px] font-medium text-slate-500">{c.weightage}</span>
                 </div>
               </div>
 

@@ -346,7 +346,9 @@ function AuthPage() {
                     className="p-2 bg-white border border-slate-200 hover:bg-slate-100 rounded text-left transition-colors"
                   >
                     <div className="font-medium text-slate-800 text-[11px]">Faculty Demo</div>
-                    <div className="text-[10px] text-slate-500 font-mono truncate">e.vance@univ.edu</div>
+                    <div className="text-[10px] text-slate-500 font-mono truncate">
+                      e.vance@univ.edu
+                    </div>
                   </button>
                   <button
                     type="button"
@@ -354,7 +356,9 @@ function AuthPage() {
                     className="p-2 bg-white border border-slate-200 hover:bg-slate-100 rounded text-left transition-colors"
                   >
                     <div className="font-medium text-slate-800 text-[11px]">Student Demo</div>
-                    <div className="text-[10px] text-slate-500 font-mono truncate">a.wright@univ.edu</div>
+                    <div className="text-[10px] text-slate-500 font-mono truncate">
+                      a.wright@univ.edu
+                    </div>
                   </button>
                 </div>
               </div>
@@ -438,9 +442,7 @@ function AuthPage() {
               {/* Registration Form */}
               <form onSubmit={handleSignUpSubmit} className="space-y-3.5">
                 <div>
-                  <label className="block text-xs font-medium text-slate-700 mb-1">
-                    Full Name
-                  </label>
+                  <label className="block text-xs font-medium text-slate-700 mb-1">Full Name</label>
                   <div className="relative">
                     <UserIcon className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
                     <Input

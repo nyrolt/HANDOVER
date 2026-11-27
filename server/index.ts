@@ -108,9 +108,7 @@ if (process.env["NODE_ENV"] !== "test" && isMainModule()) {
 
   listener.on("error", (err: NodeJS.ErrnoException) => {
     if (err.code === "EADDRINUSE") {
-      logger.error(
-        `Port ${serverConfig.port} is already in use by another active server process.`,
-      );
+      logger.error(`Port ${serverConfig.port} is already in use by another active server process.`);
     } else {
       logger.error(`Server listener error: ${err.message}`);
     }

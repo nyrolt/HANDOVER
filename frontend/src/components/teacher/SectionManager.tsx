@@ -85,12 +85,11 @@ export function SectionManager({
         <div>
           <div className="flex items-center gap-2">
             <School className="w-5 h-5 text-slate-700" />
-            <h2 className="text-base font-semibold text-slate-900">
-              Class & Section Management
-            </h2>
+            <h2 className="text-base font-semibold text-slate-900">Class & Section Management</h2>
           </div>
           <p className="text-xs text-slate-500 mt-1">
-            Configure course sections with independent student rosters, marks registers, and project groups.
+            Configure course sections with independent student rosters, marks registers, and project
+            groups.
           </p>
         </div>
 
@@ -134,15 +133,21 @@ export function SectionManager({
                 {/* Section Statistics */}
                 <div className="grid grid-cols-3 gap-2 mt-4 py-2.5 border-y border-slate-100 text-center font-mono">
                   <div>
-                    <div className="text-lg font-semibold text-slate-900 tabular-nums">{secStudents.length}</div>
+                    <div className="text-lg font-semibold text-slate-900 tabular-nums">
+                      {secStudents.length}
+                    </div>
                     <div className="text-[10px] text-slate-500 font-sans">Students</div>
                   </div>
                   <div>
-                    <div className="text-lg font-semibold text-slate-900 tabular-nums">{secGroups.length}</div>
+                    <div className="text-lg font-semibold text-slate-900 tabular-nums">
+                      {secGroups.length}
+                    </div>
                     <div className="text-[10px] text-slate-500 font-sans">Teams</div>
                   </div>
                   <div>
-                    <div className="text-lg font-semibold text-slate-900 tabular-nums">{secAssignments.length}</div>
+                    <div className="text-lg font-semibold text-slate-900 tabular-nums">
+                      {secAssignments.length}
+                    </div>
                     <div className="text-[10px] text-slate-500 font-sans">Tasks</div>
                   </div>
                 </div>
@@ -289,9 +294,7 @@ export function SectionManager({
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-slate-700 mb-1">
-                  Course Name
-                </label>
+                <label className="block text-xs font-medium text-slate-700 mb-1">Course Name</label>
                 <Input
                   value={editCourseName}
                   onChange={(e) => setEditCourseName(e.target.value)}

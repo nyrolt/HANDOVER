@@ -57,7 +57,13 @@ class CollegeDatabase {
     }
 
     try {
-      try { localStorage.removeItem(LEGACY_STORAGE_KEY); localStorage.removeItem(LEGACY_OLD_KEY); } catch (_) {} const stored = localStorage.getItem(STORAGE_KEY);
+      try {
+        localStorage.removeItem(LEGACY_STORAGE_KEY);
+        localStorage.removeItem(LEGACY_OLD_KEY);
+      } catch {
+        // Ignore legacy cleanup failures
+      }
+      const stored = localStorage.getItem(STORAGE_KEY);
       if (stored) {
         const parsed = JSON.parse(stored);
         // Ensure all required collections exist
