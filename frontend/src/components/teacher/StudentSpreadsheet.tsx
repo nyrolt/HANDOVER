@@ -261,18 +261,20 @@ export function StudentSpreadsheet({
   return (
     <div className="space-y-4">
       {/* Top Controls: Section Selector, Search, Actions */}
-      <div className="bg-white border border-slate-200 rounded-lg p-3.5 flex flex-col md:flex-row md:items-center justify-between gap-3">
+      <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
         {/* Left: Section Selector & Details */}
         <div className="flex flex-wrap items-center gap-3">
           <div className="flex items-center gap-2">
-            <FileSpreadsheet className="w-4 h-4 text-slate-600 shrink-0" />
-            <span className="text-xs font-medium text-slate-500">Section:</span>
+            <FileSpreadsheet className="w-5 h-5 text-indigo-600 shrink-0" />
+            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+              Section:
+            </span>
           </div>
 
           <select
             value={selectedSectionId}
             onChange={(e) => setSelectedSectionId(e.target.value)}
-            className="h-8 px-2.5 text-xs font-semibold bg-slate-50 border border-slate-200 rounded-md text-slate-900 focus:outline-none focus:border-slate-400 cursor-pointer"
+            className="h-9 px-3 text-sm font-semibold bg-slate-50 border border-slate-200 rounded-lg text-slate-800 focus:outline-none focus:ring-1 focus:ring-indigo-500 cursor-pointer"
           >
             {sections.map((s) => (
               <option key={s.id} value={s.id}>
@@ -281,8 +283,8 @@ export function StudentSpreadsheet({
             ))}
           </select>
 
-          <span className="text-xs text-slate-400 font-mono hidden sm:inline">
-            • {filteredRows.length} enrolled
+          <span className="text-xs text-slate-400 font-medium hidden sm:inline">
+            • {filteredRows.length} students enrolled
           </span>
         </div>
 
@@ -296,7 +298,7 @@ export function StudentSpreadsheet({
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search roll, name, group..."
-              className="w-full h-8 pl-8 pr-3 text-xs bg-slate-50 border border-slate-200 rounded-md focus:bg-white focus:outline-none focus:border-slate-400 transition-colors text-slate-900 placeholder:text-slate-400"
+              className="w-full pl-8 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:outline-none focus:ring-1 focus:ring-indigo-500"
             />
           </div>
 
@@ -305,7 +307,7 @@ export function StudentSpreadsheet({
             size="sm"
             variant="outline"
             onClick={() => exportToCSV(currentSection, rows)}
-            className="border-slate-200 text-slate-700 hover:bg-slate-50 text-xs gap-1.5 h-8 rounded-md font-medium"
+            className="border-slate-200 text-slate-700 hover:bg-slate-50 text-xs gap-1.5 h-8"
             title="Download this section as a CSV spreadsheet"
           >
             <Download className="w-3.5 h-3.5 text-slate-500" />
@@ -320,7 +322,7 @@ export function StudentSpreadsheet({
               setImportModalOpen(true);
               setImportSummary(null);
             }}
-            className="border-slate-200 text-slate-700 hover:bg-slate-50 text-xs gap-1.5 h-8 rounded-md font-medium"
+            className="border-slate-200 text-slate-700 hover:bg-slate-50 text-xs gap-1.5 h-8"
           >
             <Upload className="w-3.5 h-3.5 text-slate-500" />
             <span className="hidden sm:inline">Import</span>
@@ -330,7 +332,7 @@ export function StudentSpreadsheet({
           <Button
             size="sm"
             onClick={onOpenAddStudent}
-            className="bg-slate-900 hover:bg-slate-800 text-white text-xs gap-1.5 h-8 rounded-md font-medium px-3"
+            className="bg-indigo-600 hover:bg-indigo-700 text-white text-xs gap-1.5 h-8 shadow-xs"
           >
             <Plus className="w-3.5 h-3.5" />
             Add Student
@@ -341,35 +343,35 @@ export function StudentSpreadsheet({
       {/* Spreadsheet Instructions & Live Save Status Bar */}
       <div className="flex items-center justify-between px-1 text-xs text-slate-500">
         <div className="flex items-center gap-2">
-          <span className="font-medium text-slate-700">Academic ledger:</span>
+          <span className="font-semibold text-slate-700">Digital Spreadsheet:</span>
           <span>
-            Click any cell to edit marks. Use{" "}
-            <kbd className="px-1.5 py-0.5 bg-slate-100 border border-slate-200 rounded font-mono text-[10px] text-slate-700">
+            Click any mark cell to edit inline. Press{" "}
+            <kbd className="px-1 py-0.5 bg-slate-100 border border-slate-200 rounded font-mono text-[10px]">
               Tab
             </kbd>{" "}
             or{" "}
-            <kbd className="px-1.5 py-0.5 bg-slate-100 border border-slate-200 rounded font-mono text-[10px] text-slate-700">
+            <kbd className="px-1 py-0.5 bg-slate-100 border border-slate-200 rounded font-mono text-[10px]">
               Enter
             </kbd>{" "}
-            to move.
+            to move cells.
           </span>
         </div>
-        <div className="flex items-center gap-1.5 text-slate-600 font-mono text-xs">
-          <CheckCircle2 className="w-3.5 h-3.5 text-slate-500" />
+        <div className="flex items-center gap-1.5 text-emerald-600 font-medium">
+          <CheckCircle2 className="w-3.5 h-3.5" />
           <span>{saveStatus}</span>
         </div>
       </div>
 
       {/* Spreadsheet Table with Sticky Column Freezing & Horizontal Scroll */}
-      <div className="bg-white border border-slate-200 rounded-lg shadow-2xs overflow-hidden">
-        <div className="overflow-x-auto max-h-[620px]">
+      <div className="bg-white border border-slate-200 rounded-xl shadow-xs overflow-hidden">
+        <div className="overflow-x-auto max-h-[620px] scrollbar-thin scrollbar-thumb-slate-200">
           <table className="w-full text-left text-xs border-collapse">
             {/* Table Header */}
-            <thead className="bg-slate-50 sticky top-0 z-20 border-b border-slate-200 text-slate-600 select-none">
+            <thead className="bg-slate-50/90 backdrop-blur sticky top-0 z-20 border-b border-slate-200 text-slate-600 select-none">
               <tr>
                 <th
                   onClick={() => toggleSort("rollNumber")}
-                  className="py-2.5 px-3 font-semibold text-[11px] sticky left-0 z-30 bg-slate-50 cursor-pointer hover:bg-slate-100 transition-colors w-16 border-r border-slate-200"
+                  className="py-3 px-3.5 font-bold uppercase tracking-wider text-[11px] sticky left-0 z-30 bg-slate-50 cursor-pointer hover:bg-slate-100 transition-colors w-16"
                 >
                   <div className="flex items-center gap-1">
                     <span>Roll</span>
@@ -378,47 +380,42 @@ export function StudentSpreadsheet({
                 </th>
                 <th
                   onClick={() => toggleSort("name")}
-                  className="py-2.5 px-4 font-semibold text-[11px] sticky left-16 z-30 bg-slate-50 cursor-pointer hover:bg-slate-100 transition-colors min-w-[180px] border-r border-slate-200"
+                  className="py-3 px-4 font-bold uppercase tracking-wider text-[11px] sticky left-16 z-30 bg-slate-50 cursor-pointer hover:bg-slate-100 transition-colors min-w-[180px]"
                 >
                   <div className="flex items-center gap-1">
                     <span>Student Name</span>
                     <ArrowUpDown className="w-3 h-3 text-slate-400" />
                   </div>
                 </th>
-                <th className="py-2.5 px-3 font-medium text-[11px] min-w-[170px] text-slate-500">
-                  Email
-                </th>
-                <th className="py-2.5 px-3 font-medium text-[11px] min-w-[130px] text-slate-500">
+                <th className="py-3 px-3.5 font-semibold text-[11px] min-w-[180px]">Email</th>
+                <th className="py-3 px-3.5 font-semibold text-[11px] min-w-[140px]">
                   Project Group
                 </th>
-                <th className="py-2.5 px-3 font-medium text-[11px] text-right w-24 text-slate-600">
-                  Internal <span className="text-[10px] text-slate-400 font-mono">/20</span>
+                <th className="py-3 px-3.5 font-semibold text-[11px] text-center w-24 bg-slate-100/50">
+                  Internal <span className="text-[10px] text-slate-400">/20</span>
                 </th>
-                <th className="py-2.5 px-3 font-medium text-[11px] text-right w-24 text-slate-600">
-                  Lab <span className="text-[10px] text-slate-400 font-mono">/20</span>
+                <th className="py-3 px-3.5 font-semibold text-[11px] text-center w-24 bg-slate-100/50">
+                  Lab <span className="text-[10px] text-slate-400">/20</span>
                 </th>
-                <th className="py-2.5 px-3 font-medium text-[11px] text-right w-24 text-slate-600">
-                  Practical <span className="text-[10px] text-slate-400 font-mono">/20</span>
+                <th className="py-3 px-3.5 font-semibold text-[11px] text-center w-24 bg-slate-100/50">
+                  Practical <span className="text-[10px] text-slate-400">/20</span>
                 </th>
-                <th className="py-2.5 px-3 font-medium text-[11px] text-right w-24 text-slate-600">
-                  Project <span className="text-[10px] text-slate-400 font-mono">/20</span>
+                <th className="py-3 px-3.5 font-semibold text-[11px] text-center w-24 bg-slate-100/50">
+                  Project <span className="text-[10px] text-slate-400">/20</span>
                 </th>
                 <th
                   onClick={() => toggleSort("total")}
-                  className="py-2.5 px-3 font-semibold text-[11px] text-right w-24 bg-slate-100/70 text-slate-900 cursor-pointer hover:bg-slate-200/60 transition-colors border-l border-r border-slate-200"
+                  className="py-3 px-3.5 font-bold text-[11px] text-center w-24 bg-indigo-50/60 text-indigo-900 cursor-pointer hover:bg-indigo-100/60"
                 >
-                  <div className="flex items-center justify-end gap-1">
-                    <span>Total</span>
-                    <span className="text-[10px] text-slate-500 font-mono">/80</span>
-                    <ArrowUpDown className="w-3 h-3 text-slate-400" />
+                  <div className="flex items-center justify-center gap-1">
+                    <span>
+                      Total <span className="text-[10px] text-indigo-500">/80</span>
+                    </span>
+                    <ArrowUpDown className="w-3 h-3 text-indigo-500" />
                   </div>
                 </th>
-                <th className="py-2.5 px-3 font-medium text-[11px] text-center w-24 text-slate-600">
-                  Grade
-                </th>
-                <th className="py-2.5 px-3 font-medium text-[11px] text-right w-20 text-slate-600">
-                  Actions
-                </th>
+                <th className="py-3 px-3 font-semibold text-[11px] text-center w-28">Grade</th>
+                <th className="py-3 px-3 font-semibold text-[11px] text-right w-20">Actions</th>
               </tr>
             </thead>
 
@@ -438,35 +435,35 @@ export function StudentSpreadsheet({
                   return (
                     <tr
                       key={row.studentId}
-                      className="hover:bg-slate-50/70 transition-colors group"
+                      className="hover:bg-slate-50/80 transition-colors group"
                     >
                       {/* Frozen Roll Number */}
-                      <td className="py-2 px-3 font-mono tabular-nums font-semibold text-slate-800 sticky left-0 z-10 bg-white group-hover:bg-slate-50 border-r border-slate-200">
+                      <td className="py-2.5 px-3.5 font-mono font-bold text-slate-700 sticky left-0 z-10 bg-white group-hover:bg-slate-50 border-r border-slate-100">
                         {row.rollNumber}
                       </td>
 
                       {/* Frozen Student Name */}
-                      <td className="py-2 px-4 font-medium text-slate-900 sticky left-16 z-10 bg-white group-hover:bg-slate-50 border-r border-slate-200 whitespace-nowrap">
+                      <td className="py-2.5 px-4 font-semibold text-slate-800 sticky left-16 z-10 bg-white group-hover:bg-slate-50 border-r border-slate-100 whitespace-nowrap">
                         <div className="flex items-center gap-2">
-                          <div className="w-5 h-5 rounded bg-slate-100 text-slate-700 font-semibold flex items-center justify-center text-[10px] shrink-0">
+                          <div className="w-5 h-5 rounded-full bg-indigo-50 text-indigo-600 font-bold flex items-center justify-center text-[10px]">
                             {row.name.charAt(0)}
                           </div>
-                          <span className="truncate">{row.name}</span>
+                          <span>{row.name}</span>
                         </div>
                       </td>
 
                       {/* Email */}
-                      <td className="py-2 px-3 text-slate-500 font-mono text-[11px] truncate max-w-[180px]">
+                      <td className="py-2.5 px-3.5 text-slate-500 font-mono text-[11px] truncate max-w-[180px]">
                         {row.email}
                       </td>
 
                       {/* Project Group */}
-                      <td className="py-2 px-3">
+                      <td className="py-2.5 px-3.5">
                         <span
-                          className={`inline-flex items-center px-2 py-0.5 rounded text-[11px] font-mono ${
+                          className={`inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium ${
                             row.projectGroupName !== "Unassigned"
-                              ? "bg-slate-100 text-slate-800 border border-slate-200"
-                              : "text-slate-400"
+                              ? "bg-purple-50 text-purple-700 border border-purple-200"
+                              : "bg-slate-100 text-slate-500"
                           }`}
                         >
                           {row.projectGroupName}
@@ -485,10 +482,10 @@ export function StudentSpreadsheet({
                             onClick={() =>
                               !isEditing && handleCellClick(row.studentId, field, cellValue)
                             }
-                            className={`py-2 px-3 text-right font-mono tabular-nums cursor-pointer transition-colors border-r border-slate-100 ${
+                            className={`py-1.5 px-2 text-center font-mono cursor-pointer transition-all border-r border-slate-100 ${
                               isEditing
-                                ? "bg-white ring-2 ring-slate-900 ring-inset z-10"
-                                : "hover:bg-slate-100/60 text-slate-800"
+                                ? "bg-indigo-50 ring-2 ring-indigo-500 ring-inset z-10"
+                                : "hover:bg-indigo-50/40 text-slate-800"
                             }`}
                           >
                             {isEditing ? (
@@ -503,10 +500,18 @@ export function StudentSpreadsheet({
                                 onKeyDown={(e) =>
                                   handleKeyDown(e, rowIndex, fieldIndex, editableFields)
                                 }
-                                className="w-full text-right font-mono tabular-nums font-semibold text-slate-900 bg-transparent focus:outline-none text-xs pr-1"
+                                className="w-full text-center font-bold text-indigo-700 bg-transparent focus:outline-none text-xs"
                               />
                             ) : (
-                              <span className="font-mono tabular-nums text-slate-800">
+                              <span
+                                className={`font-semibold inline-block py-1 px-2 rounded ${
+                                  cellValue >= 18
+                                    ? "text-emerald-700"
+                                    : cellValue >= 14
+                                      ? "text-slate-700"
+                                      : "text-amber-700"
+                                }`}
+                              >
                                 {cellValue}
                               </span>
                             )}
@@ -515,23 +520,31 @@ export function StudentSpreadsheet({
                       })}
 
                       {/* Auto-calculated Total */}
-                      <td className="py-2 px-3 text-right font-mono tabular-nums font-semibold text-slate-900 bg-slate-50/70 border-l border-r border-slate-200">
+                      <td className="py-2.5 px-3.5 text-center font-bold text-sm bg-indigo-50/30 text-indigo-900 border-r border-slate-100">
                         {row.total}
                       </td>
 
                       {/* Grade Badge */}
-                      <td className="py-2 px-3 text-center whitespace-nowrap">
-                        <span className="font-mono text-[11px] px-2 py-0.5 rounded border border-slate-200 bg-slate-50 text-slate-700">
+                      <td className="py-2.5 px-3 text-center whitespace-nowrap">
+                        <span
+                          className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                            row.total >= 70
+                              ? "bg-emerald-100 text-emerald-800"
+                              : row.total >= 50
+                                ? "bg-blue-100 text-blue-800"
+                                : "bg-amber-100 text-amber-800"
+                          }`}
+                        >
                           {row.grade.split(" ")[0]}
                         </span>
                       </td>
 
                       {/* Actions */}
-                      <td className="py-2 px-3 text-right whitespace-nowrap">
+                      <td className="py-2.5 px-3 text-right whitespace-nowrap">
                         <div className="flex items-center justify-end gap-1">
                           <button
                             onClick={() => handleStartEditStudent(row)}
-                            className="p-1 rounded text-slate-400 hover:text-slate-800 hover:bg-slate-100 transition-colors"
+                            className="p-1 rounded text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 transition-colors"
                             title="Edit student profile"
                           >
                             <Edit2 className="w-3.5 h-3.5" />
@@ -555,14 +568,14 @@ export function StudentSpreadsheet({
 
         {/* Spreadsheet Footer / Summary Metrics */}
         {filteredRows.length > 0 && (
-          <div className="bg-slate-50 border-t border-slate-200 px-4 py-2.5 flex flex-wrap items-center justify-between text-xs text-slate-600 font-mono">
+          <div className="bg-slate-50/80 border-t border-slate-200 px-4 py-2.5 flex flex-wrap items-center justify-between text-xs text-slate-600">
             <div className="flex items-center gap-6">
               <span>
-                Rows: <strong className="text-slate-900 tabular-nums">{filteredRows.length}</strong>
+                Total Rows: <strong className="text-slate-800">{filteredRows.length}</strong>
               </span>
               <span>
-                Mean:{" "}
-                <strong className="text-slate-900 tabular-nums">
+                Class Average:{" "}
+                <strong className="text-indigo-700">
                   {(
                     filteredRows.reduce((acc, r) => acc + r.total, 0) / filteredRows.length
                   ).toFixed(1)}
@@ -570,15 +583,15 @@ export function StudentSpreadsheet({
                 </strong>
               </span>
               <span>
-                High:{" "}
-                <strong className="text-slate-900 tabular-nums">
+                Highest Score:{" "}
+                <strong className="text-emerald-700">
                   {Math.max(...filteredRows.map((r) => r.total))}/80
                 </strong>
               </span>
             </div>
 
-            <div className="text-[11px] text-slate-400 font-sans">
-              Enter or Tab to move • Auto-persisted to store
+            <div className="text-[11px] text-slate-400">
+              Double-click cell or press Enter to edit • Changes persist in local storage
             </div>
           </div>
         )}
@@ -587,35 +600,37 @@ export function StudentSpreadsheet({
       {/* Edit Student Details Modal */}
       {editingStudent && (
         <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-lg shadow-xl border border-slate-200 max-w-md w-full p-6 animate-in fade-in-50 zoom-in-95">
-            <h3 className="text-base font-semibold text-slate-900">Edit Student Details</h3>
+          <div className="bg-white rounded-xl shadow-xl border border-slate-200 max-w-md w-full p-6 animate-in fade-in-50 zoom-in-95">
+            <h3 className="text-base font-bold text-slate-800">Edit Student Details</h3>
             <p className="text-xs text-slate-500 mt-1">
               Update roll number, name or college email address.
             </p>
 
             <form onSubmit={handleSaveStudentDetails} className="mt-4 space-y-3.5">
               <div>
-                <label className="block text-xs font-medium text-slate-700 mb-1">Roll Number</label>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  Roll Number
+                </label>
                 <Input
                   value={editStudentRoll}
                   onChange={(e) => setEditStudentRoll(e.target.value)}
                   required
-                  className="text-xs h-8 rounded-md font-mono"
+                  className="text-xs h-9"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-slate-700 mb-1">Full Name</label>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">Full Name</label>
                 <Input
                   value={editStudentName}
                   onChange={(e) => setEditStudentName(e.target.value)}
                   required
-                  className="text-xs h-8 rounded-md"
+                  className="text-xs h-9"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-slate-700 mb-1">
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
                   Email Address
                 </label>
                 <Input
@@ -623,7 +638,7 @@ export function StudentSpreadsheet({
                   value={editStudentEmail}
                   onChange={(e) => setEditStudentEmail(e.target.value)}
                   required
-                  className="text-xs h-8 rounded-md font-mono"
+                  className="text-xs h-9"
                 />
               </div>
 
@@ -633,14 +648,14 @@ export function StudentSpreadsheet({
                   variant="outline"
                   size="sm"
                   onClick={() => setEditingStudent(null)}
-                  className="text-xs h-8 rounded-md border-slate-200 text-slate-700"
+                  className="text-xs"
                 >
                   Cancel
                 </Button>
                 <Button
                   type="submit"
                   size="sm"
-                  className="bg-slate-900 hover:bg-slate-800 text-white text-xs h-8 rounded-md font-medium"
+                  className="bg-indigo-600 hover:bg-indigo-700 text-white text-xs"
                 >
                   Save Changes
                 </Button>
@@ -653,11 +668,11 @@ export function StudentSpreadsheet({
       {/* Delete Confirmation Modal */}
       {deletingStudentId && (
         <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-lg shadow-xl border border-slate-200 max-w-sm w-full p-5 animate-in fade-in-50 zoom-in-95">
-            <div className="w-9 h-9 rounded-md bg-rose-50 text-rose-600 flex items-center justify-center mb-3">
-              <Trash2 className="w-4 h-4" />
+          <div className="bg-white rounded-xl shadow-xl border border-slate-200 max-w-sm w-full p-5 animate-in fade-in-50 zoom-in-95">
+            <div className="w-10 h-10 rounded-full bg-rose-50 text-rose-600 flex items-center justify-center mb-3">
+              <Trash2 className="w-5 h-5" />
             </div>
-            <h3 className="text-sm font-semibold text-slate-900">Remove Student Record?</h3>
+            <h3 className="text-sm font-bold text-slate-800">Remove Student?</h3>
             <p className="text-xs text-slate-500 mt-1 leading-relaxed">
               This will remove the student from this section and delete their academic marks record.
               This action cannot be undone.
@@ -667,7 +682,7 @@ export function StudentSpreadsheet({
                 variant="outline"
                 size="sm"
                 onClick={() => setDeletingStudentId(null)}
-                className="text-xs h-8 rounded-md border-slate-200 text-slate-700"
+                className="text-xs"
               >
                 Cancel
               </Button>
@@ -675,7 +690,7 @@ export function StudentSpreadsheet({
                 variant="destructive"
                 size="sm"
                 onClick={handleConfirmDelete}
-                className="bg-rose-600 hover:bg-rose-700 text-white text-xs h-8 rounded-md font-medium"
+                className="bg-rose-600 hover:bg-rose-700 text-white text-xs"
               >
                 Delete Student
               </Button>
@@ -687,11 +702,11 @@ export function StudentSpreadsheet({
       {/* Import CSV Modal */}
       {importModalOpen && (
         <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-lg shadow-xl border border-slate-200 max-w-lg w-full p-6 animate-in fade-in-50 zoom-in-95">
+          <div className="bg-white rounded-xl shadow-xl border border-slate-200 max-w-lg w-full p-6 animate-in fade-in-50 zoom-in-95">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Upload className="w-4 h-4 text-slate-700" />
-                <h3 className="text-sm font-semibold text-slate-900">Import Students via CSV</h3>
+                <Upload className="w-4 h-4 text-indigo-600" />
+                <h3 className="text-sm font-bold text-slate-800">Import Students via CSV</h3>
               </div>
               <button
                 onClick={() => setImportModalOpen(false)}
@@ -702,15 +717,15 @@ export function StudentSpreadsheet({
             </div>
 
             <p className="text-xs text-slate-500 mt-1">
-              Paste CSV data formatted as:{" "}
-              <code className="text-slate-800 bg-slate-100 px-1 py-0.5 rounded font-mono text-[11px]">
+              Paste CSV data or upload a file formatted as:{" "}
+              <code className="text-indigo-600 bg-indigo-50 px-1 py-0.5 rounded">
                 Roll No, Student Name, Email
               </code>
             </p>
 
             <form onSubmit={handleImportCSVSubmit} className="mt-4 space-y-3">
               <div>
-                <label className="block text-xs font-medium text-slate-700 mb-1">
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
                   Target Section: {currentSection?.sectionName}
                 </label>
                 <textarea
@@ -718,16 +733,16 @@ export function StudentSpreadsheet({
                   value={csvFileContent}
                   onChange={(e) => setCsvFileContent(e.target.value)}
                   placeholder={`Roll No,Student Name,Email\n09,Vikram Seth,vikram@college.edu\n10,Ananya Roy,ananya@college.edu`}
-                  className="w-full text-xs font-mono p-2.5 bg-slate-50 border border-slate-200 rounded-md focus:bg-white focus:outline-none focus:border-slate-400"
+                  className="w-full text-xs font-mono p-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:outline-none focus:ring-1 focus:ring-indigo-500"
                 />
               </div>
 
               {importSummary && (
                 <div
-                  className={`p-3 rounded-md text-xs ${
+                  className={`p-3 rounded-lg text-xs ${
                     importSummary.added > 0
-                      ? "bg-slate-50 text-slate-800 border border-slate-200"
-                      : "bg-rose-50 text-rose-800 border border-rose-200"
+                      ? "bg-emerald-50 text-emerald-800"
+                      : "bg-rose-50 text-rose-800"
                   }`}
                 >
                   <p className="font-semibold">
@@ -749,14 +764,14 @@ export function StudentSpreadsheet({
                   variant="outline"
                   size="sm"
                   onClick={() => setImportModalOpen(false)}
-                  className="text-xs h-8 rounded-md border-slate-200 text-slate-700"
+                  className="text-xs"
                 >
                   Close
                 </Button>
                 <Button
                   type="submit"
                   size="sm"
-                  className="bg-slate-900 hover:bg-slate-800 text-white text-xs h-8 rounded-md font-medium"
+                  className="bg-indigo-600 hover:bg-indigo-700 text-white text-xs"
                 >
                   Import Rows
                 </Button>

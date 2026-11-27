@@ -10,8 +10,10 @@ import {
   Bell,
   UserCheck,
   GraduationCap,
+  Sparkles,
+  Building2,
+  ChevronRight,
   ShieldCheck,
-  X,
 } from "lucide-react";
 import type { UserRole } from "@/types";
 
@@ -34,8 +36,6 @@ interface SidebarProps {
   onTabChange: (tab: string) => void;
   pendingApprovalsCount?: number;
   activeAssignmentsCount?: number;
-  mobileOpen?: boolean;
-  onCloseMobile?: () => void;
 }
 
 interface NavItem {
@@ -43,7 +43,7 @@ interface NavItem {
   label: string;
   icon: React.ComponentType<{ className?: string }>;
   badge?: string | undefined;
-  badgeVariant?: "default" | "amber";
+  badgeVariant?: "indigo" | "amber" | "emerald" | "slate";
 }
 
 export function Sidebar({
@@ -52,26 +52,24 @@ export function Sidebar({
   onTabChange,
   pendingApprovalsCount = 0,
   activeAssignmentsCount = 0,
-  mobileOpen = false,
-  onCloseMobile,
 }: SidebarProps) {
   const teacherNavGroups = [
     {
-      group: "Core workspace",
+      group: "Core Workspace",
       items: [
         { id: "overview", label: "Overview", icon: LayoutDashboard },
-        { id: "students", label: "Students sheet", icon: Users },
+        { id: "students", label: "Students", icon: Users },
         { id: "sections", label: "Sections", icon: FolderGit2 },
-        { id: "marks", label: "Marks & gradebook", icon: Award },
+        { id: "marks", label: "Marks & Results", icon: Award },
       ],
     },
     {
-      group: "Coursework & teams",
+      group: "Academics & Teams",
       items: [
         { id: "assignments", label: "Assignments", icon: BookOpen },
         {
           id: "groups",
-          label: "Group projects",
+          label: "Group Projects",
           icon: Layers,
           badge: pendingApprovalsCount > 0 ? `${pendingApprovalsCount}` : undefined,
           badgeVariant: "amber" as const,
@@ -84,82 +82,74 @@ export function Sidebar({
 
   const studentNavGroups = [
     {
-      group: "Academic hub",
+      group: "Academic Hub",
       items: [
         { id: "overview", label: "Overview", icon: LayoutDashboard },
-        { id: "marks", label: "My marks", icon: Award },
+        { id: "marks", label: "My Marks", icon: Award },
         {
           id: "assignments",
           label: "Assignments",
           icon: BookOpen,
           badge: activeAssignmentsCount > 0 ? `${activeAssignmentsCount}` : undefined,
-          badgeVariant: "default" as const,
+          badgeVariant: "indigo" as const,
         },
       ],
     },
     {
       group: "Collaboration",
       items: [
-        { id: "group", label: "My project group", icon: Layers },
+        { id: "group", label: "My Group Project", icon: Layers },
         { id: "announcements", label: "Announcements", icon: Bell },
-        { id: "profile", label: "Profile", icon: UserCheck },
+        { id: "profile", label: "My Profile", icon: UserCheck },
       ],
     },
   ];
 
   const navGroups = role === "teacher" ? teacherNavGroups : studentNavGroups;
 
-  const handleSelectTab = (tabId: string) => {
-    onTabChange(tabId);
-    if (onCloseMobile) {
-      onCloseMobile();
-    }
-  };
-
-  const sidebarContent = (
-    <div className="w-64 border-r border-slate-200 bg-white flex flex-col shrink-0 h-full select-none">
-      {/* Workspace Context Header */}
-      <div className="p-3.5 border-b border-slate-100">
-        <div className="flex items-center justify-between p-2.5 rounded-md bg-slate-50 border border-slate-200/60">
-          <div className="flex items-center gap-2.5 min-w-0">
-            <div className="w-8 h-8 rounded-md bg-white border border-slate-200 text-slate-700 flex items-center justify-center shrink-0">
-              {role === "teacher" ? (
-                <GraduationCap className="w-4 h-4 text-slate-800" />
-              ) : (
-                <Users className="w-4 h-4 text-slate-800" />
-              )}
+  return (
+    <aside className="w-64 border-r border-slate-200/80 bg-white flex flex-col shrink-0 min-h-[calc(100vh-3.5rem)] select-none">
+      {/* Workspace Branding Header */}
+      <div className="p-4 border-b border-slate-100">
+        <div className="flex items-center gap-3 p-2 rounded-xl bg-gradient-to-r from-slate-50 to-indigo-50/40 border border-slate-200/70">
+          <div
+            className={`w-9 h-9 rounded-xl flex items-center justify-center font-bold text-white shadow-xs ${
+              role === "teacher"
+                ? "bg-gradient-to-tr from-indigo-600 via-indigo-700 to-violet-700 shadow-indigo-500/20"
+                : "bg-gradient-to-tr from-emerald-600 via-teal-600 to-teal-700 shadow-emerald-500/20"
+            }`}
+          >
+            {role === "teacher" ? (
+              <GraduationCap className="w-5 h-5" />
+            ) : (
+              <Users className="w-5 h-5" />
+            )}
+          </div>
+          <div className="min-w-0 flex-1">
+            <div className="text-xs font-bold text-slate-900 truncate">
+              {role === "teacher" ? "Faculty Workspace" : "Student Portal"}
             </div>
-            <div className="min-w-0">
-              <div className="text-xs font-semibold text-slate-900 truncate">
-                {role === "teacher" ? "Faculty Workspace" : "Student Portal"}
-              </div>
-              <div className="flex items-center gap-1.5 mt-0.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-slate-400" />
-                <span className="text-[11px] text-slate-500 truncate">
-                  {role === "teacher" ? "Dept. of CS" : "Verified Student"}
-                </span>
-              </div>
+            <div className="flex items-center gap-1.5 mt-0.5">
+              <span
+                className={`w-1.5 h-1.5 rounded-full ${
+                  role === "teacher"
+                    ? "bg-indigo-600 animate-pulse"
+                    : "bg-emerald-600 animate-pulse"
+                }`}
+              />
+              <span className="text-[11px] text-slate-500 font-medium truncate">
+                {role === "teacher" ? "Dept. of CS" : "Verified Access"}
+              </span>
             </div>
           </div>
-
-          {/* Close button for mobile drawer */}
-          {onCloseMobile && (
-            <button
-              onClick={onCloseMobile}
-              className="md:hidden p-1 text-slate-400 hover:text-slate-700 rounded-md hover:bg-slate-100"
-              aria-label="Close navigation"
-            >
-              <X className="w-4 h-4" />
-            </button>
-          )}
         </div>
       </div>
 
       {/* Navigation Sections */}
-      <nav className="flex-1 px-3 py-2 space-y-5 overflow-y-auto scrollbar-thin scrollbar-thumb-slate-200">
+      <nav className="flex-1 p-3.5 space-y-6 overflow-y-auto">
         {navGroups.map((g) => (
-          <div key={g.group} className="space-y-0.5">
-            <div className="px-3 pb-1.5 pt-2 text-[11px] font-medium text-slate-400 tracking-normal">
+          <div key={g.group} className="space-y-1">
+            <div className="px-2.5 pb-1 text-[10px] font-bold uppercase tracking-wider text-slate-400">
               {g.group}
             </div>
             {g.items.map((item) => {
@@ -168,28 +158,34 @@ export function Sidebar({
               return (
                 <button
                   key={item.id}
-                  onClick={() => handleSelectTab(item.id)}
-                  className={`w-full flex items-center justify-between px-3 py-2 rounded-md text-xs transition-colors group relative ${
+                  onClick={() => onTabChange(item.id)}
+                  className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all group relative ${
                     isActive
-                      ? "bg-slate-100 text-slate-900 font-semibold before:absolute before:left-0 before:top-1.5 before:bottom-1.5 before:w-1 before:rounded-r before:bg-primary"
-                      : "text-slate-600 hover:text-slate-900 hover:bg-slate-50 font-normal"
+                      ? "bg-gradient-to-r from-indigo-50 to-indigo-50/60 text-indigo-900 shadow-[inset_0_0_0_1px_rgba(99,102,241,0.2)]"
+                      : "text-slate-600 hover:bg-slate-50/90 hover:text-slate-900"
                   }`}
                 >
                   <div className="flex items-center gap-2.5">
-                    <Icon
-                      className={`w-4 h-4 shrink-0 transition-colors ${
-                        isActive ? "text-slate-900" : "text-slate-400 group-hover:text-slate-600"
+                    <div
+                      className={`w-7 h-7 rounded-lg flex items-center justify-center transition-colors ${
+                        isActive
+                          ? "bg-indigo-600 text-white shadow-xs shadow-indigo-600/30"
+                          : "text-slate-500 group-hover:text-slate-900 group-hover:bg-slate-100/80"
                       }`}
-                    />
+                    >
+                      <Icon className="w-3.5 h-3.5" />
+                    </div>
                     <span>{item.label}</span>
                   </div>
 
                   {item.badge && (
                     <span
-                      className={`text-[11px] font-mono font-medium px-1.5 py-0.5 rounded text-center leading-none ${
+                      className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold min-w-5 text-center ${
                         item.badgeVariant === "amber"
-                          ? "bg-amber-50 text-amber-800 border border-amber-200/70"
-                          : "bg-slate-100 text-slate-600 border border-slate-200/60"
+                          ? "bg-amber-100 text-amber-900 border border-amber-200/80"
+                          : item.badgeVariant === "indigo"
+                            ? "bg-indigo-100 text-indigo-900 border border-indigo-200/80"
+                            : "bg-slate-100 text-slate-700"
                       }`}
                     >
                       {item.badge}
@@ -202,37 +198,18 @@ export function Sidebar({
         ))}
       </nav>
 
-      {/* Grounded Institutional Context Footer */}
-      <div className="p-3 border-t border-slate-100 bg-slate-50/50">
-        <div className="flex items-center justify-between px-2 py-1 text-[11px] text-slate-500">
+      {/* Sleek Subtle Workspace Badge */}
+      <div className="p-3.5 border-t border-slate-100 bg-slate-50/50">
+        <div className="flex items-center justify-between px-2 py-1.5 text-[11px] text-slate-500 font-medium">
           <div className="flex items-center gap-1.5">
-            <ShieldCheck className="w-3.5 h-3.5 text-slate-400" />
-            <span>Multi-tenant scoped</span>
+            <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+            <span>Multi-Tenant Scoped</span>
           </div>
-          <span className="text-[10px] font-mono text-slate-400">RBAC v2.1</span>
+          <span className="text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded bg-slate-200/60 text-slate-600">
+            RBAC Active
+          </span>
         </div>
       </div>
-    </div>
-  );
-
-  return (
-    <>
-      {/* Desktop Persistent Sidebar */}
-      <aside className="hidden md:block shrink-0 h-full">{sidebarContent}</aside>
-
-      {/* Mobile Drawer Overlay */}
-      {mobileOpen && (
-        <div className="fixed inset-0 z-40 md:hidden">
-          <div
-            className="fixed inset-0 bg-slate-900/25 transition-opacity"
-            onClick={onCloseMobile}
-            aria-hidden="true"
-          />
-          <div className="relative z-50 h-full w-64 shadow-lg animate-in slide-in-from-left duration-200">
-            {sidebarContent}
-          </div>
-        </div>
-      )}
-    </>
+    </aside>
   );
 }
