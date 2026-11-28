@@ -1,11 +1,12 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 process.env["NODE_ENV"] = "test";
 import { app } from "../index";
 import { serverConfig } from "../config";
 import { db } from "../../backend/services/db";
 import http from "http";
 
-async function json(res: Response): Promise<Record<string, unknown>> {
-  return (await res.json()) as Record<string, unknown>;
+async function json(res: Response): Promise<any> {
+  return (await res.json()) as any;
 }
 
 async function runE2EVerification() {

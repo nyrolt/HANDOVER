@@ -108,10 +108,21 @@ export function generateSectionMarksCSV(sectionId: string): string {
   return csvRows.join("\n");
 }
 
+interface BrowserDocument {
+  createElement(tagName: string): {
+    setAttribute(name: string, value: string): void;
+    click(): void;
+  };
+  body: {
+    appendChild(child: unknown): unknown;
+    removeChild(child: unknown): unknown;
+  };
+}
+
 export function exportSectionMarksToCSV(sectionId: string): void {
   const section = db.getSectionById(sectionId);
   const csvContent = generateSectionMarksCSV(sectionId);
-  const globalObj = globalThis as unknown as { document?: Document };
+  const globalObj = globalThis as unknown as { document?: BrowserDocument };
   if (typeof globalObj.document !== "undefined") {
     const doc = globalObj.document;
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
@@ -163,7 +174,7 @@ export function exportToCSV(section: Section | undefined, rows: SpreadsheetRow[]
     csvRows.push(line.join(","));
   });
 
-  const globalObj = globalThis as unknown as { document?: Document };
+  const globalObj = globalThis as unknown as { document?: BrowserDocument };
   if (typeof globalObj.document !== "undefined") {
     const doc = globalObj.document;
     const blob = new Blob([csvRows.join("\n")], { type: "text/csv;charset=utf-8;" });
