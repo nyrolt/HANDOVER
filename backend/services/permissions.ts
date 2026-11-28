@@ -23,10 +23,27 @@ export type PermissionAction =
   | "delete:assignment"
   | "create:announcement"
   | "read:announcement"
-  | "delete:announcement";
+  | "delete:announcement"
+  | "submit:assignment"
+  | "convert:file"
+  | "read:submission"
+  | "verify:submission"
+  | "review:submission"
+  | "reconcile:marks"
+  | "read:notification"
+  | "update:notification";
 
 export type PermissionResource =
-  "section" | "student" | "marks" | "projectGroup" | "groupRequest" | "assignment" | "announcement";
+  | "section"
+  | "student"
+  | "marks"
+  | "projectGroup"
+  | "groupRequest"
+  | "assignment"
+  | "announcement"
+  | "submission"
+  | "verification"
+  | "notification";
 
 export interface PermissionContext {
   institutionId?: string | undefined;
@@ -95,7 +112,17 @@ export function can(
       case "create:announcement":
       case "read:announcement":
       case "delete:announcement":
+      case "read:submission":
+      case "verify:submission":
+      case "review:submission":
+      case "reconcile:marks":
+      case "read:notification":
+      case "update:notification":
+      case "convert:file":
         return true;
+      case "submit:assignment":
+        // Submissions are made by students
+        return false;
       case "propose:group":
         // Group proposals are initiated by students
         return false;
@@ -128,6 +155,26 @@ export function can(
         if (context?.targetUserId) {
           return context.targetUserId === user.id;
         }
+        return false;
+
+      case "submit:assignment":
+      case "convert:file":
+        return true;
+
+      case "read:submission":
+        // A student can read submissions if scoped to them
+        if (context?.targetStudentId && context?.studentId) {
+          return context.targetStudentId === context.studentId;
+        }
+        return true;
+
+      case "read:notification":
+      case "update:notification":
+        return true;
+
+      case "verify:submission":
+      case "review:submission":
+      case "reconcile:marks":
         return false;
 
       // STRICTLY FORBIDDEN FOR STUDENTS:

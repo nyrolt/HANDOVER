@@ -25,7 +25,9 @@ dist-ssr
 .wrangler/
 .dev.vars
 
-# Archives
+# Uploads & Archives
+uploads/
+**/uploads/
 *.zip
 *.tar.gz
 *.rar

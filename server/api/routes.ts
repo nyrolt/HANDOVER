@@ -2,6 +2,8 @@ import { authController } from "../../backend/controllers/authController";
 import { teacherController } from "../../backend/controllers/teacherController";
 import { studentController } from "../../backend/controllers/studentController";
 import { marksController } from "../../backend/controllers/marksController";
+import { submissionController } from "../../backend/controllers/submissionController";
+import { verificationController } from "../../backend/controllers/verificationController";
 import { authenticate, requireRole, NextFunction } from "../../backend/middleware/authMiddleware";
 import { csrfProtection } from "../middleware/csrf";
 import { ControllerRequest, ControllerResponse } from "../../backend/controllers/authController";
@@ -239,5 +241,97 @@ export const apiRoutes: RouteDefinition[] = [
     path: "/api/student/announcements",
     middlewares: [authenticate],
     handler: (req, res) => studentController.getAnnouncements(req, res),
+  },
+
+  // --- ASSIGNMENT SUBMISSION & CONVERSION ROUTES ---
+  {
+    method: "POST",
+    path: "/api/submissions",
+    middlewares: [authenticate],
+    handler: (req, res) => submissionController.submitAssignment(req, res),
+  },
+  {
+    method: "GET",
+    path: "/api/submissions",
+    middlewares: [authenticate],
+    handler: (req, res) => submissionController.getSubmissions(req, res),
+  },
+  {
+    method: "GET",
+    path: "/api/submissions/:id",
+    middlewares: [authenticate],
+    handler: (req, res) => submissionController.getSubmissionDetails(req, res),
+  },
+  {
+    method: "GET",
+    path: "/api/submissions/files/:id/download",
+    middlewares: [authenticate],
+    handler: (req, res) => submissionController.downloadFile(req, res),
+  },
+  {
+    method: "POST",
+    path: "/api/submissions/convert",
+    middlewares: [authenticate],
+    handler: (req, res) => submissionController.convertFileStandalone(req, res),
+  },
+  {
+    method: "POST",
+    path: "/api/submissions/:id/review",
+    middlewares: [authenticate, requireRole("teacher")],
+    handler: (req, res) => submissionController.reviewSubmission(req, res),
+  },
+
+  // --- VERIFICATION QUEUE & BATCH ROUTES ---
+  {
+    method: "POST",
+    path: "/api/verification/bulk",
+    middlewares: [authenticate, requireRole("teacher")],
+    handler: (req, res) => verificationController.triggerBulkVerification(req, res),
+  },
+  {
+    method: "GET",
+    path: "/api/verification/queue",
+    middlewares: [authenticate],
+    handler: (req, res) => verificationController.getQueueProgress(req, res),
+  },
+
+  // --- MARKS RECONCILIATION ROUTES ---
+  {
+    method: "POST",
+    path: "/api/marks/reconciliation/run",
+    middlewares: [authenticate, requireRole("teacher")],
+    handler: (req, res) => verificationController.runReconciliation(req, res),
+  },
+  {
+    method: "GET",
+    path: "/api/marks/reconciliation/alerts",
+    middlewares: [authenticate, requireRole("teacher")],
+    handler: (req, res) => verificationController.getReconciliationAlerts(req, res),
+  },
+  {
+    method: "POST",
+    path: "/api/marks/reconciliation/alerts/:id/resolve",
+    middlewares: [authenticate, requireRole("teacher")],
+    handler: (req, res) => verificationController.resolveReconciliationAlert(req, res),
+  },
+
+  // --- NOTIFICATIONS ROUTES ---
+  {
+    method: "GET",
+    path: "/api/notifications",
+    middlewares: [authenticate],
+    handler: (req, res) => verificationController.getNotifications(req, res),
+  },
+  {
+    method: "PATCH",
+    path: "/api/notifications/:id/read",
+    middlewares: [authenticate],
+    handler: (req, res) => verificationController.markNotificationRead(req, res),
+  },
+  {
+    method: "POST",
+    path: "/api/notifications/read-all",
+    middlewares: [authenticate],
+    handler: (req, res) => verificationController.markAllNotificationsRead(req, res),
   },
 ];

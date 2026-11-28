@@ -6,87 +6,44 @@
       "role": "teacher",
       "department": "Computer Science",
       "password": "Faculty@2026",
-      "id": "usr-1795734095112",
-      "createdAt": "2026-11-26T23:01:35.112Z"
+      "id": "usr-1795877608572",
+      "createdAt": "2026-11-28T14:53:28.572Z"
     },
     {
       "name": "Alexander Wright",
       "email": "a.wright@student.university.edu",
       "role": "student",
       "password": "Password@123",
-      "id": "usr-1795734095114",
-      "createdAt": "2026-11-26T23:01:35.114Z"
-    },
-    {
-      "name": "Dr. Test Faculty",
-      "email": "faculty.test@university.edu",
-      "role": "teacher",
-      "department": "Computer Science",
-      "password": "Password@2026",
-      "id": "usr-1795734223189",
-      "createdAt": "2026-11-26T23:03:43.189Z"
-    },
-    {
-      "name": "John Test Student",
-      "email": "student.test@university.edu",
-      "role": "student",
-      "password": "Password@2026",
-      "id": "usr-1795734223238",
-      "createdAt": "2026-11-26T23:03:43.238Z"
+      "id": "usr-1795877608574",
+      "createdAt": "2026-11-28T14:53:28.574Z"
     }
   ],
   "sections": [
     {
-      "id": "sec-1795734095113",
+      "id": "sec-1795877608573",
       "sectionName": "CS-301: Algorithms & Data Structures",
       "courseName": "Computer Science",
       "academicYear": "2026-2027",
-      "teacherId": "usr-1795734095112",
-      "createdAt": "2026-11-26T23:01:35.113Z"
-    },
-    {
-      "id": "sec-1795734223190",
-      "sectionName": "Computer Science - Section A",
-      "courseName": "Computer Science",
-      "academicYear": "2026-2027",
-      "teacherId": "usr-1795734223189",
-      "createdAt": "2026-11-26T23:03:43.190Z"
-    },
-    {
-      "id": "sec-1795734223217",
-      "sectionName": "CS-401: Distributed Systems",
-      "courseName": "B.S. Computer Science",
-      "academicYear": "2026-2027",
-      "teacherId": "usr-1795734223189",
-      "createdAt": "2026-11-26T23:03:43.217Z"
+      "teacherId": "usr-1795877608572",
+      "createdAt": "2026-11-28T14:53:28.573Z"
     }
   ],
   "students": [
     {
-      "id": "stud-1795734095114888",
-      "userId": "usr-1795734095114",
+      "id": "stud-1795877608575949",
+      "userId": "usr-1795877608574",
       "name": "Alexander Wright",
       "email": "a.wright@student.university.edu",
       "rollNumber": "2024-CS-001",
-      "sectionId": "sec-1795734095113",
-      "createdAt": "2026-11-26T23:01:35.114Z"
-    },
-    {
-      "id": "stud-1795734223239513",
-      "userId": "usr-1795734223238",
-      "name": "John Test Student",
-      "email": "student.test@university.edu",
-      "rollNumber": "2026-CS-999",
-      "sectionId": "sec-1795734223217",
-      "projectGroupId": "grp-1795734223368",
-      "createdAt": "2026-11-26T23:03:43.239Z"
+      "sectionId": "sec-1795877608573",
+      "createdAt": "2026-11-28T14:53:28.575Z"
     }
   ],
   "marks": [
     {
-      "id": "mark-1795734095114964",
-      "studentId": "stud-1795734095114888",
-      "sectionId": "sec-1795734095113",
+      "id": "mark-1795877608575436",
+      "studentId": "stud-1795877608575949",
+      "sectionId": "sec-1795877608573",
       "internalMarks": 0,
       "labRecordMarks": 0,
       "practicalMarks": 0,
@@ -95,119 +52,26 @@
       "total": 0,
       "maxTotal": 80,
       "updatedBy": "System",
-      "updatedAt": "2026-11-26T23:01:35.114Z"
-    },
-    {
-      "id": "mark-1795734223239784",
-      "studentId": "stud-1795734223239513",
-      "sectionId": "sec-1795734223217",
-      "internalMarks": 18,
-      "labRecordMarks": 19,
-      "practicalMarks": 17,
-      "projectMarks": 19,
-      "assignmentMarks": 0,
-      "total": 73,
-      "maxTotal": 80,
-      "updatedBy": "Dr. Test Faculty",
-      "updatedAt": "2026-11-26T23:03:43.313Z"
+      "updatedAt": "2026-11-28T14:53:28.575Z"
     }
   ],
   "assignments": [],
-  "projectGroups": [
-    {
-      "id": "grp-1795734223368",
-      "groupName": "Team Distributed Core",
-      "projectTitle": "Byzantine Fault Tolerant Replication Engine",
-      "sectionId": "sec-1795734223217",
-      "projectDescription": "No description provided.",
-      "guide": "Dr. Test Faculty",
-      "status": "In Progress",
-      "projectMarks": 0,
-      "maxProjectMarks": 20,
-      "approvedBy": "Dr. Test Faculty",
-      "members": [
-        {
-          "studentId": "stud-1795734223239513",
-          "studentName": "John Test Student",
-          "rollNumber": "2026-CS-999",
-          "role": "Leader"
-        }
-      ],
-      "createdAt": "2026-11-26T23:03:43.368Z",
-      "updatedAt": "2026-11-26T23:03:43.368Z"
-    }
-  ],
-  "groupRequests": [
-    {
-      "id": "req-1795734223353",
-      "studentId": "stud-1795734223239513",
-      "studentName": "John Test Student",
-      "proposedGroupName": "Team Distributed Core",
-      "proposedProjectTitle": "Byzantine Fault Tolerant Replication Engine",
-      "proposedMembers": [
-        "John Test Student"
-      ],
-      "sectionId": "sec-1795734223217",
-      "status": "Pending",
-      "createdAt": "2026-11-26T23:03:43.353Z"
-    }
-  ],
+  "projectGroups": [],
+  "groupRequests": [],
   "announcements": [],
   "activityLogs": [
     {
-      "id": "act-1795734223369",
-      "action": "Project Group Created",
-      "description": "Created project group \"Team Distributed Core\".",
-      "timestamp": "2026-11-26T23:03:43.369Z",
-      "type": "project"
-    },
-    {
-      "id": "act-1795734223354",
-      "action": "Group Proposal Submitted",
-      "description": "John Test Student proposed group \"Team Distributed Core\".",
-      "timestamp": "2026-11-26T23:03:43.354Z",
-      "type": "project"
-    },
-    {
-      "id": "act-1795734223315",
-      "action": "Marks Updated",
-      "description": "Updated academic marks for John Test Student (Total: 73/80).",
-      "timestamp": "2026-11-26T23:03:43.315Z",
-      "type": "marks"
-    },
-    {
-      "id": "act-1795734223240",
-      "action": "Student Added",
-      "description": "Added student John Test Student (Roll 2026-CS-999).",
-      "timestamp": "2026-11-26T23:03:43.240Z",
-      "type": "student"
-    },
-    {
-      "id": "act-1795734223218",
-      "action": "Section Created",
-      "description": "Created section \"CS-401: Distributed Systems\".",
-      "timestamp": "2026-11-26T23:03:43.218Z",
-      "type": "section"
-    },
-    {
-      "id": "act-1795734223191",
-      "action": "Section Created",
-      "description": "Created section \"Computer Science - Section A\".",
-      "timestamp": "2026-11-26T23:03:43.191Z",
-      "type": "section"
-    },
-    {
-      "id": "act-1795734095115",
+      "id": "act-1795877608575",
       "action": "Student Added",
       "description": "Added student Alexander Wright (Roll 2024-CS-001).",
-      "timestamp": "2026-11-26T23:01:35.115Z",
+      "timestamp": "2026-11-28T14:53:28.575Z",
       "type": "student"
     },
     {
-      "id": "act-1795734095113",
+      "id": "act-1795877608573",
       "action": "Section Created",
       "description": "Created section \"CS-301: Algorithms & Data Structures\".",
-      "timestamp": "2026-11-26T23:01:35.113Z",
+      "timestamp": "2026-11-28T14:53:28.573Z",
       "type": "section"
     }
   ]

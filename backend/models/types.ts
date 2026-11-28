@@ -135,3 +135,177 @@ export interface ActivityLog {
   institutionId?: string | undefined;
   type: "student" | "assignment" | "project" | "marks" | "section";
 }
+
+export type SubmissionStatus =
+  | "Not Submitted"
+  | "Uploading"
+  | "Submitted"
+  | "Queued for Verification"
+  | "Scanning"
+  | "Verified"
+  | "Needs Teacher Review"
+  | "Rejected"
+  | "Resubmission Required"
+  | "Processing Failed";
+
+export type VerificationStatus =
+  | "Pending"
+  | "Queued"
+  | "Scanning"
+  | "Verified"
+  | "Needs Review"
+  | "Invalid File"
+  | "Failed";
+
+export type TeacherReviewStatus = "Pending" | "Approved" | "Rejected" | "Resubmission Requested";
+
+export interface AssignmentSubmission {
+  id: string;
+  institutionId?: string | undefined;
+  sectionId: string;
+  assignmentId: string;
+  studentId: string;
+  studentName: string;
+  rollNumber: string;
+  status: SubmissionStatus;
+  verificationStatus: VerificationStatus;
+  teacherReviewStatus: TeacherReviewStatus;
+  teacherReviewNotes?: string | undefined;
+  reviewedBy?: string | undefined;
+  reviewedAt?: string | undefined;
+  submissionVersion: number;
+  isLatest: boolean;
+  convertedFromFormat?: string | undefined;
+  originalFilename: string;
+  storedFilename: string;
+  storagePath: string;
+  fileMimeType: string;
+  fileSize: number;
+  checksumSha256: string;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt?: string | null | undefined;
+}
+
+export interface SubmissionFile {
+  id: string;
+  submissionId: string;
+  fileRole: "original" | "converted" | "extracted_text" | "thumbnail";
+  originalFilename: string;
+  storedFilename: string;
+  storagePath: string;
+  fileMimeType: string;
+  fileSize: number;
+  checksumSha256: string;
+  createdAt: string;
+}
+
+export type VerificationJobStatus =
+  | "PENDING"
+  | "QUEUED"
+  | "PROCESSING"
+  | "COMPLETED"
+  | "NEEDS_REVIEW"
+  | "FAILED";
+
+export interface VerificationJob {
+  id: string;
+  institutionId?: string | undefined;
+  sectionId: string;
+  assignmentId: string;
+  submissionId: string;
+  studentId: string;
+  batchId: string;
+  status: VerificationJobStatus;
+  attemptCount: number;
+  maxAttempts: number;
+  queuePosition: number;
+  priority: number;
+  workerId?: string | undefined;
+  startedAt?: string | undefined;
+  completedAt?: string | undefined;
+  errorMessage?: string | undefined;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface VerificationResult {
+  id: string;
+  jobId?: string | undefined;
+  submissionId: string;
+  overallStatus: "Verified" | "Needs Teacher Review" | "Invalid File" | "Processing Failed";
+  integrityStatus: string;
+  formatValid: boolean;
+  metadataFindings: {
+    creationDate?: string;
+    modificationDate?: string;
+    author?: string;
+    creator?: string;
+    producer?: string;
+    pageCount?: number;
+    wordCount?: number;
+    suspiciousFlags?: string[];
+  };
+  textSimilarityFindings: {
+    maxSimilarityScore: number;
+    matchedSubmissionId?: string;
+    matchedStudentName?: string;
+    matchedSnippet?: string;
+    isFlagged: boolean;
+  };
+  imageSimilarityFindings: {
+    maxVisualSimilarity: number;
+    matchedSubmissionId?: string;
+    isFlagged: boolean;
+  };
+  warnings: string[];
+  recommendation: string;
+  confidenceScore: number;
+  createdAt: string;
+}
+
+export interface MarksReconciliationAlert {
+  id: string;
+  institutionId?: string | undefined;
+  sectionId: string;
+  assignmentId: string;
+  studentId: string;
+  studentName?: string;
+  rollNumber?: string;
+  assignmentTitle?: string;
+  submissionId: string;
+  status: "ACTIVE" | "RESOLVED" | "DISMISSED";
+  daysPending: number;
+  reminderCount: number;
+  lastRemindedAt?: string | undefined;
+  resolvedAt?: string | undefined;
+  resolvedBy?: string | undefined;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type NotificationType =
+  | "submission_received"
+  | "verification_completed"
+  | "needs_review"
+  | "invalid_file"
+  | "resubmission_required"
+  | "processing_failed"
+  | "marks_pending"
+  | "marks_reconciliation"
+  | "general";
+
+export interface Notification {
+  id: string;
+  institutionId?: string | undefined;
+  recipientUserId: string;
+  recipientRole: "teacher" | "student" | "admin";
+  title: string;
+  message: string;
+  type: NotificationType;
+  relatedAssignmentId?: string | undefined;
+  relatedSubmissionId?: string | undefined;
+  isRead: boolean;
+  readAt?: string | undefined;
+  createdAt: string;
+}

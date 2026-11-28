@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Award,
   Download,
@@ -9,12 +9,17 @@ import {
   Calculator,
   Sparkles,
   FileSpreadsheet,
+  AlertTriangle,
+  RefreshCw,
+  BellRing,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { db } from "@/services/db";
 import { useAuth } from "@/services/auth";
 import { getSectionSpreadsheetRows, exportToCSV } from "@/services/teacher";
+import { submissionsApi } from "@/services/submissionsApi";
+import type { MarksReconciliationAlert } from "@/types";
 import { AsciiGlitchRipple } from "@/components/ui/ascii-glitch-ripple";
 
 export function MarksManager() {
@@ -41,6 +46,43 @@ export function MarksManager() {
   const [cellInput, setCellInput] = useState("");
   const [statusMsg, setStatusMsg] = useState("All grades synced");
   const [seedingMarks, setSeedingMarks] = useState(false);
+
+  // Automatic Marks Reconciliation State (System F)
+  const [reconciliationAlerts, setReconciliationAlerts] = useState<MarksReconciliationAlert[]>([]);
+  const [isReconciling, setIsReconciling] = useState(false);
+  const [showReconciliationDrawer, setShowReconciliationDrawer] = useState(false);
+
+  const loadReconciliationAlerts = async () => {
+    if (!selectedSectionId) return;
+    try {
+      const res = await submissionsApi.getReconciliationAlerts(selectedSectionId);
+      if (res.success && res.data) {
+        setReconciliationAlerts(res.data);
+      }
+    } catch {}
+  };
+
+  useEffect(() => {
+    loadReconciliationAlerts();
+  }, [selectedSectionId]);
+
+  const handleRunReconciliation = async () => {
+    if (!selectedSectionId) return;
+    try {
+      setIsReconciling(true);
+      const res = await submissionsApi.runReconciliation(selectedSectionId);
+      if (res.success && res.data) {
+        setReconciliationAlerts(res.data.alerts || []);
+        setStatusMsg(
+          `Reconciliation scan finished: ${res.data.totalMissingMarks} missing marks detected.`,
+        );
+      }
+    } catch {
+      setStatusMsg("Failed to complete reconciliation scan");
+    } finally {
+      setIsReconciling(false);
+    }
+  };
 
   const handlePopulateMarks = () => {
     if (!selectedSectionId) return;
@@ -160,6 +202,82 @@ export function MarksManager() {
           </Button>
         </div>
       </div>
+
+      {/* System F: Marks Reconciliation Alert Banner */}
+      {reconciliationAlerts.length > 0 && (
+        <div className="bg-amber-50 border border-amber-200/90 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+          <div className="flex items-start gap-2.5">
+            <div className="w-8 h-8 rounded-lg bg-amber-100 flex items-center justify-center text-amber-700 shrink-0">
+              <AlertTriangle className="w-4 h-4" />
+            </div>
+            <div>
+              <div className="font-semibold text-amber-900">
+                Marks Reconciliation: {reconciliationAlerts.length} verified submission(s) missing grades
+              </div>
+              <p className="text-amber-700 mt-0.5">
+                Students have submitted assignments that passed verification but have no recorded continuous marks in this section.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 self-end sm:self-auto shrink-0">
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={handleRunReconciliation}
+              disabled={isReconciling}
+              className="bg-white border-amber-300 text-amber-900 hover:bg-amber-100 text-xs h-8"
+            >
+              {isReconciling ? (
+                <>
+                  <RefreshCw className="w-3 h-3 animate-spin mr-1.5" /> Scanning...
+                </>
+              ) : (
+                <>
+                  <RefreshCw className="w-3 h-3 mr-1.5" /> Re-Scan
+                </>
+              )}
+            </Button>
+            <Button
+              size="sm"
+              onClick={() => setShowReconciliationDrawer(!showReconciliationDrawer)}
+              className="bg-amber-700 hover:bg-amber-800 text-white text-xs h-8"
+            >
+              {showReconciliationDrawer ? "Hide Missing" : "Review Missing"}
+            </Button>
+          </div>
+        </div>
+      )}
+
+      {/* Reconciliation Drawer / List */}
+      {showReconciliationDrawer && reconciliationAlerts.length > 0 && (
+        <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-2">
+          <div className="text-xs font-semibold text-slate-800">
+            Pending Gradebook Entries ({reconciliationAlerts.length} Students)
+          </div>
+          <div className="divide-y divide-slate-200/60 border border-slate-200 rounded-lg bg-white overflow-hidden">
+            {reconciliationAlerts.map((alt) => (
+              <div key={alt.id} className="p-3 flex items-center justify-between text-xs">
+                <div>
+                  <span className="font-semibold text-slate-900">{alt.studentName || alt.studentId}</span>
+                  <span className="text-slate-500 ml-2 font-mono">({alt.daysPending} days awaiting marks)</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => {
+                      setSearchQuery(alt.studentName || "");
+                      setShowReconciliationDrawer(false);
+                    }}
+                    className="text-xs font-semibold text-indigo-600 hover:underline"
+                  >
+                    Award Marks in Grid →
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Max Marks Configuration Panel */}
       {configOpen && (

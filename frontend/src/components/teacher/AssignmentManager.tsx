@@ -1,10 +1,11 @@
 import React, { useState } from "react";
-import { BookOpen, Plus, Calendar, Edit2, Trash2, Sparkles, CheckCircle2 } from "lucide-react";
+import { BookOpen, Plus, Calendar, Edit2, Trash2, Sparkles, CheckCircle2, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { db } from "@/services/db";
 import { useAuth } from "@/services/auth";
+import { SubmissionsBulkVerificationModal } from "./SubmissionsBulkVerificationModal";
 import type { Assignment } from "@/types";
 
 export function AssignmentManager() {
@@ -28,6 +29,8 @@ export function AssignmentManager() {
   const [editDeadline, setEditDeadline] = useState("");
   const [editDescription, setEditDescription] = useState("");
   const [editStatus, setEditStatus] = useState<Assignment["status"]>("Active");
+  const [selectedSubmissionsAssignment, setSelectedSubmissionsAssignment] =
+    useState<Assignment | null>(null);
 
   const assignments =
     selectedSectionId === "all" ? db.getAssignments() : db.getAssignments(selectedSectionId);
@@ -215,7 +218,18 @@ export function AssignmentManager() {
                 </p>
 
                 <div className="flex items-center justify-between text-xs text-slate-400 pt-1 border-t border-slate-100">
-                  <span>Created by {assignment.createdBy}</span>
+                  <div className="flex items-center gap-3">
+                    <span>Created by {assignment.createdBy}</span>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => setSelectedSubmissionsAssignment(assignment)}
+                      className="text-xs h-7 px-2.5 bg-indigo-50/50 hover:bg-indigo-50 border-indigo-200 text-indigo-700 font-medium"
+                    >
+                      <ShieldCheck className="w-3.5 h-3.5 mr-1 text-indigo-600" />
+                      Submissions & Bulk Verification
+                    </Button>
+                  </div>
 
                   <div className="flex items-center gap-2">
                     <button
@@ -454,6 +468,14 @@ export function AssignmentManager() {
             </form>
           </div>
         </div>
+      )}
+      {/* Submissions & Bulk Verification Modal */}
+      {selectedSubmissionsAssignment && (
+        <SubmissionsBulkVerificationModal
+          assignment={selectedSubmissionsAssignment}
+          isOpen={Boolean(selectedSubmissionsAssignment)}
+          onClose={() => setSelectedSubmissionsAssignment(null)}
+        />
       )}
     </div>
   );

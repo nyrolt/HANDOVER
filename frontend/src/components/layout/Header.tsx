@@ -1,9 +1,22 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { LogOut, Search, ChevronRight, Menu, X } from "lucide-react";
+import {
+  LogOut,
+  Search,
+  ChevronRight,
+  Menu,
+  X,
+  Bell,
+  CheckCircle2,
+  AlertTriangle,
+  Info,
+  Clock,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/services/auth";
 import { HandoverLogo } from "@/components/common/HandoverLogo";
+import { submissionsApi } from "@/services/submissionsApi";
+import type { Notification } from "@/types";
 
 interface HeaderProps {
   currentTitle: string;
@@ -24,6 +37,33 @@ export function Header({
 }: HeaderProps) {
   const { user, isTeacher, isStudent, studentProfile, logout } = useAuth();
   const navigate = useNavigate();
+
+  // Notifications State (System E)
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [showNotifications, setShowNotifications] = useState(false);
+
+  const loadNotifications = async () => {
+    if (!user) return;
+    try {
+      const res = await submissionsApi.getNotifications();
+      if (res.success && res.data) {
+        setNotifications(res.data);
+      }
+    } catch {}
+  };
+
+  useEffect(() => {
+    loadNotifications();
+    const interval = setInterval(loadNotifications, 15000);
+    return () => clearInterval(interval);
+  }, [user]);
+
+  const unreadCount = notifications.filter((n) => !n.isRead).length;
+
+  const handleMarkAllRead = async () => {
+    await submissionsApi.markAllNotificationsRead();
+    setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
+  };
 
   const handleSignOut = () => {
     logout();
@@ -85,6 +125,65 @@ export function Header({
       <div className="flex items-center gap-2.5 shrink-0">
         {user ? (
           <div className="flex items-center gap-2">
+            {/* Notification Bell Dropdown */}
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => setShowNotifications(!showNotifications)}
+                className="relative p-2 rounded-lg text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition-colors"
+                title="System Notifications"
+              >
+                <Bell className="w-4 h-4" />
+                {unreadCount > 0 && (
+                  <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-indigo-600 ring-2 ring-white animate-pulse" />
+                )}
+              </button>
+
+              {/* Notification Popover Panel */}
+              {showNotifications && (
+                <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-white border border-slate-200 rounded-2xl shadow-xl z-50 overflow-hidden divide-y divide-slate-100">
+                  <div className="p-3.5 px-4 bg-slate-50 flex items-center justify-between">
+                    <span className="text-xs font-semibold text-slate-900">Notifications</span>
+                    {unreadCount > 0 && (
+                      <button
+                        onClick={handleMarkAllRead}
+                        className="text-[11px] font-medium text-indigo-600 hover:text-indigo-800"
+                      >
+                        Mark all as read
+                      </button>
+                    )}
+                  </div>
+
+                  <div className="max-h-72 overflow-y-auto divide-y divide-slate-100">
+                    {notifications.length === 0 ? (
+                      <div className="p-6 text-center text-xs text-slate-400">
+                        No notifications yet.
+                      </div>
+                    ) : (
+                      notifications.map((n) => (
+                        <div
+                          key={n.id}
+                          className={`p-3.5 text-xs space-y-1 transition-colors hover:bg-slate-50/80 ${
+                            !n.isRead ? "bg-indigo-50/20" : ""
+                          }`}
+                        >
+                          <div className="flex items-center justify-between">
+                            <span className="font-semibold text-slate-800">{n.title}</span>
+                            <span className="font-mono text-[10px] text-slate-400">
+                              {new Date(n.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                            </span>
+                          </div>
+                          <p className="text-slate-600 text-[11.5px] leading-relaxed">
+                            {n.message}
+                          </p>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+
             {/* User Profile Info */}
             <div className="flex items-center gap-2 px-2 py-1 rounded-md bg-slate-50 border border-slate-200">
               <div className="w-6 h-6 rounded-md bg-slate-200 text-slate-700 flex items-center justify-center text-xs font-semibold shrink-0">
