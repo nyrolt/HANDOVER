@@ -15,6 +15,7 @@ import { Input } from "@/components/ui/input";
 import { db } from "@/services/db";
 import { useAuth } from "@/services/auth";
 import { getSectionSpreadsheetRows, exportToCSV } from "@/services/teacher";
+import { AsciiGlitchRipple } from "@/components/ui/ascii-glitch-ripple";
 
 export function MarksManager() {
   const { user } = useAuth();
@@ -200,51 +201,51 @@ export function MarksManager() {
 
       {/* 4 KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
-        <div className="bg-white border border-neutral-200/80 rounded-2xl p-4 shadow-2xs">
-          <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400 font-semibold">
+        <div className="bg-white border border-slate-200/90 rounded-xl p-4 shadow-xs">
+          <span className="text-[10px] font-mono uppercase tracking-wider text-slate-400 font-semibold">
             CLASS AVERAGE
           </span>
-          <div className="text-2xl font-bold text-neutral-900 mt-1 font-mono tabular-nums">
-            {classAvg}{" "}
-            <span className="text-xs font-normal text-neutral-400 font-sans">/{maxTotal}</span>
+          <div className="text-2xl font-bold text-slate-900 mt-1 font-mono tabular-nums">
+            <AsciiGlitchRipple as="span">{classAvg}</AsciiGlitchRipple>{" "}
+            <span className="text-xs font-normal text-slate-400 font-sans">/{maxTotal}</span>
           </div>
-          <div className="text-xs text-neutral-500 mt-0.5">Mean student performance</div>
+          <div className="text-xs text-slate-500 mt-0.5">Mean student performance</div>
         </div>
 
-        <div className="bg-white border border-neutral-200/80 rounded-2xl p-4 shadow-2xs">
-          <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400 font-semibold">
+        <div className="bg-white border border-slate-200/90 rounded-xl p-4 shadow-xs">
+          <span className="text-[10px] font-mono uppercase tracking-wider text-slate-400 font-semibold">
             HIGHEST TOTAL
           </span>
           <div className="text-2xl font-bold text-emerald-600 mt-1 font-mono tabular-nums">
-            {highestScore}{" "}
-            <span className="text-xs font-normal text-neutral-400 font-sans">/{maxTotal}</span>
+            <AsciiGlitchRipple as="span">{String(highestScore)}</AsciiGlitchRipple>{" "}
+            <span className="text-xs font-normal text-slate-400 font-sans">/{maxTotal}</span>
           </div>
-          <div className="text-xs text-neutral-500 mt-0.5">Section top performer</div>
+          <div className="text-xs text-slate-500 mt-0.5">Section top performer</div>
         </div>
 
-        <div className="bg-white border border-neutral-200/80 rounded-2xl p-4 shadow-2xs">
-          <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400 font-semibold">
+        <div className="bg-white border border-slate-200/90 rounded-xl p-4 shadow-xs">
+          <span className="text-[10px] font-mono uppercase tracking-wider text-slate-400 font-semibold">
             PASS RATE
           </span>
-          <div className="text-2xl font-bold text-neutral-900 mt-1 font-mono tabular-nums">
-            {passRate}%
+          <div className="text-2xl font-bold text-slate-900 mt-1 font-mono tabular-nums">
+            <AsciiGlitchRipple as="span">{String(passRate)}</AsciiGlitchRipple>%
           </div>
-          <div className="text-xs text-neutral-500 mt-0.5">
+          <div className="text-xs text-slate-500 mt-0.5">
             {passCount} of {totalStudents} passing
           </div>
         </div>
 
-        <div className="bg-white border border-neutral-200/80 rounded-2xl p-4 flex flex-col justify-between shadow-2xs">
-          <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400 font-semibold">
+        <div className="bg-white border border-slate-200/90 rounded-xl p-4 flex flex-col justify-between shadow-xs">
+          <span className="text-[10px] font-mono uppercase tracking-wider text-slate-400 font-semibold">
             SYNC STATUS
           </span>
           <div className="flex items-center gap-1.5 mt-2">
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span className="text-xs font-semibold text-neutral-900 font-mono">{statusMsg}</span>
+            <span className="text-xs font-semibold text-slate-900 font-mono">
+              <AsciiGlitchRipple as="span">{statusMsg}</AsciiGlitchRipple>
+            </span>
           </div>
-          <div className="text-[11px] text-neutral-400 mt-0.5 font-mono">
-            Continuous save active
-          </div>
+          <div className="text-[11px] text-slate-400 mt-0.5 font-mono">Continuous save active</div>
         </div>
       </div>
 

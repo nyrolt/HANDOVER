@@ -20,6 +20,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { db } from "@/services/db";
 import { useAuth } from "@/services/auth";
+import { AsciiGlitchRipple } from "@/components/ui/ascii-glitch-ripple";
 import {
   getSectionSpreadsheetRows,
   exportToCSV,
@@ -283,46 +284,46 @@ export function StudentSpreadsheet({
       {/* Quick Summary KPI Ticker */}
       {totalStudentsCount > 0 && (
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          <div className="bg-white border border-neutral-200/80 rounded-2xl p-3.5 shadow-2xs">
-            <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400 font-semibold">
+          <div className="bg-white border border-slate-200/90 rounded-xl p-3.5 shadow-xs">
+            <span className="text-[10px] font-mono uppercase tracking-wider text-slate-400 font-semibold">
               ENROLLED ROSTER
             </span>
-            <div className="text-xl font-bold text-neutral-900 font-mono mt-0.5">
-              {totalStudentsCount}{" "}
-              <span className="text-xs font-sans font-normal text-neutral-400">students</span>
+            <div className="text-xl font-bold text-slate-900 font-mono mt-0.5">
+              <AsciiGlitchRipple as="span">{String(totalStudentsCount)}</AsciiGlitchRipple>{" "}
+              <span className="text-xs font-sans font-normal text-slate-400">students</span>
             </div>
           </div>
-          <div className="bg-white border border-neutral-200/80 rounded-2xl p-3.5 shadow-2xs">
-            <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400 font-semibold">
+          <div className="bg-white border border-slate-200/90 rounded-xl p-3.5 shadow-xs">
+            <span className="text-[10px] font-mono uppercase tracking-wider text-slate-400 font-semibold">
               CLASS AVERAGE
             </span>
-            <div className="text-xl font-bold text-neutral-900 font-mono mt-0.5">
-              {classAvgScore}{" "}
-              <span className="text-xs font-sans font-normal text-neutral-400">/80</span>
+            <div className="text-xl font-bold text-slate-900 font-mono mt-0.5">
+              <AsciiGlitchRipple as="span">{classAvgScore}</AsciiGlitchRipple>{" "}
+              <span className="text-xs font-sans font-normal text-slate-400">/80</span>
             </div>
           </div>
-          <div className="bg-white border border-neutral-200/80 rounded-2xl p-3.5 shadow-2xs">
-            <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400 font-semibold">
+          <div className="bg-white border border-slate-200/90 rounded-xl p-3.5 shadow-xs">
+            <span className="text-[10px] font-mono uppercase tracking-wider text-slate-400 font-semibold">
               HIGHEST TOTAL
             </span>
             <div className="text-xl font-bold text-emerald-600 font-mono mt-0.5">
-              {highestScorerScore}{" "}
-              <span className="text-xs font-sans font-normal text-neutral-400">/80</span>
+              <AsciiGlitchRipple as="span">{String(highestScorerScore)}</AsciiGlitchRipple>{" "}
+              <span className="text-xs font-sans font-normal text-slate-400">/80</span>
             </div>
           </div>
-          <div className="bg-white border border-neutral-200/80 rounded-2xl p-3.5 shadow-2xs flex items-center justify-between">
+          <div className="bg-white border border-slate-200/90 rounded-xl p-3.5 shadow-xs flex items-center justify-between">
             <div>
-              <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400 font-semibold">
+              <span className="text-[10px] font-mono uppercase tracking-wider text-slate-400 font-semibold">
                 EVALUATION
               </span>
-              <div className="text-xs font-bold text-neutral-900 mt-1 flex items-center gap-1.5">
+              <div className="text-xs font-bold text-slate-900 mt-1 flex items-center gap-1.5">
                 <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
                 Live Clamped [0, 20]
               </div>
             </div>
             <button
               onClick={() => exportToCSV(currentSection, rows)}
-              className="text-xs font-semibold text-blue-600 hover:text-blue-700 bg-blue-50 px-2.5 py-1.5 rounded-full"
+              className="text-xs font-semibold text-indigo-600 hover:text-indigo-700 bg-indigo-50 border border-indigo-200/60 px-3 py-1 rounded-md cursor-pointer"
             >
               CSV
             </button>
