@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { BookOpen, Plus, Calendar, Edit2, Trash2 } from "lucide-react";
+import { BookOpen, Plus, Calendar, Edit2, Trash2, Sparkles, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -114,15 +114,60 @@ export function AssignmentManager() {
         </div>
       </div>
 
+      {/* Quick Summary Chips */}
+      <div className="flex flex-wrap items-center gap-2.5 text-xs font-mono">
+        <span className="px-3 py-1 bg-white border border-neutral-200/80 rounded-full font-semibold text-neutral-900 shadow-2xs">
+          All: {assignments.length}
+        </span>
+        <span className="px-3 py-1 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-full font-semibold">
+          Active: {assignments.filter((a) => a.status === "Active").length}
+        </span>
+        <span className="px-3 py-1 bg-neutral-100 border border-neutral-200 text-neutral-600 rounded-full font-semibold">
+          Closed: {assignments.filter((a) => a.status === "Closed").length}
+        </span>
+      </div>
+
       {/* Assignments List */}
-      <div className="space-y-3.5">
+      <div className="space-y-4">
         {assignments.length === 0 ? (
-          <div className="bg-white border border-slate-200 rounded-lg p-12 text-center text-slate-400">
-            <BookOpen className="w-8 h-8 mx-auto text-slate-300 mb-2" />
-            <p className="text-sm font-medium text-slate-700">No assignments created yet.</p>
-            <p className="text-xs mt-1 text-slate-400">
-              Click "Create Assignment" to post coursework for your sections.
-            </p>
+          <div className="bg-white border border-neutral-200/80 rounded-2xl p-12 text-center shadow-2xs">
+            <div className="max-w-md mx-auto space-y-3">
+              <div className="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center mx-auto shadow-xs border border-indigo-100">
+                <BookOpen className="w-6 h-6" />
+              </div>
+              <h3 className="text-base font-bold text-neutral-900">
+                No Coursework Assignments Posted
+              </h3>
+              <p className="text-xs text-neutral-500 leading-relaxed">
+                Publish lab exercises, milestones, and project deadlines with strict submission
+                dates for your enrolled sections.
+              </p>
+              <div className="flex flex-wrap items-center justify-center gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    const targetSecId =
+                      selectedSectionId === "all" ? sections[0]?.id : selectedSectionId;
+                    if (targetSecId) {
+                      db.populateSampleAssignments(targetSecId);
+                    }
+                  }}
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold shadow-xs transition-colors"
+                >
+                  <Sparkles className="w-3.5 h-3.5" />
+                  <span>Populate 3 Sample Assignments</span>
+                </button>
+
+                <Button
+                  size="sm"
+                  onClick={() => setCreateOpen(true)}
+                  className="bg-neutral-900 hover:bg-neutral-800 text-white text-xs rounded-full px-4 h-9 font-semibold gap-1.5"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  <span>Create Assignment</span>
+                </Button>
+              </div>
+            </div>
           </div>
         ) : (
           assignments.map((assignment) => {

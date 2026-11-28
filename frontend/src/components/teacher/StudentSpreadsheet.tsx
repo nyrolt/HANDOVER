@@ -14,6 +14,7 @@ import {
   AlertCircle,
   HelpCircle,
   CheckCircle2,
+  Sparkles,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -254,12 +255,81 @@ export function StudentSpreadsheet({
     }
   };
 
+  const [seedingSection, setSeedingSection] = useState(false);
+
+  const handlePopulateSection = () => {
+    if (!selectedSectionId) return;
+    setSeedingSection(true);
+    db.populateSampleStudents(selectedSectionId);
+    setTimeout(() => {
+      setSeedingSection(false);
+      setSaveStatus("Populated 8 sample students");
+    }, 200);
+  };
+
   const editableFields: Array<
     "internalMarks" | "labRecordMarks" | "practicalMarks" | "projectMarks"
   > = ["internalMarks", "labRecordMarks", "practicalMarks", "projectMarks"];
 
+  const totalStudentsCount = rows.length;
+  const classAvgScore =
+    totalStudentsCount > 0
+      ? (rows.reduce((acc, r) => acc + r.total, 0) / totalStudentsCount).toFixed(1)
+      : "0";
+  const highestScorerScore = totalStudentsCount > 0 ? Math.max(...rows.map((r) => r.total)) : 0;
+
   return (
     <div className="space-y-4">
+      {/* Quick Summary KPI Ticker */}
+      {totalStudentsCount > 0 && (
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <div className="bg-white border border-neutral-200/80 rounded-2xl p-3.5 shadow-2xs">
+            <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400 font-semibold">
+              ENROLLED ROSTER
+            </span>
+            <div className="text-xl font-bold text-neutral-900 font-mono mt-0.5">
+              {totalStudentsCount}{" "}
+              <span className="text-xs font-sans font-normal text-neutral-400">students</span>
+            </div>
+          </div>
+          <div className="bg-white border border-neutral-200/80 rounded-2xl p-3.5 shadow-2xs">
+            <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400 font-semibold">
+              CLASS AVERAGE
+            </span>
+            <div className="text-xl font-bold text-neutral-900 font-mono mt-0.5">
+              {classAvgScore}{" "}
+              <span className="text-xs font-sans font-normal text-neutral-400">/80</span>
+            </div>
+          </div>
+          <div className="bg-white border border-neutral-200/80 rounded-2xl p-3.5 shadow-2xs">
+            <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400 font-semibold">
+              HIGHEST TOTAL
+            </span>
+            <div className="text-xl font-bold text-emerald-600 font-mono mt-0.5">
+              {highestScorerScore}{" "}
+              <span className="text-xs font-sans font-normal text-neutral-400">/80</span>
+            </div>
+          </div>
+          <div className="bg-white border border-neutral-200/80 rounded-2xl p-3.5 shadow-2xs flex items-center justify-between">
+            <div>
+              <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400 font-semibold">
+                EVALUATION
+              </span>
+              <div className="text-xs font-bold text-neutral-900 mt-1 flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                Live Clamped [0, 20]
+              </div>
+            </div>
+            <button
+              onClick={() => exportToCSV(currentSection, rows)}
+              className="text-xs font-semibold text-blue-600 hover:text-blue-700 bg-blue-50 px-2.5 py-1.5 rounded-full"
+            >
+              CSV
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Top Controls: Section Selector, Search, Actions */}
       <div className="bg-white border border-slate-200 rounded-lg p-3.5 flex flex-col md:flex-row md:items-center justify-between gap-3">
         {/* Left: Section Selector & Details */}
@@ -426,11 +496,56 @@ export function StudentSpreadsheet({
             <tbody className="divide-y divide-slate-100 font-sans">
               {filteredRows.length === 0 ? (
                 <tr>
-                  <td colSpan={11} className="py-12 text-center text-slate-400">
-                    <p className="text-sm font-medium">No student records found in this section.</p>
-                    <p className="text-xs mt-1">
-                      Add a new student or import from CSV to populate the spreadsheet.
-                    </p>
+                  <td colSpan={11} className="py-16 text-center">
+                    <div className="max-w-md mx-auto space-y-3">
+                      <div className="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center mx-auto shadow-xs border border-blue-100">
+                        <FileSpreadsheet className="w-6 h-6" />
+                      </div>
+                      <h4 className="text-base font-bold text-neutral-900">
+                        {searchQuery
+                          ? "No matching students found"
+                          : "No Student Records in this Section"}
+                      </h4>
+                      <p className="text-xs text-neutral-500 leading-relaxed">
+                        {searchQuery
+                          ? `No student record matched "${searchQuery}". Clear your search query to view all students.`
+                          : "This class section currently has 0 enrolled students. Add students manually, upload an existing CSV roster, or populate an instant 8-student sample roster with marks."}
+                      </p>
+                      {!searchQuery && (
+                        <div className="flex flex-wrap items-center justify-center gap-2 pt-2">
+                          <button
+                            type="button"
+                            onClick={handlePopulateSection}
+                            disabled={seedingSection}
+                            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold shadow-xs transition-colors"
+                          >
+                            <Sparkles className="w-3.5 h-3.5" />
+                            <span>
+                              {seedingSection ? "Populating..." : "Populate 8 Sample Students"}
+                            </span>
+                          </button>
+                          <button
+                            type="button"
+                            onClick={onOpenAddStudent}
+                            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-neutral-900 hover:bg-neutral-800 text-white text-xs font-semibold shadow-xs transition-colors"
+                          >
+                            <Plus className="w-3.5 h-3.5" />
+                            <span>Add Student</span>
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setImportModalOpen(true);
+                              setImportSummary(null);
+                            }}
+                            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-white border border-neutral-200 hover:bg-neutral-50 text-neutral-800 text-xs font-medium shadow-2xs transition-colors"
+                          >
+                            <Upload className="w-3.5 h-3.5 text-neutral-500" />
+                            <span>Import CSV</span>
+                          </button>
+                        </div>
+                      )}
+                    </div>
                   </td>
                 </tr>
               ) : (
@@ -521,7 +636,21 @@ export function StudentSpreadsheet({
 
                       {/* Grade Badge */}
                       <td className="py-2 px-3 text-center whitespace-nowrap">
-                        <span className="font-mono text-[11px] px-2 py-0.5 rounded border border-slate-200 bg-slate-50 text-slate-700">
+                        <span
+                          className={`font-mono text-[11px] font-bold px-2.5 py-0.5 rounded-full border ${
+                            row.grade.startsWith("O")
+                              ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                              : row.grade.startsWith("A+")
+                                ? "bg-blue-50 text-blue-700 border-blue-200"
+                                : row.grade.startsWith("A")
+                                  ? "bg-indigo-50 text-indigo-700 border-indigo-200"
+                                  : row.grade.startsWith("B+")
+                                    ? "bg-purple-50 text-purple-700 border-purple-200"
+                                    : row.grade.startsWith("B")
+                                      ? "bg-amber-50 text-amber-700 border-amber-200"
+                                      : "bg-rose-50 text-rose-700 border-rose-200"
+                          }`}
+                        >
                           {row.grade.split(" ")[0]}
                         </span>
                       </td>

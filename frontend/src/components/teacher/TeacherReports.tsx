@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { BarChart3, Download, Search } from "lucide-react";
+import { BarChart3, Download, Search, Sparkles, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { db } from "@/services/db";
@@ -27,14 +27,56 @@ export function TeacherReports() {
   const highest = totalStudents > 0 ? Math.max(...rows.map((r) => r.total)) : 0;
   const lowest = totalStudents > 0 ? Math.min(...rows.map((r) => r.total)) : 0;
 
-  // Grade breakdown
+  // Grade breakdown with semantic colors
   const gradeTiers = [
-    { tier: "O", label: "Outstanding (≥ 90%)", count: 0 },
-    { tier: "A+", label: "Excellent (≥ 80%)", count: 0 },
-    { tier: "A", label: "Very Good (≥ 70%)", count: 0 },
-    { tier: "B+", label: "Good (≥ 60%)", count: 0 },
-    { tier: "B/C", label: "Passing Average (≥ 40%)", count: 0 },
-    { tier: "F", label: "Need Attention (< 40%)", count: 0 },
+    {
+      tier: "O",
+      label: "Outstanding (≥ 90%)",
+      count: 0,
+      color: "bg-emerald-500",
+      text: "text-emerald-700",
+      badgeBg: "bg-emerald-50 border-emerald-200",
+    },
+    {
+      tier: "A+",
+      label: "Excellent (≥ 80%)",
+      count: 0,
+      color: "bg-blue-500",
+      text: "text-blue-700",
+      badgeBg: "bg-blue-50 border-blue-200",
+    },
+    {
+      tier: "A",
+      label: "Very Good (≥ 70%)",
+      count: 0,
+      color: "bg-indigo-500",
+      text: "text-indigo-700",
+      badgeBg: "bg-indigo-50 border-indigo-200",
+    },
+    {
+      tier: "B+",
+      label: "Good (≥ 60%)",
+      count: 0,
+      color: "bg-purple-500",
+      text: "text-purple-700",
+      badgeBg: "bg-purple-50 border-purple-200",
+    },
+    {
+      tier: "B/C",
+      label: "Passing Average (≥ 40%)",
+      count: 0,
+      color: "bg-amber-500",
+      text: "text-amber-700",
+      badgeBg: "bg-amber-50 border-amber-200",
+    },
+    {
+      tier: "F",
+      label: "Need Attention (< 40%)",
+      count: 0,
+      color: "bg-rose-500",
+      text: "text-rose-700",
+      badgeBg: "bg-rose-50 border-rose-200",
+    },
   ];
 
   rows.forEach((r) => {
@@ -131,47 +173,94 @@ export function TeacherReports() {
       </div>
 
       {/* Grade Tier Distribution Visualization */}
-      <div className="bg-white border border-slate-200 rounded-lg p-5 space-y-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <h3 className="text-sm font-semibold text-slate-900">Grade Tier Distribution</h3>
-            <p className="text-xs text-slate-500 mt-0.5">
-              Breakdown for <strong>{currentSection?.sectionName}</strong> based on {maxTotal}-mark
-              continuous assessment.
-            </p>
+      {totalStudents === 0 ? (
+        <div className="bg-white border border-slate-200/90 rounded-2xl p-8 sm:p-12 text-center shadow-xs">
+          <div className="w-14 h-14 rounded-2xl bg-indigo-50/80 border border-indigo-100/60 flex items-center justify-center mx-auto mb-4 text-indigo-600">
+            <Users className="w-7 h-7" />
           </div>
-          <span className="text-xs font-mono font-medium px-2 py-0.5 rounded bg-slate-100 text-slate-700 border border-slate-200">
-            {totalStudents} Evaluated
-          </span>
-        </div>
+          <h3 className="font-serif text-2xl font-normal text-slate-900 tracking-tight">
+            No Student Marks to Report
+          </h3>
+          <p className="text-xs text-slate-500 max-w-md mx-auto mt-2 leading-relaxed">
+            Academic tier distributions, mean percentage calculations, and marksheet rosters require
+            enrolled students with continuous assessment marks.
+          </p>
 
-        <div className="space-y-3 pt-1">
-          {gradeTiers.map((tier) => {
-            const pct = totalStudents > 0 ? Math.round((tier.count / totalStudents) * 100) : 0;
-            return (
-              <div key={tier.tier} className="space-y-1">
-                <div className="flex items-center justify-between text-xs">
-                  <div className="flex items-center gap-2">
-                    <span className="font-mono text-[11px] px-1.5 py-0.5 rounded border border-slate-200 bg-slate-50 text-slate-800 font-semibold w-8 text-center">
-                      {tier.tier}
-                    </span>
-                    <span className="font-medium text-slate-700">{tier.label}</span>
-                  </div>
-                  <span className="font-mono text-slate-600 tabular-nums">
-                    {tier.count} student{tier.count !== 1 ? "s" : ""} ({pct}%)
-                  </span>
-                </div>
-                <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
-                  <div
-                    className="h-full rounded-full bg-slate-800 transition-all duration-300"
-                    style={{ width: `${pct}%` }}
-                  />
-                </div>
-              </div>
-            );
-          })}
+          <div className="flex flex-wrap items-center justify-center gap-2.5 mt-6">
+            <Button
+              size="sm"
+              onClick={() => {
+                if (!selectedSectionId) return;
+                db.populateSampleStudents(selectedSectionId);
+              }}
+              className="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-medium rounded-lg h-9 px-4 gap-2 shadow-xs cursor-pointer"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-indigo-200" />
+              <span>⚡ Populate Sample Class (8 Students)</span>
+            </Button>
+          </div>
         </div>
-      </div>
+      ) : (
+        <div className="bg-white border border-slate-200/90 rounded-xl p-5 space-y-4 shadow-xs">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-sm font-semibold text-slate-900">Grade Tier Distribution</h3>
+              <p className="text-xs text-slate-500 mt-0.5">
+                Breakdown for <strong>{currentSection?.sectionName}</strong> based on {maxTotal}
+                -mark continuous assessment.
+              </p>
+            </div>
+            <span className="text-xs font-mono font-medium px-2.5 py-0.5 rounded bg-slate-100 text-slate-700 border border-slate-200">
+              {totalStudents} Evaluated
+            </span>
+          </div>
+
+          {/* Stacked multi-color bar */}
+          <div className="w-full h-3 bg-slate-100 rounded-full overflow-hidden flex border border-slate-200/50">
+            {gradeTiers.map((tier) => {
+              const pct = (tier.count / totalStudents) * 100;
+              if (pct === 0) return null;
+              return (
+                <div
+                  key={tier.tier}
+                  style={{ width: `${pct}%` }}
+                  className={`${tier.color} transition-all duration-300`}
+                  title={`${tier.tier}: ${tier.count} (${Math.round(pct)}%)`}
+                />
+              );
+            })}
+          </div>
+
+          <div className="space-y-3 pt-1">
+            {gradeTiers.map((tier) => {
+              const pct = totalStudents > 0 ? Math.round((tier.count / totalStudents) * 100) : 0;
+              return (
+                <div key={tier.tier} className="space-y-1">
+                  <div className="flex items-center justify-between text-xs">
+                    <div className="flex items-center gap-2">
+                      <span
+                        className={`font-mono text-[11px] px-1.5 py-0.5 rounded border font-semibold w-8 text-center ${tier.badgeBg} ${tier.text}`}
+                      >
+                        {tier.tier}
+                      </span>
+                      <span className="font-medium text-slate-700">{tier.label}</span>
+                    </div>
+                    <span className="font-mono text-slate-600 tabular-nums">
+                      {tier.count} student{tier.count !== 1 ? "s" : ""} ({pct}%)
+                    </span>
+                  </div>
+                  <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
+                    <div
+                      className={`h-full rounded-full ${tier.color} transition-all duration-300`}
+                      style={{ width: `${pct}%` }}
+                    />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {/* Roster Summary Table */}
       <div className="bg-white border border-slate-200 rounded-lg overflow-hidden space-y-4 p-5">

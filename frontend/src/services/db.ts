@@ -857,6 +857,231 @@ class CollegeDatabase {
     });
     return true;
   }
+
+  // --- Quick Demo Seeding Helpers ---
+  public populateSampleStudents(sectionId: string): number {
+    const section = this.getSectionById(sectionId);
+    if (!section) return 0;
+
+    const sampleRoster = [
+      {
+        name: "Alexander Wright",
+        email: "a.wright@univ.edu",
+        roll: "2024-CS-001",
+        int: 19,
+        lab: 19.5,
+        prac: 18.5,
+        proj: 19,
+      },
+      {
+        name: "Ananya Sharma",
+        email: "a.sharma@univ.edu",
+        roll: "2024-CS-002",
+        int: 18.5,
+        lab: 19,
+        prac: 19,
+        proj: 18,
+      },
+      {
+        name: "Marcus Brody",
+        email: "m.brody@univ.edu",
+        roll: "2024-CS-003",
+        int: 19.5,
+        lab: 18.5,
+        prac: 19.5,
+        proj: 19.5,
+      },
+      {
+        name: "Elena Rostova",
+        email: "e.rostova@univ.edu",
+        roll: "2024-CS-004",
+        int: 20,
+        lab: 19.5,
+        prac: 19,
+        proj: 19.5,
+      },
+      {
+        name: "Devon Vance",
+        email: "d.vance@univ.edu",
+        roll: "2024-CS-005",
+        int: 16.5,
+        lab: 17,
+        prac: 16,
+        proj: 17.5,
+      },
+      {
+        name: "Priya Nair",
+        email: "p.nair@univ.edu",
+        roll: "2024-CS-006",
+        int: 18,
+        lab: 18.5,
+        prac: 18,
+        proj: 18.5,
+      },
+      {
+        name: "Liam O'Connor",
+        email: "l.oconnor@univ.edu",
+        roll: "2024-CS-007",
+        int: 17,
+        lab: 17.5,
+        prac: 18,
+        proj: 17,
+      },
+      {
+        name: "Zara Chen",
+        email: "z.chen@univ.edu",
+        roll: "2024-CS-008",
+        int: 19,
+        lab: 19,
+        prac: 18.5,
+        proj: 19,
+      },
+    ];
+
+    let count = 0;
+    sampleRoster.forEach((item) => {
+      const exists = this.state.students.some(
+        (s) => s.sectionId === sectionId && s.rollNumber === item.roll,
+      );
+      if (!exists) {
+        const student = this.addStudent({
+          name: item.name,
+          email: item.email,
+          rollNumber: item.roll,
+          sectionId,
+        });
+        this.updateStudentMarks(
+          student.id,
+          {
+            internalMarks: item.int,
+            labRecordMarks: item.lab,
+            practicalMarks: item.prac,
+            projectMarks: item.proj,
+          },
+          "System Demo Seed",
+        );
+        count++;
+      }
+    });
+
+    if (count > 0) {
+      this.addActivity(
+        "Sample Roster Loaded",
+        `Populated ${count} students in section ${section.sectionName}.`,
+        "student",
+      );
+    }
+    return count;
+  }
+
+  public populateSampleAssignments(sectionId: string): number {
+    const section = this.getSectionById(sectionId);
+    if (!section) return 0;
+
+    const samples = [
+      {
+        title: "Lab 1: Distributed Socket & RPC Architecture",
+        subject: "Distributed Systems",
+        description:
+          "Implement a multi-threaded TCP socket server with persistent client state and heartbeats.",
+        deadline: new Date(Date.now() + 86400000 * 4).toISOString().split("T")[0] || "2026-12-05",
+      },
+      {
+        title: "Milestone 2: Raft Consensus & Leader Election",
+        subject: "Core Engineering",
+        description:
+          "Design leader election and log replication module with automated partition recovery tests.",
+        deadline: new Date(Date.now() + 86400000 * 9).toISOString().split("T")[0] || "2026-12-10",
+      },
+      {
+        title: "Continuous Evaluation: Capstone Project Proposal",
+        subject: "Capstone Lab",
+        description:
+          "Submit 2-page project specification with architecture diagrams and member task matrix.",
+        deadline: new Date(Date.now() + 86400000 * 14).toISOString().split("T")[0] || "2026-12-15",
+      },
+    ];
+
+    let count = 0;
+    samples.forEach((s) => {
+      const exists = this.state.assignments.some(
+        (a) => a.sectionId === sectionId && a.title === s.title,
+      );
+      if (!exists) {
+        this.createAssignment({
+          title: s.title,
+          subject: s.subject,
+          description: s.description,
+          sectionId,
+          deadline: s.deadline,
+          createdBy: "Faculty Chair",
+        });
+        count++;
+      }
+    });
+
+    return count;
+  }
+
+  public populateSampleGroups(sectionId: string): number {
+    const section = this.getSectionById(sectionId);
+    if (!section) return 0;
+
+    const students = this.getStudents(sectionId);
+    const unassigned = students.filter((s) => !s.projectGroupId);
+    if (unassigned.length < 2) return 0;
+
+    const team1Students = unassigned.slice(0, 3).map((s) => s.id);
+    this.createProjectGroup({
+      groupName: "Team RaftCore",
+      projectTitle: "Distributed Key-Value Store with Raft Consensus",
+      sectionId,
+      projectDescription:
+        "High-throughput fault tolerant key-value datastore implemented in Go with Raft protocol.",
+      guide: "Dr. Eleanor Vance, Ph.D.",
+      projectMarks: 19,
+      approvedBy: "Faculty",
+      memberStudentIds: team1Students,
+    });
+
+    return 1;
+  }
+
+  public populateSampleAnnouncements(sectionId: string): number {
+    const samples = [
+      {
+        title: "Mid-Semester Continuous Marks Review Schedule",
+        message:
+          "Continuous internal evaluation marks (0-20 scale) have been recorded. Please verify your scores in the student portal before Friday.",
+        priority: "important" as const,
+      },
+      {
+        title: "Lab Record Submission Guidelines & Verification",
+        message:
+          "Ensure your experiment logs and GitHub repository links are committed. Lab vivas will commence next Monday.",
+        priority: "normal" as const,
+      },
+    ];
+
+    let count = 0;
+    samples.forEach((s) => {
+      const exists = this.state.announcements.some(
+        (a) => a.sectionId === sectionId && a.title === s.title,
+      );
+      if (!exists) {
+        this.createAnnouncement({
+          title: s.title,
+          message: s.message,
+          sectionId,
+          teacherName: "Prof. Eleanor Vance",
+          priority: s.priority,
+        });
+        count++;
+      }
+    });
+
+    return count;
+  }
 }
 
 export const db = new CollegeDatabase();

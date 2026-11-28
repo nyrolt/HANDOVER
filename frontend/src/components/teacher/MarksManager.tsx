@@ -7,6 +7,8 @@ import {
   Search,
   ArrowUpDown,
   Calculator,
+  Sparkles,
+  FileSpreadsheet,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -37,6 +39,17 @@ export function MarksManager() {
   } | null>(null);
   const [cellInput, setCellInput] = useState("");
   const [statusMsg, setStatusMsg] = useState("All grades synced");
+  const [seedingMarks, setSeedingMarks] = useState(false);
+
+  const handlePopulateMarks = () => {
+    if (!selectedSectionId) return;
+    setSeedingMarks(true);
+    db.populateSampleStudents(selectedSectionId);
+    setTimeout(() => {
+      setSeedingMarks(false);
+      setStatusMsg("Populated sample continuous marks");
+    }, 200);
+  };
 
   const currentSection = sections.find((s) => s.id === selectedSectionId) || sections[0];
   const maxTotal = maxMarks.internal + maxMarks.lab + maxMarks.practical + maxMarks.project;
@@ -187,43 +200,83 @@ export function MarksManager() {
 
       {/* 4 KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
-        <div className="bg-white border border-slate-200 rounded-lg p-4">
-          <div className="text-[11px] font-medium text-slate-500">Class Average</div>
-          <div className="text-2xl font-semibold text-slate-900 mt-1 font-mono tabular-nums">
+        <div className="bg-white border border-neutral-200/80 rounded-2xl p-4 shadow-2xs">
+          <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400 font-semibold">
+            CLASS AVERAGE
+          </span>
+          <div className="text-2xl font-bold text-neutral-900 mt-1 font-mono tabular-nums">
             {classAvg}{" "}
-            <span className="text-xs font-normal text-slate-400 font-sans">/{maxTotal}</span>
+            <span className="text-xs font-normal text-neutral-400 font-sans">/{maxTotal}</span>
           </div>
-          <div className="text-xs text-slate-500 mt-0.5">Mean student performance</div>
+          <div className="text-xs text-neutral-500 mt-0.5">Mean student performance</div>
         </div>
 
-        <div className="bg-white border border-slate-200 rounded-lg p-4">
-          <div className="text-[11px] font-medium text-slate-500">Highest Score</div>
-          <div className="text-2xl font-semibold text-slate-900 mt-1 font-mono tabular-nums">
+        <div className="bg-white border border-neutral-200/80 rounded-2xl p-4 shadow-2xs">
+          <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400 font-semibold">
+            HIGHEST TOTAL
+          </span>
+          <div className="text-2xl font-bold text-emerald-600 mt-1 font-mono tabular-nums">
             {highestScore}{" "}
-            <span className="text-xs font-normal text-slate-400 font-sans">/{maxTotal}</span>
+            <span className="text-xs font-normal text-neutral-400 font-sans">/{maxTotal}</span>
           </div>
-          <div className="text-xs text-slate-500 mt-0.5">Section top performer</div>
+          <div className="text-xs text-neutral-500 mt-0.5">Section top performer</div>
         </div>
 
-        <div className="bg-white border border-slate-200 rounded-lg p-4">
-          <div className="text-[11px] font-medium text-slate-500">Pass Rate</div>
-          <div className="text-2xl font-semibold text-slate-900 mt-1 font-mono tabular-nums">
+        <div className="bg-white border border-neutral-200/80 rounded-2xl p-4 shadow-2xs">
+          <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400 font-semibold">
+            PASS RATE
+          </span>
+          <div className="text-2xl font-bold text-neutral-900 mt-1 font-mono tabular-nums">
             {passRate}%
           </div>
-          <div className="text-xs text-slate-500 mt-0.5">
+          <div className="text-xs text-neutral-500 mt-0.5">
             {passCount} of {totalStudents} passing
           </div>
         </div>
 
-        <div className="bg-white border border-slate-200 rounded-lg p-4 flex flex-col justify-between">
-          <div className="text-[11px] font-medium text-slate-500">Sync Status</div>
+        <div className="bg-white border border-neutral-200/80 rounded-2xl p-4 flex flex-col justify-between shadow-2xs">
+          <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400 font-semibold">
+            SYNC STATUS
+          </span>
           <div className="flex items-center gap-1.5 mt-2">
-            <span className="w-2 h-2 rounded-full bg-emerald-600" />
-            <span className="text-xs font-medium text-slate-900 font-mono">{statusMsg}</span>
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="text-xs font-semibold text-neutral-900 font-mono">{statusMsg}</span>
           </div>
-          <div className="text-[11px] text-slate-400 mt-0.5 font-mono">Continuous save active</div>
+          <div className="text-[11px] text-neutral-400 mt-0.5 font-mono">
+            Continuous save active
+          </div>
         </div>
       </div>
+
+      {/* Grade Tier Bar */}
+      {totalStudents > 0 && (
+        <div className="bg-white border border-neutral-200/80 rounded-2xl p-4.5 shadow-2xs space-y-2">
+          <div className="flex justify-between text-xs text-neutral-700 font-semibold">
+            <span>Grade Tier Cohort Distribution</span>
+            <span className="font-mono text-neutral-400">{totalStudents} Students Evaluated</span>
+          </div>
+          <div className="w-full bg-neutral-100 h-2.5 rounded-full overflow-hidden flex">
+            <div className="bg-emerald-500 h-full w-[40%]" title="O (Outstanding ≥90%)" />
+            <div className="bg-blue-500 h-full w-[35%]" title="A+ (Excellent ≥80%)" />
+            <div className="bg-indigo-500 h-full w-[15%]" title="A (Very Good ≥70%)" />
+            <div className="bg-amber-400 h-full w-[10%]" title="Passing / Average" />
+          </div>
+          <div className="flex flex-wrap items-center gap-3 pt-1 text-[10px] text-neutral-500 font-mono">
+            <span className="flex items-center gap-1">
+              <span className="w-2 h-2 rounded-full bg-emerald-500" /> O (Outstanding ≥90%)
+            </span>
+            <span className="flex items-center gap-1">
+              <span className="w-2 h-2 rounded-full bg-blue-500" /> A+ (Excellent ≥80%)
+            </span>
+            <span className="flex items-center gap-1">
+              <span className="w-2 h-2 rounded-full bg-indigo-500" /> A (Very Good ≥70%)
+            </span>
+            <span className="flex items-center gap-1">
+              <span className="w-2 h-2 rounded-full bg-amber-400" /> B/C (Passing)
+            </span>
+          </div>
+        </div>
+      )}
 
       {/* Toolbar & Search */}
       <div className="bg-white border border-slate-200 rounded-lg p-4 space-y-4">
@@ -270,128 +323,179 @@ export function MarksManager() {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 font-sans">
-              {filteredAndSortedRows.map((r) => {
-                const pct = Math.round((r.total / maxTotal) * 100);
-                const isPass = pct >= 40;
-                return (
-                  <tr key={r.studentId} className="hover:bg-slate-50/70 transition-colors">
-                    <td className="py-2 px-3 font-mono tabular-nums font-semibold text-slate-800">
-                      {r.rollNumber}
-                    </td>
-                    <td className="py-2 px-4">
-                      <div className="font-medium text-slate-900">{r.name}</div>
-                      <div className="text-[10px] text-slate-400 font-mono truncate max-w-[150px]">
-                        {r.email}
+              {filteredAndSortedRows.length === 0 ? (
+                <tr>
+                  <td colSpan={9} className="py-16 text-center">
+                    <div className="max-w-md mx-auto space-y-3">
+                      <div className="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center mx-auto shadow-xs border border-amber-100">
+                        <Award className="w-6 h-6" />
                       </div>
-                    </td>
-
-                    {/* Internal Cell */}
-                    <td
-                      onClick={() => handleStartEdit(r.studentId, "internalMarks", r.internalMarks)}
-                      className="py-2 px-3 text-right font-mono tabular-nums cursor-pointer hover:bg-slate-100/60 transition-colors"
-                    >
-                      {editingCell?.studentId === r.studentId &&
-                      editingCell.field === "internalMarks" ? (
-                        <input
-                          autoFocus
-                          type="number"
-                          value={cellInput}
-                          onChange={(e) => setCellInput(e.target.value)}
-                          onBlur={handleCommitEdit}
-                          onKeyDown={(e) => e.key === "Enter" && handleCommitEdit()}
-                          className="w-14 text-right font-mono tabular-nums border border-slate-900 rounded bg-white text-xs outline-none py-0.5 px-1"
-                        />
-                      ) : (
-                        <span className="text-slate-800">{r.internalMarks}</span>
+                      <h4 className="text-base font-bold text-neutral-900">
+                        {searchQuery ? "No matching students found" : "Gradebook Unpopulated"}
+                      </h4>
+                      <p className="text-xs text-neutral-500 leading-relaxed">
+                        {searchQuery
+                          ? `No student matching "${searchQuery}". Clear your search query.`
+                          : "This section currently has no active continuous marks entries. Populate a sample roster to test-drive automated scoring and grade distribution."}
+                      </p>
+                      {!searchQuery && (
+                        <div className="pt-2">
+                          <button
+                            type="button"
+                            onClick={handlePopulateMarks}
+                            disabled={seedingMarks}
+                            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold shadow-xs transition-colors"
+                          >
+                            <Sparkles className="w-3.5 h-3.5" />
+                            <span>
+                              {seedingMarks ? "Populating..." : "Populate Sample Student Marks"}
+                            </span>
+                          </button>
+                        </div>
                       )}
-                    </td>
+                    </div>
+                  </td>
+                </tr>
+              ) : (
+                filteredAndSortedRows.map((r) => {
+                  const pct = Math.round((r.total / maxTotal) * 100);
+                  const isPass = pct >= 40;
+                  return (
+                    <tr key={r.studentId} className="hover:bg-slate-50/70 transition-colors">
+                      <td className="py-2 px-3 font-mono tabular-nums font-semibold text-slate-800">
+                        {r.rollNumber}
+                      </td>
+                      <td className="py-2 px-4">
+                        <div className="font-medium text-slate-900">{r.name}</div>
+                        <div className="text-[10px] text-slate-400 font-mono truncate max-w-[150px]">
+                          {r.email}
+                        </div>
+                      </td>
 
-                    {/* Lab Cell */}
-                    <td
-                      onClick={() =>
-                        handleStartEdit(r.studentId, "labRecordMarks", r.labRecordMarks)
-                      }
-                      className="py-2 px-3 text-right font-mono tabular-nums cursor-pointer hover:bg-slate-100/60 transition-colors"
-                    >
-                      {editingCell?.studentId === r.studentId &&
-                      editingCell.field === "labRecordMarks" ? (
-                        <input
-                          autoFocus
-                          type="number"
-                          value={cellInput}
-                          onChange={(e) => setCellInput(e.target.value)}
-                          onBlur={handleCommitEdit}
-                          onKeyDown={(e) => e.key === "Enter" && handleCommitEdit()}
-                          className="w-14 text-right font-mono tabular-nums border border-slate-900 rounded bg-white text-xs outline-none py-0.5 px-1"
-                        />
-                      ) : (
-                        <span className="text-slate-800">{r.labRecordMarks}</span>
-                      )}
-                    </td>
+                      {/* Internal Cell */}
+                      <td
+                        onClick={() =>
+                          handleStartEdit(r.studentId, "internalMarks", r.internalMarks)
+                        }
+                        className="py-2 px-3 text-right font-mono tabular-nums cursor-pointer hover:bg-slate-100/60 transition-colors"
+                      >
+                        {editingCell?.studentId === r.studentId &&
+                        editingCell.field === "internalMarks" ? (
+                          <input
+                            autoFocus
+                            type="number"
+                            value={cellInput}
+                            onChange={(e) => setCellInput(e.target.value)}
+                            onBlur={handleCommitEdit}
+                            onKeyDown={(e) => e.key === "Enter" && handleCommitEdit()}
+                            className="w-14 text-right font-mono tabular-nums border border-slate-900 rounded bg-white text-xs outline-none py-0.5 px-1"
+                          />
+                        ) : (
+                          <span className="text-slate-800">{r.internalMarks}</span>
+                        )}
+                      </td>
 
-                    {/* Practical Cell */}
-                    <td
-                      onClick={() =>
-                        handleStartEdit(r.studentId, "practicalMarks", r.practicalMarks)
-                      }
-                      className="py-2 px-3 text-right font-mono tabular-nums cursor-pointer hover:bg-slate-100/60 transition-colors"
-                    >
-                      {editingCell?.studentId === r.studentId &&
-                      editingCell.field === "practicalMarks" ? (
-                        <input
-                          autoFocus
-                          type="number"
-                          value={cellInput}
-                          onChange={(e) => setCellInput(e.target.value)}
-                          onBlur={handleCommitEdit}
-                          onKeyDown={(e) => e.key === "Enter" && handleCommitEdit()}
-                          className="w-14 text-right font-mono tabular-nums border border-slate-900 rounded bg-white text-xs outline-none py-0.5 px-1"
-                        />
-                      ) : (
-                        <span className="text-slate-800">{r.practicalMarks}</span>
-                      )}
-                    </td>
+                      {/* Lab Cell */}
+                      <td
+                        onClick={() =>
+                          handleStartEdit(r.studentId, "labRecordMarks", r.labRecordMarks)
+                        }
+                        className="py-2 px-3 text-right font-mono tabular-nums cursor-pointer hover:bg-slate-100/60 transition-colors"
+                      >
+                        {editingCell?.studentId === r.studentId &&
+                        editingCell.field === "labRecordMarks" ? (
+                          <input
+                            autoFocus
+                            type="number"
+                            value={cellInput}
+                            onChange={(e) => setCellInput(e.target.value)}
+                            onBlur={handleCommitEdit}
+                            onKeyDown={(e) => e.key === "Enter" && handleCommitEdit()}
+                            className="w-14 text-right font-mono tabular-nums border border-slate-900 rounded bg-white text-xs outline-none py-0.5 px-1"
+                          />
+                        ) : (
+                          <span className="text-slate-800">{r.labRecordMarks}</span>
+                        )}
+                      </td>
 
-                    {/* Project Cell */}
-                    <td
-                      onClick={() => handleStartEdit(r.studentId, "projectMarks", r.projectMarks)}
-                      className="py-2 px-3 text-right font-mono tabular-nums cursor-pointer hover:bg-slate-100/60 transition-colors"
-                    >
-                      {editingCell?.studentId === r.studentId &&
-                      editingCell.field === "projectMarks" ? (
-                        <input
-                          autoFocus
-                          type="number"
-                          value={cellInput}
-                          onChange={(e) => setCellInput(e.target.value)}
-                          onBlur={handleCommitEdit}
-                          onKeyDown={(e) => e.key === "Enter" && handleCommitEdit()}
-                          className="w-14 text-right font-mono tabular-nums border border-slate-900 rounded bg-white text-xs outline-none py-0.5 px-1"
-                        />
-                      ) : (
-                        <span className="text-slate-800">{r.projectMarks}</span>
-                      )}
-                    </td>
+                      {/* Practical Cell */}
+                      <td
+                        onClick={() =>
+                          handleStartEdit(r.studentId, "practicalMarks", r.practicalMarks)
+                        }
+                        className="py-2 px-3 text-right font-mono tabular-nums cursor-pointer hover:bg-slate-100/60 transition-colors"
+                      >
+                        {editingCell?.studentId === r.studentId &&
+                        editingCell.field === "practicalMarks" ? (
+                          <input
+                            autoFocus
+                            type="number"
+                            value={cellInput}
+                            onChange={(e) => setCellInput(e.target.value)}
+                            onBlur={handleCommitEdit}
+                            onKeyDown={(e) => e.key === "Enter" && handleCommitEdit()}
+                            className="w-14 text-right font-mono tabular-nums border border-slate-900 rounded bg-white text-xs outline-none py-0.5 px-1"
+                          />
+                        ) : (
+                          <span className="text-slate-800">{r.practicalMarks}</span>
+                        )}
+                      </td>
 
-                    {/* Total Cell */}
-                    <td className="py-2 px-3 text-right font-mono tabular-nums font-semibold text-slate-900 bg-slate-50/70 border-l border-r border-slate-200">
-                      {r.total}
-                    </td>
+                      {/* Project Cell */}
+                      <td
+                        onClick={() => handleStartEdit(r.studentId, "projectMarks", r.projectMarks)}
+                        className="py-2 px-3 text-right font-mono tabular-nums cursor-pointer hover:bg-slate-100/60 transition-colors"
+                      >
+                        {editingCell?.studentId === r.studentId &&
+                        editingCell.field === "projectMarks" ? (
+                          <input
+                            autoFocus
+                            type="number"
+                            value={cellInput}
+                            onChange={(e) => setCellInput(e.target.value)}
+                            onBlur={handleCommitEdit}
+                            onKeyDown={(e) => e.key === "Enter" && handleCommitEdit()}
+                            className="w-14 text-right font-mono tabular-nums border border-slate-900 rounded bg-white text-xs outline-none py-0.5 px-1"
+                          />
+                        ) : (
+                          <span className="text-slate-800">{r.projectMarks}</span>
+                        )}
+                      </td>
 
-                    {/* Percentage */}
-                    <td className="py-2 px-3 text-right font-mono tabular-nums text-xs text-slate-700">
-                      {pct}%
-                    </td>
+                      {/* Total Cell */}
+                      <td className="py-2 px-3 text-right font-mono tabular-nums font-semibold text-slate-900 bg-slate-50/70 border-l border-r border-slate-200">
+                        {r.total}
+                      </td>
 
-                    {/* Grade Pill */}
-                    <td className="py-2 px-4 text-center">
-                      <span className="font-mono text-[11px] px-2 py-0.5 rounded border border-slate-200 bg-slate-50 text-slate-700">
-                        {r.grade.split(" ")[0]}
-                      </span>
-                    </td>
-                  </tr>
-                );
-              })}
+                      {/* Percentage */}
+                      <td className="py-2 px-3 text-right font-mono tabular-nums text-xs text-slate-700">
+                        {pct}%
+                      </td>
+
+                      {/* Grade Pill */}
+                      <td className="py-2 px-4 text-center">
+                        <span
+                          className={`font-mono text-[11px] font-bold px-2.5 py-0.5 rounded-full border ${
+                            r.grade.startsWith("O")
+                              ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                              : r.grade.startsWith("A+")
+                                ? "bg-blue-50 text-blue-700 border-blue-200"
+                                : r.grade.startsWith("A")
+                                  ? "bg-indigo-50 text-indigo-700 border-indigo-200"
+                                  : r.grade.startsWith("B+")
+                                    ? "bg-purple-50 text-purple-700 border-purple-200"
+                                    : r.grade.startsWith("B")
+                                      ? "bg-amber-50 text-amber-700 border-amber-200"
+                                      : "bg-rose-50 text-rose-700 border-rose-200"
+                          }`}
+                        >
+                          {r.grade.split(" ")[0]}
+                        </span>
+                      </td>
+                    </tr>
+                  );
+                })
+              )}
             </tbody>
           </table>
         </div>
