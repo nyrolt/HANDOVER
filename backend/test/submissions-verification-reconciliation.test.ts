@@ -81,7 +81,11 @@ describe("Submissions, Verification & Reconciliation Engine", () => {
 
     it("converts files through universal convertFile orchestrator", async () => {
       const textBuffer = Buffer.from("Algorithm analysis submission by student.");
-      const result = await FileConverterService.convertFile(textBuffer, "algorithm_notes.txt", "pdf");
+      const result = await FileConverterService.convertFile(
+        textBuffer,
+        "algorithm_notes.txt",
+        "pdf",
+      );
       expect(result.success).toBe(true);
       expect(result.convertedInfo?.fileMimeType).toBe("application/pdf");
     });
@@ -89,15 +93,24 @@ describe("Submissions, Verification & Reconciliation Engine", () => {
 
   describe("System D: Document Verification Pipeline & Similarity", () => {
     it("calculates exact Jaccard similarity between texts", () => {
-      const textA = new Set(["operating systems architecture", "memory allocation techniques", "paging virtual memory"]);
-      const textB = new Set(["operating systems architecture", "memory allocation techniques", "cpu scheduling algorithms"]);
+      const textA = new Set([
+        "operating systems architecture",
+        "memory allocation techniques",
+        "paging virtual memory",
+      ]);
+      const textB = new Set([
+        "operating systems architecture",
+        "memory allocation techniques",
+        "cpu scheduling algorithms",
+      ]);
       const sim = DocumentVerificationService.calculateJaccardSimilarity(textA, textB);
       expect(sim).toBeGreaterThan(0.3);
       expect(sim).toBeLessThan(1.0);
     });
 
     it("evaluates genuine file integrity and marks compliance", async () => {
-      const validText = "Computer systems and operating system design lab report with detailed experimental methodology and performance benchmarks across multiprocessor architectures.";
+      const validText =
+        "Computer systems and operating system design lab report with detailed experimental methodology and performance benchmarks across multiprocessor architectures.";
       const pdfBuffer = await FileConverterService.textToPdf(validText, "Lab Report 1");
       const saved = await FileStorageService.saveBuffer(pdfBuffer, "student_lab_report.pdf");
 

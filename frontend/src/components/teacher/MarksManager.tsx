@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   Award,
   Download,
@@ -11,7 +11,6 @@ import {
   FileSpreadsheet,
   AlertTriangle,
   RefreshCw,
-  BellRing,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -52,19 +51,21 @@ export function MarksManager() {
   const [isReconciling, setIsReconciling] = useState(false);
   const [showReconciliationDrawer, setShowReconciliationDrawer] = useState(false);
 
-  const loadReconciliationAlerts = async () => {
+  const loadReconciliationAlerts = useCallback(async () => {
     if (!selectedSectionId) return;
     try {
       const res = await submissionsApi.getReconciliationAlerts(selectedSectionId);
       if (res.success && res.data) {
         setReconciliationAlerts(res.data);
       }
-    } catch {}
-  };
+    } catch {
+      // Offline fallback
+    }
+  }, [selectedSectionId]);
 
   useEffect(() => {
     loadReconciliationAlerts();
-  }, [selectedSectionId]);
+  }, [loadReconciliationAlerts]);
 
   const handleRunReconciliation = async () => {
     if (!selectedSectionId) return;
@@ -212,10 +213,12 @@ export function MarksManager() {
             </div>
             <div>
               <div className="font-semibold text-amber-900">
-                Marks Reconciliation: {reconciliationAlerts.length} verified submission(s) missing grades
+                Marks Reconciliation: {reconciliationAlerts.length} verified submission(s) missing
+                grades
               </div>
               <p className="text-amber-700 mt-0.5">
-                Students have submitted assignments that passed verification but have no recorded continuous marks in this section.
+                Students have submitted assignments that passed verification but have no recorded
+                continuous marks in this section.
               </p>
             </div>
           </div>
@@ -259,8 +262,12 @@ export function MarksManager() {
             {reconciliationAlerts.map((alt) => (
               <div key={alt.id} className="p-3 flex items-center justify-between text-xs">
                 <div>
-                  <span className="font-semibold text-slate-900">{alt.studentName || alt.studentId}</span>
-                  <span className="text-slate-500 ml-2 font-mono">({alt.daysPending} days awaiting marks)</span>
+                  <span className="font-semibold text-slate-900">
+                    {alt.studentName || alt.studentId}
+                  </span>
+                  <span className="text-slate-500 ml-2 font-mono">
+                    ({alt.daysPending} days awaiting marks)
+                  </span>
                 </div>
                 <div className="flex items-center gap-2">
                   <button

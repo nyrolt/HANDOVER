@@ -4,16 +4,13 @@ import {
   FileText,
   CheckCircle2,
   AlertTriangle,
-  Clock,
   RefreshCw,
   Download,
-  Eye,
   X,
   FileCheck,
   ShieldCheck,
   Sparkles,
   ArrowRight,
-  HelpCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { submissionsApi, SubmissionDetailsResponse } from "@/services/submissionsApi";
@@ -173,9 +170,7 @@ export function StudentSubmissionModal({
     if (!convertedResult) return;
     setFileBase64(convertedResult.convertedBase64);
     // Create synthetic File
-    setSelectedFile(
-      new File([""], convertedResult.convertedFilename, { type: "application/pdf" }),
-    );
+    setSelectedFile(new File([""], convertedResult.convertedFilename, { type: "application/pdf" }));
     setActiveTab("submit");
     setSuccessMsg("Attached converted PDF to your submission form!");
   };
@@ -209,7 +204,8 @@ export function StudentSubmissionModal({
             <p className="text-xs text-slate-500 mt-0.5">
               Due Date: <span className="font-semibold text-slate-700">{assignment.deadline}</span>
               {" · "}Max Size: <span className="font-semibold text-slate-700">25 MB</span>
-              {" · "}Formats: <span className="font-mono text-slate-700">PDF, DOCX, TXT, PNG, JPG</span>
+              {" · "}Formats:{" "}
+              <span className="font-mono text-slate-700">PDF, DOCX, TXT, PNG, JPG</span>
             </p>
           </div>
 
@@ -310,7 +306,9 @@ export function StudentSubmissionModal({
                 </div>
 
                 <div className="text-sm font-semibold text-slate-800">
-                  {selectedFile ? selectedFile.name : "Click to browse or drag and drop your file here"}
+                  {selectedFile
+                    ? selectedFile.name
+                    : "Click to browse or drag and drop your file here"}
                 </div>
                 <p className="text-xs text-slate-500 mt-1">
                   Supports DOCX, PDF, Plain Text, PNG, or JPG up to 25 MB
@@ -325,9 +323,12 @@ export function StudentSubmissionModal({
                       <FileText className="w-4.5 h-4.5" />
                     </div>
                     <div>
-                      <div className="text-xs font-semibold text-slate-800">{selectedFile.name}</div>
+                      <div className="text-xs font-semibold text-slate-800">
+                        {selectedFile.name}
+                      </div>
                       <div className="text-[11px] text-slate-500 font-mono">
-                        {(selectedFile.size / 1024).toFixed(1)} KB · {selectedFile.type || "Document"}
+                        {(selectedFile.size / 1024).toFixed(1)} KB ·{" "}
+                        {selectedFile.type || "Document"}
                       </div>
                     </div>
                   </div>
@@ -400,11 +401,13 @@ export function StudentSubmissionModal({
             <div className="space-y-4">
               <div className="p-4 rounded-xl bg-indigo-50/60 border border-indigo-100 text-xs text-indigo-900">
                 <div className="font-semibold flex items-center gap-1.5">
-                  <Sparkles className="w-3.5 h-3.5 text-indigo-600" /> Smart Academic Document Converter
+                  <Sparkles className="w-3.5 h-3.5 text-indigo-600" /> Smart Academic Document
+                  Converter
                 </div>
                 <p className="mt-1 text-slate-600 leading-relaxed text-[11.5px]">
                   Convert Microsoft Word (.docx), Plain Text (.txt), or Scanned Images (.png, .jpg)
-                  directly into a standardized, paginated PDF with academic headers and page numbering.
+                  directly into a standardized, paginated PDF with academic headers and page
+                  numbering.
                 </p>
               </div>
 
@@ -428,7 +431,9 @@ export function StudentSubmissionModal({
                   }}
                 />
                 <div className="text-xs font-semibold text-slate-800">
-                  {converterFile ? converterFile.name : "Select DOCX, TXT, or Image file to convert"}
+                  {converterFile
+                    ? converterFile.name
+                    : "Select DOCX, TXT, or Image file to convert"}
                 </div>
                 <div className="text-[11px] text-slate-400 mt-1">Target format: PDF (.pdf)</div>
               </div>
@@ -502,11 +507,15 @@ export function StudentSubmissionModal({
                         existingSubmission.status === "Verified"
                           ? "bg-emerald-500"
                           : existingSubmission.status === "Needs Teacher Review"
-                          ? "bg-amber-500"
-                          : "bg-indigo-500"
+                            ? "bg-amber-500"
+                            : "bg-indigo-500"
                       }`}
                     />
-                    {existingSubmission.status} (v{existingSubmission.submission_version || existingSubmission.submissionVersion || 1})
+                    {existingSubmission.status} (v
+                    {existingSubmission.submission_version ||
+                      existingSubmission.submissionVersion ||
+                      1}
+                    )
                   </div>
                 </div>
 
@@ -525,12 +534,16 @@ export function StudentSubmissionModal({
                 existingSubmission.verification_checks.length > 0 && (
                   <div className="space-y-2">
                     <div className="text-xs font-semibold text-slate-800 flex items-center gap-1.5">
-                      <ShieldCheck className="w-3.5 h-3.5 text-indigo-600" /> Automated Verification Pipeline Checks
+                      <ShieldCheck className="w-3.5 h-3.5 text-indigo-600" /> Automated Verification
+                      Pipeline Checks
                     </div>
 
                     <div className="divide-y divide-slate-100 border border-slate-200 rounded-xl overflow-hidden bg-white">
                       {existingSubmission.verification_checks.map((chk, idx) => (
-                        <div key={idx} className="p-3 text-xs flex items-start justify-between gap-3">
+                        <div
+                          key={idx}
+                          className="p-3 text-xs flex items-start justify-between gap-3"
+                        >
                           <div className="flex items-start gap-2">
                             {chk.passed ? (
                               <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
@@ -552,11 +565,15 @@ export function StudentSubmissionModal({
                 )}
 
               {/* Teacher Review Notes Callout */}
-              {(existingSubmission.teacher_review_notes || existingSubmission.teacherReviewNotes) && (
+              {(existingSubmission.teacher_review_notes ||
+                existingSubmission.teacherReviewNotes) && (
                 <div className="p-4 rounded-xl bg-purple-50/70 border border-purple-200 text-xs text-purple-900 space-y-1">
                   <div className="font-semibold">Instructor Review Feedback:</div>
                   <p className="text-[11.5px] text-purple-800">
-                    "{existingSubmission.teacher_review_notes || existingSubmission.teacherReviewNotes}"
+                    "
+                    {existingSubmission.teacher_review_notes ||
+                      existingSubmission.teacherReviewNotes}
+                    "
                   </p>
                 </div>
               )}

@@ -170,11 +170,26 @@ export class VerificationQueueService {
   private static async executeJob(job: VerificationJob): Promise<void> {
     try {
       // 1. Fetch submission details
-      let submission: any = null;
+      interface DbSubmissionRow {
+        id: string;
+        student_id: string;
+        student_name: string;
+        storage_path: string;
+        original_filename: string;
+        file_mime_type: string;
+        file_size: number | string;
+        checksum_sha256: string;
+        created_at: string;
+      }
+      let submission: DbSubmissionRow | null = null;
       try {
-        const subRows = await sql`SELECT * FROM assignment_submissions WHERE id = ${job.submissionId}`;
-        if (subRows && subRows.length > 0) submission = subRows[0];
-      } catch {}
+        const subRows = await sql<
+          DbSubmissionRow[]
+        >`SELECT * FROM assignment_submissions WHERE id = ${job.submissionId}`;
+        if (subRows && subRows.length > 0 && subRows[0]) submission = subRows[0];
+      } catch {
+        // Query fallback
+      }
 
       if (!submission) {
         // Mark failed
@@ -183,16 +198,35 @@ export class VerificationQueueService {
       }
 
       // 2. Fetch assignment constraints
-      let assignment: any = { title: "Course Assignment", allowedFormats: ["pdf", "docx", "txt", "zip"] };
+      interface DbAssignmentRow {
+        title: string;
+        deadline?: string;
+        allowed_formats?: string[];
+      }
+      let assignment: DbAssignmentRow = {
+        title: "Course Assignment",
+        allowed_formats: ["pdf", "docx", "txt", "zip"],
+      };
       try {
-        const assignRows = await sql`SELECT * FROM assignments WHERE id = ${job.assignmentId}`;
-        if (assignRows && assignRows.length > 0) assignment = assignRows[0];
-      } catch {}
+        const assignRows = await sql<
+          DbAssignmentRow[]
+        >`SELECT * FROM assignments WHERE id = ${job.assignmentId}`;
+        if (assignRows && assignRows.length > 0 && assignRows[0]) assignment = assignRows[0];
+      } catch {
+        // Fallback to default assignment constraints
+      }
 
       // 3. Fetch peer submissions for plagiarism / text similarity comparison
       const peerList: ExistingSubmissionText[] = [];
       try {
-        const peerRows = await sql`
+        interface PeerRow {
+          id: string;
+          student_id: string;
+          student_name: string;
+          storage_path: string;
+          original_filename: string;
+        }
+        const peerRows = await sql<PeerRow[]>`
           SELECT id, student_id, student_name, storage_path, original_filename
           FROM assignment_submissions
           WHERE assignment_id = ${job.assignmentId} AND id != ${job.submissionId}
@@ -212,7 +246,9 @@ export class VerificationQueueService {
             });
           }
         }
-      } catch {}
+      } catch {
+        // Peer fetch fallback
+      }
 
       // 4. Run modular document verification pipeline
       const evaluation = await DocumentVerificationService.evaluateSubmission(
@@ -241,10 +277,10 @@ export class VerificationQueueService {
         evaluation.status === "Verified"
           ? "Verified"
           : evaluation.status === "Needs Review"
-          ? "Needs Teacher Review"
-          : evaluation.status === "Invalid File"
-          ? "Invalid File"
-          : "Processing Failed";
+            ? "Needs Teacher Review"
+            : evaluation.status === "Invalid File"
+              ? "Invalid File"
+              : "Processing Failed";
 
       const result: VerificationResult = {
         id: resultId,
@@ -290,8 +326,8 @@ export class VerificationQueueService {
           evaluation.status === "Verified"
             ? "Verified"
             : evaluation.status === "Needs Review"
-            ? "Needs Teacher Review"
-            : "Rejected";
+              ? "Needs Teacher Review"
+              : "Rejected";
 
         await sql`
           UPDATE assignment_submissions
@@ -307,7 +343,10 @@ export class VerificationQueueService {
         institutionId: job.institutionId || "inst_demo",
         userId: job.studentId,
         role: "student",
-        title: evaluation.status === "Verified" ? "Submission Verified" : "Submission Flagged for Review",
+        title:
+          evaluation.status === "Verified"
+            ? "Submission Verified"
+            : "Submission Flagged for Review",
         message:
           evaluation.status === "Verified"
             ? `Your submission for "${assignment.title || "Assignment"}" has successfully passed automated verification.`
@@ -330,7 +369,9 @@ export class VerificationQueueService {
             SET status = 'PENDING', error_message = ${errMsg}, updated_at = NOW()
             WHERE id = ${job.id}
           `;
-        } catch {}
+        } catch {
+          // Re-queue error fallback
+        }
       } else {
         await this.finalizeJob(job, "FAILED", errMsg);
       }
@@ -352,7 +393,9 @@ export class VerificationQueueService {
         SET status = ${status}, completed_at = NOW(), error_message = ${errorMsg || null}, updated_at = NOW()
         WHERE id = ${job.id}
       `;
-    } catch {}
+    } catch {
+      // Memory state already preserved
+    }
   }
 
   /**
@@ -397,7 +440,9 @@ export class VerificationQueueService {
           isComplete: processed >= total && total > 0,
         };
       }
-    } catch {}
+    } catch {
+      // Fallback to in-memory state
+    }
 
     // Fallback using memoryJobs
     const jobs = Array.from(memoryJobs.values()).filter((j) => !batchId || j.batchId === batchId);

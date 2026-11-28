@@ -1,5 +1,14 @@
 import React, { useState } from "react";
-import { BookOpen, Plus, Calendar, Edit2, Trash2, Sparkles, CheckCircle2, ShieldCheck } from "lucide-react";
+import {
+  BookOpen,
+  Plus,
+  Calendar,
+  Edit2,
+  Trash2,
+  Sparkles,
+  CheckCircle2,
+  ShieldCheck,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";

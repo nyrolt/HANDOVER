@@ -36,6 +36,13 @@ Handover is a simple, minimal, and professional SaaS application designed for co
 - **Format**: `npm run format`
 - **Build**: `npm run build`
 
+## Core Engineering Principles (ANDREW.md)
+
+- **Think Before Coding**: Don't assume. State assumptions explicitly. Surface tradeoffs and present options rather than picking silently. If something is unclear or a simpler approach exists, stop and push back when warranted.
+- **Simplicity First**: Minimum code that solves the problem. Nothing speculative. No features beyond what was asked. No abstractions for single-use code. No error handling for impossible scenarios. If you write 200 lines and it could be 50, rewrite it.
+- **Surgical Changes**: Touch only what you must. Clean up only your own mess. Match existing style. Remove imports/variables/functions that your changes made unused. Every changed line must trace directly to the request.
+- **Goal-Driven Execution**: Define verifiable success criteria. For multi-step tasks, state a brief plan with verifiable checks (`1. [Step] -> verify: [check]`). Loop independently until verified.
+
 ## Architecture Decisions
 
 All structural and technical choices are documented in Architecture Decision Records (ADRs) under `/docs/decisions/`.

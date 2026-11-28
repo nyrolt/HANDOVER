@@ -149,13 +149,7 @@ export type SubmissionStatus =
   | "Processing Failed";
 
 export type VerificationStatus =
-  | "Pending"
-  | "Queued"
-  | "Scanning"
-  | "Verified"
-  | "Needs Review"
-  | "Invalid File"
-  | "Failed";
+  "Pending" | "Queued" | "Scanning" | "Verified" | "Needs Review" | "Invalid File" | "Failed";
 
 export type TeacherReviewStatus = "Pending" | "Approved" | "Rejected" | "Resubmission Requested";
 
@@ -201,12 +195,7 @@ export interface SubmissionFile {
 }
 
 export type VerificationJobStatus =
-  | "PENDING"
-  | "QUEUED"
-  | "PROCESSING"
-  | "COMPLETED"
-  | "NEEDS_REVIEW"
-  | "FAILED";
+  "PENDING" | "QUEUED" | "PROCESSING" | "COMPLETED" | "NEEDS_REVIEW" | "FAILED";
 
 export interface VerificationJob {
   id: string;

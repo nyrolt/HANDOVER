@@ -28,7 +28,9 @@ export class SubmissionController {
         db.getStudents().find((s) => s.email.toLowerCase() === user.email.toLowerCase());
 
       if (!student) {
-        return res.status(403).json({ success: false, error: "Only enrolled students can submit assignments" });
+        return res
+          .status(403)
+          .json({ success: false, error: "Only enrolled students can submit assignments" });
       }
 
       const body = req.body as {
@@ -43,7 +45,8 @@ export class SubmissionController {
       if (!body.assignmentId || !body.filename || !body.fileBase64) {
         return res.status(400).json({
           success: false,
-          error: "Missing required parameters: assignmentId, filename, and fileBase64 are required.",
+          error:
+            "Missing required parameters: assignmentId, filename, and fileBase64 are required.",
         });
       }
 
@@ -85,7 +88,9 @@ export class SubmissionController {
             WHERE assignment_id = ${body.assignmentId} AND student_id = ${student.id}
           `;
         }
-      } catch {}
+      } catch {
+        // Fallback to version 1 if query fails
+      }
 
       // 4. Create new submission record
       const submissionId = `sub_${Date.now()}_${crypto.randomBytes(4).toString("hex")}`;
@@ -148,7 +153,11 @@ export class SubmissionController {
       let convertedInfo = null;
       const ext = originalSaved.originalFilename.split(".").pop()?.toLowerCase();
       if (body.autoConvertDocx && (ext === "docx" || ext === "doc" || ext === "txt")) {
-        const conv = await FileConverterService.convertFile(buffer, originalSaved.originalFilename, "pdf");
+        const conv = await FileConverterService.convertFile(
+          buffer,
+          originalSaved.originalFilename,
+          "pdf",
+        );
         if (conv.success && conv.convertedInfo) {
           convertedInfo = conv.convertedInfo;
           const convFileId = `file_${Date.now()}_${crypto.randomBytes(4).toString("hex")}`;
@@ -167,7 +176,9 @@ export class SubmissionController {
               SET converted_from_format = ${ext}
               WHERE id = ${newSubmission.id}
             `;
-          } catch {}
+          } catch {
+            // Conversion record failure fallback
+          }
         }
       }
 
@@ -336,12 +347,16 @@ export class SubmissionController {
       }
 
       const buffer = await fs.promises.readFile(fileRecord.storage_path);
-      (res as any).setHeader("Content-Type", fileRecord.file_mime_type);
-      (res as any).setHeader(
+      const streamRes = res as unknown as {
+        setHeader: (name: string, value: string) => void;
+        status: (code: number) => { send: (chunk: Buffer) => void };
+      };
+      streamRes.setHeader("Content-Type", fileRecord.file_mime_type);
+      streamRes.setHeader(
         "Content-Disposition",
         `attachment; filename="${fileRecord.original_filename}"`,
       );
-      return (res as any).status(200).send(buffer);
+      return streamRes.status(200).send(buffer);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "File download error";
       return res.status(500).json({ success: false, error: msg });
@@ -435,8 +450,8 @@ export class SubmissionController {
             status === "Approved"
               ? "Verified"
               : status === "Rejected"
-              ? "Rejected"
-              : "Resubmission Required"
+                ? "Rejected"
+                : "Resubmission Required"
           },
           updated_at = NOW()
         WHERE id = ${id}

@@ -25,17 +25,26 @@ export class VerificationController {
         submissionIds?: string[];
       };
 
-      let submissionsToQueue: any[] = [];
+      interface SubQueueItem {
+        id: string;
+        institutionId: string;
+        sectionId: string;
+        assignmentId: string;
+        studentId: string;
+        studentName: string;
+      }
+
+      let submissionsToQueue: SubQueueItem[] = [];
 
       if (submissionIds && submissionIds.length > 0) {
-        submissionsToQueue = await sql`
+        submissionsToQueue = (await sql<SubQueueItem[]>`
           SELECT id, institution_id as "institutionId", section_id as "sectionId",
                  assignment_id as "assignmentId", student_id as "studentId", student_name as "studentName"
           FROM assignment_submissions
           WHERE id = ANY(${submissionIds})
-        `;
+        `) as SubQueueItem[];
       } else if (assignmentId || sectionId) {
-        submissionsToQueue = await sql`
+        submissionsToQueue = (await sql<SubQueueItem[]>`
           SELECT id, institution_id as "institutionId", section_id as "sectionId",
                  assignment_id as "assignmentId", student_id as "studentId", student_name as "studentName"
           FROM assignment_submissions
@@ -43,7 +52,7 @@ export class VerificationController {
             AND (${sectionId || null}::text IS NULL OR section_id = ${sectionId || null})
           ORDER BY created_at ASC
           LIMIT 100
-        `;
+        `) as SubQueueItem[];
       }
 
       if (submissionsToQueue.length === 0) {
@@ -53,7 +62,8 @@ export class VerificationController {
         });
       }
 
-      const { batchId, queuedCount } = await VerificationQueueService.enqueueBatch(submissionsToQueue);
+      const { batchId, queuedCount } =
+        await VerificationQueueService.enqueueBatch(submissionsToQueue);
 
       return res.status(202).json({
         success: true,

@@ -181,8 +181,8 @@ export class DocumentVerificationService {
       details: integrityPassed
         ? `Checksum verified: ${diskChecksum.substring(0, 12)}... (${fileBuffer?.length} bytes)`
         : fileExists
-        ? "Checksum mismatch: file may have been altered or corrupted on disk."
-        : "File not found on storage disk.",
+          ? "Checksum mismatch: file may have been altered or corrupted on disk."
+          : "File not found on storage disk.",
     });
     if (integrityPassed) passedChecks++;
 
@@ -205,9 +205,10 @@ export class DocumentVerificationService {
     if (magicPassed) passedChecks++;
 
     // 3. Academic Requirements & Constraints
-    const allowed = (assignment.allowedFormats && assignment.allowedFormats.length > 0)
-      ? assignment.allowedFormats
-      : ["pdf", "docx", "txt", "zip", "png", "jpg", "jpeg"];
+    const allowed =
+      assignment.allowedFormats && assignment.allowedFormats.length > 0
+        ? assignment.allowedFormats
+        : ["pdf", "docx", "txt", "zip", "png", "jpg", "jpeg"];
     const ext = submission.originalFilename.split(".").pop()?.toLowerCase() || "";
     const formatAllowed = allowed.includes(ext);
     const maxSize = assignment.maxSizeBytes || 25 * 1024 * 1024; // 25 MB
@@ -234,7 +235,10 @@ export class DocumentVerificationService {
     if (reqPassed) passedChecks++;
 
     // 4. Content Inspection & Pairwise Similarity Check
-    const extractedText = await this.extractTextFromFile(submission.storagePath, submission.originalFilename);
+    const extractedText = await this.extractTextFromFile(
+      submission.storagePath,
+      submission.originalFilename,
+    );
     const tokens = this.tokenize(extractedText);
     const wordCount = tokens.length;
     const shingles = this.getShingles(tokens);
@@ -255,26 +259,28 @@ export class DocumentVerificationService {
       }
     }
 
-    const similarityFlagged = maxSim >= 0.70; // > 70% content overlap
+    const similarityFlagged = maxSim >= 0.7; // > 70% content overlap
     const similarityPassed = !similarityFlagged;
 
     checks.push({
       name: "Cross-Submission Similarity & Originality Check",
       passed: similarityPassed,
       score: Math.max(0, Math.round((1 - maxSim) * 100)),
-      details: wordCount < 10
-        ? `Document contains minimal or no extractable text (${wordCount} words detected).`
-        : similarityFlagged
-        ? `High peer similarity detected (${(maxSim * 100).toFixed(1)}% match with ${
-            matchedStudent || "another submission"
-          }). Flagged for manual review.`
-        : `Verified original. Max peer similarity: ${(maxSim * 100).toFixed(1)}% (${wordCount} words).`,
+      details:
+        wordCount < 10
+          ? `Document contains minimal or no extractable text (${wordCount} words detected).`
+          : similarityFlagged
+            ? `High peer similarity detected (${(maxSim * 100).toFixed(1)}% match with ${
+                matchedStudent || "another submission"
+              }). Flagged for manual review.`
+            : `Verified original. Max peer similarity: ${(maxSim * 100).toFixed(1)}% (${wordCount} words).`,
     });
     if (similarityPassed) passedChecks++;
 
     // Overall Status Determination
     let status: "Verified" | "Needs Review" | "Invalid File" | "Failed" = "Verified";
-    const isEmptyFile = submission.fileSize < 100 || (wordCount < 5 && ["txt", "docx", "doc"].includes(ext));
+    const isEmptyFile =
+      submission.fileSize < 100 || (wordCount < 5 && ["txt", "docx", "doc"].includes(ext));
     if (!integrityPassed || !magicPassed) {
       status = "Invalid File";
     } else if (similarityFlagged || !reqPassed || !deadlinePassed || isEmptyFile) {
@@ -301,8 +307,8 @@ export class DocumentVerificationService {
         status === "Verified"
           ? "All automated verification criteria satisfied. Document intact, original, and compliant."
           : status === "Needs Review"
-          ? `Document flagged for teacher attention: ${similarityFlagged ? "High similarity detected" : "Formatting or deadline anomaly"}.`
-          : "Verification failed: Corrupt binary or invalid file signature.",
+            ? `Document flagged for teacher attention: ${similarityFlagged ? "High similarity detected" : "Formatting or deadline anomaly"}.`
+            : "Verification failed: Corrupt binary or invalid file signature.",
       notes: `Evaluated by Handover Automated Verification Engine v2.0 on ${new Date().toISOString()}`,
       extractedWordCount: wordCount,
     };

@@ -109,7 +109,10 @@ export class FileConverterService {
   /**
    * Converts DOCX buffer to PDF and extracts plain text.
    */
-  public static async docxToPdf(docxBuffer: Buffer, originalFilename: string): Promise<{ pdfBuffer: Buffer; text: string }> {
+  public static async docxToPdf(
+    docxBuffer: Buffer,
+    originalFilename: string,
+  ): Promise<{ pdfBuffer: Buffer; text: string }> {
     const { value: extractedText } = await mammoth.extractRawText({ buffer: docxBuffer });
     const title = originalFilename.replace(/\.docx?$/i, "");
     const pdfBuffer = await this.textToPdf(extractedText || "No readable text extracted.", title);
@@ -119,7 +122,11 @@ export class FileConverterService {
   /**
    * Converts Image (PNG or JPEG) to a high-quality PDF page.
    */
-  public static async imageToPdf(imageBuffer: Buffer, mimeType: string, filename: string): Promise<Buffer> {
+  public static async imageToPdf(
+    imageBuffer: Buffer,
+    mimeType: string,
+    filename: string,
+  ): Promise<Buffer> {
     const pdfDoc = await PDFDocument.create();
     let embeddedImage;
 

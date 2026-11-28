@@ -69,7 +69,10 @@ export class FileStorageService {
     // ZIP / DOCX / XLSX magic bytes: PK\x03\x04 (50 4B 03 04)
     if (buffer[0] === 0x50 && buffer[1] === 0x4b && buffer[2] === 0x03 && buffer[3] === 0x04) {
       // DOCX is a zip archive
-      return { valid: true, detectedMime: "application/vnd.openxmlformats-officedocument.wordprocessingml.document" };
+      return {
+        valid: true,
+        detectedMime: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      };
     }
 
     // Plain text check (printable ASCII / UTF-8)

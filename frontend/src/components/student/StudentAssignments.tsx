@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   BookOpen,
   Calendar,
@@ -8,7 +8,6 @@ import {
   AlertTriangle,
   FileText,
   ShieldCheck,
-  Sparkles,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { db } from "@/services/db";
@@ -29,7 +28,7 @@ export function StudentAssignments({ student }: StudentAssignmentsProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const loadSubmissions = async () => {
+  const loadSubmissions = useCallback(async () => {
     try {
       setLoading(true);
       const res = await submissionsApi.getSubmissions({ studentId: student.id });
@@ -41,11 +40,11 @@ export function StudentAssignments({ student }: StudentAssignmentsProps) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [student.id]);
 
   useEffect(() => {
     loadSubmissions();
-  }, [student.id]);
+  }, [loadSubmissions]);
 
   const getSubmissionForAssignment = (assignmentId: string) => {
     return submissions.find((s) => (s.assignment_id || s.assignmentId) === assignmentId);
@@ -124,10 +123,10 @@ export function StudentAssignments({ student }: StudentAssignmentsProps) {
                             submission.status === "Verified"
                               ? "bg-emerald-50 text-emerald-700 border-emerald-200"
                               : submission.status === "Needs Teacher Review"
-                              ? "bg-amber-50 text-amber-700 border-amber-200"
-                              : submission.status === "Rejected"
-                              ? "bg-rose-50 text-rose-700 border-rose-200"
-                              : "bg-indigo-50 text-indigo-700 border-indigo-200"
+                                ? "bg-amber-50 text-amber-700 border-amber-200"
+                                : submission.status === "Rejected"
+                                  ? "bg-rose-50 text-rose-700 border-rose-200"
+                                  : "bg-indigo-50 text-indigo-700 border-indigo-200"
                           }`}
                         >
                           {submission.status === "Verified" ? (
@@ -137,7 +136,8 @@ export function StudentAssignments({ student }: StudentAssignmentsProps) {
                           ) : (
                             <Clock className="w-3 h-3 text-indigo-600 animate-pulse" />
                           )}
-                          {submission.status} (v{submission.submission_version || submission.submissionVersion || 1})
+                          {submission.status} (v
+                          {submission.submission_version || submission.submissionVersion || 1})
                         </span>
                       ) : (
                         <span className="font-mono text-[10px] font-medium px-2 py-0.5 rounded border bg-slate-100 text-slate-600 border-slate-200">
@@ -153,7 +153,9 @@ export function StudentAssignments({ student }: StudentAssignmentsProps) {
                   <div className="flex items-center gap-2.5 px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs self-start shrink-0 font-mono">
                     <Calendar className="w-3.5 h-3.5 text-slate-500" />
                     <div>
-                      <div className="text-[10px] text-slate-400 font-sans font-medium">Due Date</div>
+                      <div className="text-[10px] text-slate-400 font-sans font-medium">
+                        Due Date
+                      </div>
                       <div className="font-semibold text-slate-800 tabular-nums">
                         {assignment.deadline}
                       </div>
@@ -165,7 +167,8 @@ export function StudentAssignments({ student }: StudentAssignmentsProps) {
                   <div className="font-semibold text-slate-800 mb-1 font-sans">
                     Problem Statement & Deliverables:
                   </div>
-                  {assignment.description || "Submit completed laboratory report and code documentation."}
+                  {assignment.description ||
+                    "Submit completed laboratory report and code documentation."}
                 </div>
 
                 {/* Submission footer info and CTA button */}
@@ -174,7 +177,12 @@ export function StudentAssignments({ student }: StudentAssignmentsProps) {
                     {submission ? (
                       <>
                         <FileText className="w-4 h-4 text-slate-400" />
-                        <span>Submitted file: <span className="font-semibold text-slate-700">{submission.original_filename || submission.originalFilename}</span></span>
+                        <span>
+                          Submitted file:{" "}
+                          <span className="font-semibold text-slate-700">
+                            {submission.original_filename || submission.originalFilename}
+                          </span>
+                        </span>
                         {submission.verification_score !== undefined && (
                           <span className="font-mono text-[11px] font-medium text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
                             Score: {submission.verification_score}%

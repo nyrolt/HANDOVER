@@ -23,9 +23,7 @@ export class MarksReconciliationService {
 
     try {
       // 1. Fetch verified submissions for the section
-      const subCondition = assignmentId
-        ? sql`AND s.assignment_id = ${assignmentId}`
-        : sql``;
+      const subCondition = assignmentId ? sql`AND s.assignment_id = ${assignmentId}` : sql``;
 
       const verifiedSubs = await sql`
         SELECT 
@@ -84,7 +82,8 @@ export class MarksReconciliationService {
           `;
 
           if (existing && existing.length > 0 && existing[0]) {
-            if ((existing[0] as any).status === "OPEN" || (existing[0] as any).status === "ACTIVE") {
+            const rawStatus = String((existing[0] as unknown as Record<string, unknown>)["status"] || "");
+            if (rawStatus === "OPEN" || rawStatus === "ACTIVE") {
               alerts.push(existing[0]);
             }
           } else {

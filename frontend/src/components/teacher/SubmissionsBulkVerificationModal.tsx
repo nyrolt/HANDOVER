@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   ShieldCheck,
   Play,
@@ -6,12 +6,8 @@ import {
   CheckCircle2,
   AlertTriangle,
   FileText,
-  Download,
-  Filter,
-  Eye,
   X,
   Clock,
-  Sparkles,
   Search,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -45,15 +41,16 @@ export function SubmissionsBulkVerificationModal({
   const [isVerifying, setIsVerifying] = useState(false);
 
   // Review modal state
-  const [reviewingSubmission, setReviewingSubmission] =
-    useState<SubmissionDetailsResponse | null>(null);
+  const [reviewingSubmission, setReviewingSubmission] = useState<SubmissionDetailsResponse | null>(
+    null,
+  );
   const [reviewStatus, setReviewStatus] = useState<
     "Approved" | "Rejected" | "Resubmission Requested"
   >("Approved");
   const [reviewNotes, setReviewNotes] = useState("");
   const [submittingReview, setSubmittingReview] = useState(false);
 
-  const loadSubmissions = async () => {
+  const loadSubmissions = useCallback(async () => {
     try {
       setLoading(true);
       const res = await submissionsApi.getSubmissions({ assignmentId: assignment.id });
@@ -65,13 +62,13 @@ export function SubmissionsBulkVerificationModal({
     } finally {
       setLoading(false);
     }
-  };
+  }, [assignment.id]);
 
   useEffect(() => {
     if (isOpen) {
       loadSubmissions();
     }
-  }, [isOpen, assignment.id]);
+  }, [isOpen, loadSubmissions]);
 
   // Polling queue progress when verifying
   useEffect(() => {
@@ -89,7 +86,7 @@ export function SubmissionsBulkVerificationModal({
       }, 1500);
     }
     return () => clearInterval(timer);
-  }, [isVerifying, activeBatchId]);
+  }, [isVerifying, activeBatchId, loadSubmissions]);
 
   if (!isOpen) return null;
 
@@ -150,7 +147,11 @@ export function SubmissionsBulkVerificationModal({
     if (activeFilter === "verified" && s.status !== "Verified") return false;
     if (activeFilter === "needs_review" && s.status !== "Needs Teacher Review") return false;
     if (activeFilter === "rejected" && s.status !== "Rejected") return false;
-    if (activeFilter === "pending" && s.status !== "Submitted" && s.status !== "Queued for Verification")
+    if (
+      activeFilter === "pending" &&
+      s.status !== "Submitted" &&
+      s.status !== "Queued for Verification"
+    )
       return false;
 
     if (searchQuery) {
@@ -316,10 +317,14 @@ export function SubmissionsBulkVerificationModal({
                           {sub.original_filename || sub.originalFilename}
                         </span>
                         <span>·</span>
-                        <span>{(Number(sub.file_size || sub.fileSize || 0) / 1024).toFixed(1)} KB</span>
+                        <span>
+                          {(Number(sub.file_size || sub.fileSize || 0) / 1024).toFixed(1)} KB
+                        </span>
                         <span>·</span>
                         <span>
-                          {new Date(sub.created_at || sub.createdAt || Date.now()).toLocaleTimeString([], {
+                          {new Date(
+                            sub.created_at || sub.createdAt || Date.now(),
+                          ).toLocaleTimeString([], {
                             hour: "2-digit",
                             minute: "2-digit",
                           })}
@@ -330,7 +335,9 @@ export function SubmissionsBulkVerificationModal({
                       {sub.similarity_metrics?.flagged && (
                         <div className="mt-1 text-[11px] font-semibold text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded inline-flex items-center gap-1">
                           <AlertTriangle className="w-3 h-3 text-amber-600" />
-                          Similarity Flag: {(sub.similarity_metrics.maxSimilarity * 100).toFixed(0)}% match with {sub.similarity_metrics.matchedStudentName || "peer submission"}
+                          Similarity Flag: {(sub.similarity_metrics.maxSimilarity * 100).toFixed(0)}
+                          % match with{" "}
+                          {sub.similarity_metrics.matchedStudentName || "peer submission"}
                         </div>
                       )}
                     </div>
@@ -344,10 +351,10 @@ export function SubmissionsBulkVerificationModal({
                           sub.status === "Verified"
                             ? "bg-emerald-50 text-emerald-700 border-emerald-200"
                             : sub.status === "Needs Teacher Review"
-                            ? "bg-amber-50 text-amber-700 border-amber-200"
-                            : sub.status === "Rejected"
-                            ? "bg-rose-50 text-rose-700 border-rose-200"
-                            : "bg-indigo-50 text-indigo-700 border-indigo-200"
+                              ? "bg-amber-50 text-amber-700 border-amber-200"
+                              : sub.status === "Rejected"
+                                ? "bg-rose-50 text-rose-700 border-rose-200"
+                                : "bg-indigo-50 text-indigo-700 border-indigo-200"
                         }`}
                       >
                         {sub.status === "Verified" ? (
@@ -374,9 +381,7 @@ export function SubmissionsBulkVerificationModal({
                         setReviewStatus(
                           sub.status === "Needs Teacher Review" ? "Approved" : "Approved",
                         );
-                        setReviewNotes(
-                          sub.teacher_review_notes || sub.teacherReviewNotes || "",
-                        );
+                        setReviewNotes(sub.teacher_review_notes || sub.teacherReviewNotes || "");
                       }}
                       className="text-xs"
                     >
@@ -415,15 +420,21 @@ export function SubmissionsBulkVerificationModal({
               <div className="space-y-2">
                 <label className="text-xs font-semibold text-slate-700">Faculty Decision:</label>
                 <div className="grid grid-cols-3 gap-2">
-                  {[
-                    { id: "Approved", label: "Approve", color: "hover:border-emerald-500" },
-                    { id: "Resubmission Requested", label: "Resubmit", color: "hover:border-amber-500" },
-                    { id: "Rejected", label: "Reject", color: "hover:border-rose-500" },
-                  ].map((opt) => (
+                  {(
+                    [
+                      { id: "Approved", label: "Approve", color: "hover:border-emerald-500" },
+                      {
+                        id: "Resubmission Requested",
+                        label: "Resubmit",
+                        color: "hover:border-amber-500",
+                      },
+                      { id: "Rejected", label: "Reject", color: "hover:border-rose-500" },
+                    ] as const
+                  ).map((opt) => (
                     <button
                       key={opt.id}
                       type="button"
-                      onClick={() => setReviewStatus(opt.id as any)}
+                      onClick={() => setReviewStatus(opt.id)}
                       className={`text-xs py-2 px-1 rounded-lg border font-medium text-center transition-all ${
                         reviewStatus === opt.id
                           ? "bg-slate-900 text-white border-slate-900 font-semibold"

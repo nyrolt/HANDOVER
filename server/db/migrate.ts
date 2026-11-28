@@ -16,7 +16,7 @@ async function runMigrations() {
   try {
     const migration0002 = fs.readFileSync(
       path.join(__dirname, "migrations", "0002_submissions_verification_reconciliation.sql"),
-      "utf-8"
+      "utf-8",
     );
     console.log("Executing migration 0002_submissions_verification_reconciliation.sql...");
     await sql.unsafe(migration0002);
@@ -29,7 +29,10 @@ async function runMigrations() {
       WHERE table_schema = 'public' 
       ORDER BY table_name;
     `;
-    console.log("All tables in Supabase public schema:", tables.map((t) => t.table_name));
+    console.log(
+      "All tables in Supabase public schema:",
+      tables.map((t) => t.table_name),
+    );
 
     await sql.end();
     process.exit(0);

@@ -1,17 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
-import {
-  LogOut,
-  Search,
-  ChevronRight,
-  Menu,
-  X,
-  Bell,
-  CheckCircle2,
-  AlertTriangle,
-  Info,
-  Clock,
-} from "lucide-react";
+import { LogOut, Search, ChevronRight, Menu, X, Bell } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/services/auth";
 import { HandoverLogo } from "@/components/common/HandoverLogo";
@@ -42,21 +31,23 @@ export function Header({
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [showNotifications, setShowNotifications] = useState(false);
 
-  const loadNotifications = async () => {
+  const loadNotifications = useCallback(async () => {
     if (!user) return;
     try {
       const res = await submissionsApi.getNotifications();
       if (res.success && res.data) {
         setNotifications(res.data);
       }
-    } catch {}
-  };
+    } catch {
+      // Offline fallback
+    }
+  }, [user]);
 
   useEffect(() => {
     loadNotifications();
     const interval = setInterval(loadNotifications, 15000);
     return () => clearInterval(interval);
-  }, [user]);
+  }, [loadNotifications]);
 
   const unreadCount = notifications.filter((n) => !n.isRead).length;
 
@@ -170,7 +161,10 @@ export function Header({
                           <div className="flex items-center justify-between">
                             <span className="font-semibold text-slate-800">{n.title}</span>
                             <span className="font-mono text-[10px] text-slate-400">
-                              {new Date(n.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                              {new Date(n.createdAt).toLocaleTimeString([], {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              })}
                             </span>
                           </div>
                           <p className="text-slate-600 text-[11.5px] leading-relaxed">
