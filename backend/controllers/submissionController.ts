@@ -51,7 +51,16 @@ export class SubmissionController {
       }
 
       const assignment = db.getAssignments().find((a) => a.id === body.assignmentId);
-      const sectionId = body.sectionId || student.sectionId || assignment?.sectionId || "";
+      if (!assignment) {
+        return res.status(404).json({ success: false, error: "Assignment not found." });
+      }
+      if (assignment.sectionId && assignment.sectionId !== student.sectionId) {
+        return res.status(403).json({
+          success: false,
+          error: "Forbidden: You are not enrolled in the section for this coursework assignment.",
+        });
+      }
+      const sectionId = student.sectionId;
       const institutionId = user.institutionId || "inst_demo";
 
       // 1. Decode buffer
@@ -247,6 +256,8 @@ export class SubmissionController {
         studentIdFilter = student?.id;
       }
 
+      const userInstId = user.institutionId || "inst_demo";
+
       try {
         const rows = await sql`
           SELECT s.*, 
@@ -254,7 +265,8 @@ export class SubmissionController {
             r.similarity_metrics, r.summary as verification_summary
           FROM assignment_submissions s
           LEFT JOIN verification_results r ON r.submission_id = s.id
-          WHERE (${query.assignmentId || null}::text IS NULL OR s.assignment_id = ${query.assignmentId || null})
+          WHERE (s.institution_id = ${userInstId} OR ${user.role} = 'admin')
+            AND (${query.assignmentId || null}::text IS NULL OR s.assignment_id = ${query.assignmentId || null})
             AND (${query.sectionId || null}::text IS NULL OR s.section_id = ${query.sectionId || null})
             AND (${studentIdFilter || null}::text IS NULL OR s.student_id = ${studentIdFilter || null})
             AND (${query.status || null}::text IS NULL OR s.status = ${query.status || null})
@@ -302,6 +314,15 @@ export class SubmissionController {
 
       const submission = rows[0];
 
+      // Multi-tenancy check
+      if (
+        user.institutionId &&
+        submission.institution_id !== user.institutionId &&
+        user.role !== "admin"
+      ) {
+        return res.status(403).json({ success: false, error: "Access denied across institutions" });
+      }
+
       // IDOR protection: student can only read their own
       if (user.role === "student") {
         const student =
@@ -331,17 +352,50 @@ export class SubmissionController {
   }
 
   /**
-   * Download a submitted file safely
+   * Download a submitted file safely with strict IDOR verification
    */
   async downloadFile(req: ControllerRequest, res: ControllerResponse) {
     try {
+      const user = req.user as User;
+      if (!user) {
+        return res.status(401).json({ success: false, error: "Authentication required" });
+      }
+
       const { id } = req.params as { id: string };
-      const rows = await sql`SELECT * FROM submission_files WHERE id = ${id}`;
+      const rows = await sql`
+        SELECT f.*, s.institution_id, s.section_id, s.student_id
+        FROM submission_files f
+        JOIN assignment_submissions s ON s.id = f.submission_id
+        WHERE f.id = ${id}
+      `;
       if (!rows || rows.length === 0 || !rows[0]) {
         return res.status(404).json({ success: false, error: "File not found" });
       }
 
       const fileRecord = rows[0];
+
+      // IDOR verification
+      if (user.role === "student") {
+        const student =
+          db.getStudentByUserId(user.id) ||
+          db.getStudents().find((s) => s.email.toLowerCase() === user.email.toLowerCase());
+        if (!student || student.id !== fileRecord.student_id) {
+          return res.status(403).json({
+            success: false,
+            error: "Access denied: you are not authorized to download this student's file",
+          });
+        }
+      } else if (user.role === "teacher") {
+        if (user.institutionId && fileRecord.institution_id !== user.institutionId) {
+          return res.status(403).json({
+            success: false,
+            error: "Access denied: submission belongs to another institution",
+          });
+        }
+      } else if (user.role !== "admin") {
+        return res.status(403).json({ success: false, error: "Forbidden" });
+      }
+
       if (!fs.existsSync(fileRecord.storage_path)) {
         return res.status(404).json({ success: false, error: "File removed or missing on disk" });
       }
@@ -385,6 +439,10 @@ export class SubmissionController {
 
       const base64Data = fileBase64.replace(/^data:.*?;base64,/, "");
       const buffer = Buffer.from(base64Data, "base64");
+
+      if (buffer.length > 25 * 1024 * 1024) {
+        return res.status(400).json({ success: false, error: "File exceeds 25 MB size limit." });
+      }
 
       const result = await FileConverterService.convertFile(
         buffer,

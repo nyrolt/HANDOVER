@@ -6,44 +6,44 @@
       "role": "teacher",
       "department": "Computer Science",
       "password": "Faculty@2026",
-      "id": "usr-1795878362261",
-      "createdAt": "2026-11-28T15:06:02.261Z"
+      "id": "usr-1795879437090",
+      "createdAt": "2026-11-28T15:23:57.090Z"
     },
     {
       "name": "Alexander Wright",
       "email": "a.wright@student.university.edu",
       "role": "student",
       "password": "Password@123",
-      "id": "usr-1795878362263",
-      "createdAt": "2026-11-28T15:06:02.263Z"
+      "id": "usr-1795879437092",
+      "createdAt": "2026-11-28T15:23:57.092Z"
     }
   ],
   "sections": [
     {
-      "id": "sec-1795878362262",
+      "id": "sec-1795879437090",
       "sectionName": "CS-301: Algorithms & Data Structures",
       "courseName": "Computer Science",
       "academicYear": "2026-2027",
-      "teacherId": "usr-1795878362261",
-      "createdAt": "2026-11-28T15:06:02.262Z"
+      "teacherId": "usr-1795879437090",
+      "createdAt": "2026-11-28T15:23:57.090Z"
     }
   ],
   "students": [
     {
-      "id": "stud-1795878362264117",
-      "userId": "usr-1795878362263",
+      "id": "stud-1795879437093930",
+      "userId": "usr-1795879437092",
       "name": "Alexander Wright",
       "email": "a.wright@student.university.edu",
       "rollNumber": "2024-CS-001",
-      "sectionId": "sec-1795878362262",
-      "createdAt": "2026-11-28T15:06:02.264Z"
+      "sectionId": "sec-1795879437090",
+      "createdAt": "2026-11-28T15:23:57.093Z"
     }
   ],
   "marks": [
     {
-      "id": "mark-1795878362264947",
-      "studentId": "stud-1795878362264117",
-      "sectionId": "sec-1795878362262",
+      "id": "mark-1795879437093708",
+      "studentId": "stud-1795879437093930",
+      "sectionId": "sec-1795879437090",
       "internalMarks": 0,
       "labRecordMarks": 0,
       "practicalMarks": 0,
@@ -52,7 +52,7 @@
       "total": 0,
       "maxTotal": 80,
       "updatedBy": "System",
-      "updatedAt": "2026-11-28T15:06:02.265Z"
+      "updatedAt": "2026-11-28T15:23:57.093Z"
     }
   ],
   "assignments": [],
@@ -61,17 +61,17 @@
   "announcements": [],
   "activityLogs": [
     {
-      "id": "act-1795878362265",
+      "id": "act-1795879437094",
       "action": "Student Added",
       "description": "Added student Alexander Wright (Roll 2024-CS-001).",
-      "timestamp": "2026-11-28T15:06:02.265Z",
+      "timestamp": "2026-11-28T15:23:57.094Z",
       "type": "student"
     },
     {
-      "id": "act-1795878362263",
+      "id": "act-1795879437091",
       "action": "Section Created",
       "description": "Created section \"CS-301: Algorithms & Data Structures\".",
-      "timestamp": "2026-11-28T15:06:02.263Z",
+      "timestamp": "2026-11-28T15:23:57.091Z",
       "type": "section"
     }
   ]

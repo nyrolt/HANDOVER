@@ -5,6 +5,8 @@ import { serverConfig } from "./config";
 import { apiRoutes } from "./api/routes";
 import { errorHandler } from "./middleware/errorHandler";
 import { logger } from "../backend/services/logger";
+import { VerificationQueueService } from "./services/verificationQueueService";
+import { MarksReconciliationService } from "./services/marksReconciliationService";
 
 export const app = express();
 
@@ -104,6 +106,18 @@ if (process.env["NODE_ENV"] !== "test" && isMainModule()) {
       env: serverConfig.nodeEnv,
       endpoints: apiRoutes.length + 1,
     });
+
+    // Boot-time recovery: reset any orphaned jobs from previous crashes
+    VerificationQueueService.recoverStaleJobs()
+      .then((recovered) => {
+        if (recovered > 0) {
+          logger.info(`Verification Queue: Recovered ${recovered} orphaned processing job(s).`);
+        }
+      })
+      .catch((err) => logger.error(`Failed to recover stale verification jobs: ${err}`));
+
+    // Start background reconciliation
+    MarksReconciliationService.startScheduledReconciliation(3600000);
   });
 
   listener.on("error", (err: NodeJS.ErrnoException) => {

@@ -12,17 +12,22 @@ export interface ReconciliationSummary {
 }
 
 export class MarksReconciliationService {
+  private static scheduledInterval: NodeJS.Timeout | null = null;
+
   /**
    * Scans a section or assignment for verified submissions missing marks.
+   * Only submissions with status 'Verified' that exceed the grace period (default 2 days)
+   * are flagged as overdue missing marks.
    */
   public static async runReconciliation(
     sectionId: string,
     assignmentId?: string,
+    gracePeriodDays: number = 2,
   ): Promise<ReconciliationSummary> {
     const alerts: MarksReconciliationAlert[] = [];
 
     try {
-      // 1. Fetch verified submissions for the section
+      // 1. Fetch strictly verified submissions for the section
       const subCondition = assignmentId ? sql`AND s.assignment_id = ${assignmentId}` : sql``;
 
       const verifiedSubs = await sql`
@@ -42,7 +47,7 @@ export class MarksReconciliationService {
         FROM assignment_submissions s
         LEFT JOIN marks m ON m.student_id = s.student_id AND m.section_id = s.section_id
         WHERE s.section_id = ${sectionId}
-          AND s.status IN ('Verified', 'Submitted', 'Needs Teacher Review')
+          AND s.status = 'Verified'
           ${subCondition}
       `;
 
@@ -69,11 +74,17 @@ export class MarksReconciliationService {
             WHERE submission_id = ${row.submission_id} AND status = 'OPEN'
           `;
         } else {
-          totalMissingMarks++;
           const submissionDate = new Date(row.created_at);
           const daysSince = Math.floor(
             (Date.now() - submissionDate.getTime()) / (1000 * 60 * 60 * 24),
           );
+
+          // Phase 7: Respect evaluation grace period (e.g. 2 days)
+          if (daysSince <= gracePeriodDays) {
+            continue;
+          }
+
+          totalMissingMarks++;
 
           // Check if alert already exists
           const existing = await sql<MarksReconciliationAlert[]>`
@@ -82,7 +93,9 @@ export class MarksReconciliationService {
           `;
 
           if (existing && existing.length > 0 && existing[0]) {
-            const rawStatus = String((existing[0] as unknown as Record<string, unknown>)["status"] || "");
+            const rawStatus = String(
+              (existing[0] as unknown as Record<string, unknown>)["status"] || "",
+            );
             if (rawStatus === "OPEN" || rawStatus === "ACTIVE") {
               alerts.push(existing[0]);
             }
@@ -115,6 +128,21 @@ export class MarksReconciliationService {
             `;
 
             alerts.push(newAlert);
+
+            // Phase 7: Send reassuring, neutral notification to student
+            if (row.student_id) {
+              await NotificationService.createNotification({
+                institutionId: row.institution_id || "inst_demo",
+                userId: row.student_id,
+                role: "student",
+                title: "Assignment Evaluation Pending",
+                message:
+                  "Your assignment has been verified and is awaiting final evaluation by your instructor.",
+                type: "info",
+                link: "/student/assignments",
+                metadata: { submissionId: row.submission_id, sectionId: row.section_id },
+              }).catch(() => {});
+            }
           }
         }
       }
@@ -182,6 +210,39 @@ export class MarksReconciliationService {
       return true;
     } catch {
       return false;
+    }
+  }
+
+  /**
+   * Starts a background cron/timer that runs reconciliation periodically across active sections.
+   */
+  public static startScheduledReconciliation(intervalMs: number = 3600000): void {
+    if (this.scheduledInterval) return;
+    this.scheduledInterval = setInterval(async () => {
+      try {
+        const sections = await sql<
+          { id: string }[]
+        >`SELECT id FROM sections WHERE deleted_at IS NULL`;
+        for (const sec of sections) {
+          await this.runReconciliation(sec.id);
+        }
+      } catch (err) {
+        console.error("Scheduled reconciliation error:", err);
+      }
+    }, intervalMs);
+
+    if (this.scheduledInterval.unref) {
+      this.scheduledInterval.unref();
+    }
+  }
+
+  /**
+   * Stops the background reconciliation interval timer.
+   */
+  public static stopScheduledReconciliation(): void {
+    if (this.scheduledInterval) {
+      clearInterval(this.scheduledInterval);
+      this.scheduledInterval = null;
     }
   }
 }

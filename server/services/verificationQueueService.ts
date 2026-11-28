@@ -92,12 +92,47 @@ export class VerificationQueueService {
   }
 
   /**
+   * Recovers jobs that were left in 'PROCESSING' state due to server restart or process crash.
+   */
+  public static async recoverStaleJobs(): Promise<number> {
+    try {
+      const recovered = await sql`
+        UPDATE verification_jobs
+        SET status = 'PENDING', started_at = NULL, worker_id = NULL, updated_at = NOW()
+        WHERE status = 'PROCESSING'
+          AND (started_at IS NULL OR started_at < NOW() - INTERVAL '5 minutes')
+        RETURNING id
+      `;
+      if (recovered && recovered.length > 0) {
+        return recovered.length;
+      }
+    } catch {
+      // Memory fallback: reset memory jobs in PROCESSING
+      let count = 0;
+      for (const job of memoryJobs.values()) {
+        if (job.status === "PROCESSING") {
+          job.status = "PENDING";
+          job.workerId = undefined;
+          job.startedAt = undefined;
+          count++;
+        }
+      }
+      return count;
+    }
+    return 0;
+  }
+
+  /**
    * Starts worker pool to process pending jobs up to concurrency limit.
    */
   public static startWorkerPool(): void {
     if (this.isLoopRunning) return;
     this.isLoopRunning = true;
-    this.processNextJobs().catch(() => {});
+    this.recoverStaleJobs()
+      .catch(() => {})
+      .finally(() => {
+        this.processNextJobs().catch(() => {});
+      });
   }
 
   private static async processNextJobs(): Promise<void> {

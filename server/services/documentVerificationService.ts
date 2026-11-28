@@ -43,7 +43,8 @@ export class DocumentVerificationService {
   /**
    * Tokenizes text into normalized word list.
    */
-  private static tokenize(text: string): string[] {
+  private static tokenize(text?: string): string[] {
+    if (!text || typeof text !== "string") return [];
     return text
       .toLowerCase()
       .replace(/[^a-z0-9\s]/g, " ")
@@ -102,17 +103,17 @@ export class DocumentVerificationService {
           const rawStream = Buffer.from(streamMatch[1] || "", "binary");
           try {
             const decompressed = zlib.inflateSync(rawStream).toString("utf-8");
-            const textRegex = /\(([^)]+)\)\s*T[jJ]/g;
+            const textRegex = /\(([^)]+)\)/g;
             let m;
             while ((m = textRegex.exec(decompressed)) !== null) {
-              if (m[1]) textParts.push(m[1]);
+              if (m[1] && m[1].trim().length > 0) textParts.push(m[1].trim());
             }
           } catch {
             // Not compressed or raw stream
-            const textRegex = /\(([^)]+)\)\s*T[jJ]/g;
+            const textRegex = /\(([^)]+)\)/g;
             let m;
             while ((m = textRegex.exec(streamMatch[1] || "")) !== null) {
-              if (m[1]) textParts.push(m[1]);
+              if (m[1] && m[1].trim().length > 0) textParts.push(m[1].trim());
             }
           }
         }
